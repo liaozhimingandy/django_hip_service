@@ -1,0 +1,59 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-hans">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://www.alsoapp.com/favicon.svg">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <title>alsoapp.com</title>
+</head>
+<body>
+<div class="text-bg-primary p-3 text-center bg-dark">
+    <B>集成平台标准文档共享服务&nbsp;&bull;&nbsp;<span class="text-center"><a
+            href="mailto:liaozhimingandy@qq.com" class="text-light" style="text-decoration: none;"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+            data-bs-title="通过邮件联系我们;邮箱地址: liaozhimingandy@qq.com">联系我们补充</a></span></B>
+</div>
+<div class="container pt-3">
+    <h5><a href="{% static 'esb_standard/Caradigm_临床数据中心基本数据集.xlsx' %}">数据集文档下载</a></h5>
+    <hr>
+    <h5><a href="{% static 'esb_standard/字典标准梳理.xlsx' %}">标准字典</a></h5>
+    <hr>
+    <h5>选中你要下载的消息事件来进行下载</h5>
+    <hr>
+    <form action="/download/" method="post">
+        {% csrf_token %}
+        <div class="container bg-light pt-2">
+            <table class="table table-striped table-hover" id="datatables">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">请选择</th>
+                    <th scope="col">消息名称</th>
+                    <th scope="col">消息事件代码</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="messages" value="{{ message.id }}">
+                        </label>
+                    </td>
+                    <td>{{ message.service.service_code }}</td>
+                    <td>{{ message.service.service_name }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <input type="submit" value="下载" class="btn btn-danger">
+    </form>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
