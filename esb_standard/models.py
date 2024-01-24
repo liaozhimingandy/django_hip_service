@@ -90,8 +90,7 @@ class DataElement(BaseInfo):
     allowable_value = models.CharField("数据元允许值", max_length=32, null=True, blank=True, db_comment="数据元允许值")
     length = models.PositiveSmallIntegerField("长度", null=True, blank=True, db_comment="长度")
     value = models.CharField("默认值",  max_length=64, blank=True, null='', db_comment="默认值")
-    data_set = models.ForeignKey(DataSet, on_delete=models.PROTECT, null=True, verbose_name="所属数据集",
-                                 db_comment="所属数据集")
+    data_set = models.ForeignKey(DataSet, on_delete=models.PROTECT, null=True, verbose_name="所属数据集", db_comment="所属数据集")
 
     def __str__(self):
         return f"{self.de_name}({self.de_en_code})"
@@ -124,6 +123,7 @@ class MessageFormat(BaseInfo):
     service = models.ForeignKey(Service, on_delete=models.PROTECT, verbose_name="事件", db_comment="对应事件",
                                 help_text="对应事件")
     format = models.JSONField("消息格式",  db_comment="消息格式", help_text="消息格式")
+    is_custom = models.BooleanField("是否自定义", db_default=False, db_comment="是否未自定义", help_text="自定义消息不参与动态构建")
 
     def __str__(self):
         return f'{self.service}'

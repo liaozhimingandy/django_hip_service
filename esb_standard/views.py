@@ -8,6 +8,7 @@ from django.http import HttpResponse, QueryDict
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
+from django_hip_service import settings
 from .models import MessageFormat, DataElement
 
 
@@ -15,7 +16,9 @@ from .models import MessageFormat, DataElement
 def home(request):
     """首页"""
     messages = MessageFormat.objects.all()
-    return render(request, template_name='esb_standard/index.html', context={'messages': messages})
+    return render(request, template_name='esb_standard/index.html',
+                  context={'messages': messages, 'APP_COMMIT_HASH': settings.APP_COMMIT_HASH,
+                           'APP_BRANCH': settings.APP_BRANCH, 'APP_ENV': settings.APP_ENV})
 
 
 @require_POST
@@ -23,7 +26,7 @@ def download(request):
     """下载消息示例"""
     # 提取参数
     query_dict = QueryDict(request.body)
-    messages_list = query_dict.get("messages")
+    messages_list = query_dict.getlist("messages")
 
     assert messages_list is not None, "缺失必要参数"
 
@@ -45,15 +48,18 @@ def generate_messages_demo(dir_name: str, messages):
     for message in messages:
         # 生成demo样例,打压缩包
         # 递归创建目录
-        dir_path = f"tmp/{dir_name}/{message.service.service_name}"
+        dir_path = f"tmp/{dir_name}/{message.service.service_name}-{message.service.service_code}"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path, exist_ok=False)
 
         data = message.format
+        data['id'] = str(uuid.uuid4()).replace('-', '')
         data['creationTime'] = f'{datetime.datetime.now().strftime("%Y%m%dT%H%M%S")}'
 
-        # 递归消息节点
-        data['message'] = iterative_message(data['message'])
+        # 递归处理消息节点
+        if not message.is_custom:
+            data['message'] = iterative_message(data['message'])
+
         # 请求
         with open(os.path.join(dir_path, f'{message.service.service_name}-请求消息.json'), encoding='utf8',
                   mode='w') as fp:
@@ -61,16 +67,19 @@ def generate_messages_demo(dir_name: str, messages):
 
         # 正向响应
         del data['message']
+        data['receiver'], data['sender'] = data['sender'], data['receiver']
         data["ack"] = {
             "ackCode": "AA",
-            "targetMessageId": "22a0f9e0-4454-11dc-a6be-3603d6866807",
+            "targetMessageId": data['id'],
             "ackDetail": "消息处理成功"
         }
+        data['id'] = str(uuid.uuid4()).replace('-', '')
         with open(os.path.join(dir_path, f'{message.service.service_name}-响应消息（成功）.json'), encoding='utf8',
                   mode='w') as fp:
             fp.write(json.dumps(data, ensure_ascii=False, indent=4))
 
         # 反向响应
+        data['id'] = str(uuid.uuid4()).replace('-', '')
         data["ack"]["ackCode"] = "AE"
         data["ack"]["ackDetail"] = "消息处理失败，原因：XXX"
 
@@ -79,6 +88,8 @@ def generate_messages_demo(dir_name: str, messages):
             fp.write(json.dumps(data, ensure_ascii=False, indent=4))
 
     # 压缩文件夹
+    if os.path.exists("tmp-messages.zip"):
+        os.remove("tmp-messages.zip")
     shutil.make_archive(base_name="tmp-messages", format='zip', root_dir="tmp")
 
     # 移除文件夹

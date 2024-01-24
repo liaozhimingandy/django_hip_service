@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import logging
+import subprocess
 import time
 
 from django import get_version
@@ -21,6 +22,9 @@ from import_export.formats import base_formats
 # 应用版本号
 VERSION = (1, 0, 1, "alpha", 3)
 __version__ = get_version(VERSION)
+APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()[:8]
+APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode()
+APP_ENV = '生产环境' if int(os.environ.get("DEBUG", default=0)) else '非生产环境'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,6 +51,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django.contrib.admindocs",  # 供生成文档使用
+    "django.contrib.sites", # 站点使用
 ]
 
 THIRD_PARTY_APPS = [
@@ -282,3 +287,6 @@ LOGGING = {
 }
 # e.g. logger = logging.getLogger("mylogger")
 # ######################### 日志配置结束 ######################### #
+
+
+SITE_ID = os.getenv('AP_SITE_ID', 2024)

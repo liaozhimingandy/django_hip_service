@@ -121,6 +121,7 @@ class DataSetModelResourceModelAdmin(ImportExportModelAdmin, ExportActionModelAd
     # 导入导出类
     resource_class = DataSetModelResource
 
+
     def save_model(self, request, obj, form, change):
         """
         重新保存模型方法
@@ -165,6 +166,8 @@ class DataSetModelResourceModelAdmin(ImportExportModelAdmin, ExportActionModelAd
 class DataElementModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
     list_display = ["hd_code", "de_code", "de_en_code", "de_name", "definition", "data_type", "expression",
                     "allowable_value", "length", "data_set"]
+    ordering = ("hd_code", )
+
     # 导入导出类
     resource_class = DataElementModelResource
 
