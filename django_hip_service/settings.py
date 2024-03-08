@@ -22,9 +22,10 @@ from import_export.formats import base_formats
 # 应用版本号
 VERSION = (1, 0, 1, "alpha", 3)
 __version__ = get_version(VERSION)
-APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()[:8]
-APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode()
+APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
+APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
 APP_ENV = '生产环境' if int(os.environ.get("DEBUG", default=0)) else '非生产环境'
+APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}•{APP_BRANCH}•{APP_COMMIT_HASH})"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,6 +61,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "hipmessageservice",
     "esb_standard",
     # Your stuff: custom apps go here
 ]
@@ -101,10 +103,18 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "hipmessageservice",
+            "USER": "zhiming",
+            "PASSWORD": "zhiming",
+            "HOST": "dev.esb.alsoapp.com",
+            "PORT": "5432",
+        },
+    'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
 }
 
 # Password validation
@@ -145,6 +155,7 @@ STATIC_URL = os.getenv("STATIC_URL", 'static/')
 # https://docs.djangoproject.com/zh-hans/5.0/howto/static-files/
 # python manage.py collectstatic 收集文件到下面文件文件夹里
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATICFILES_DIRS = [BASE_DIR / "static", ]
 
 # 多媒体文件
 MEDIA_URL = os.getenv("MEDIA_URL", 'media/')

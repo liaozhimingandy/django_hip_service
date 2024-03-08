@@ -17,8 +17,7 @@ def home(request):
     """首页"""
     messages = MessageFormat.objects.all()
     return render(request, template_name='esb_standard/index.html',
-                  context={'messages': messages, 'APP_COMMIT_HASH': settings.APP_COMMIT_HASH,
-                           'APP_BRANCH': settings.APP_BRANCH, 'APP_ENV': settings.APP_ENV})
+                  context={'messages': messages, 'APP_VERSION_VERBOSE': settings.APP_VERSION_VERBOSE})
 
 
 @require_POST

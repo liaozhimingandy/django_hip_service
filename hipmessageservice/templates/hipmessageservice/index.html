@@ -1,0 +1,139 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-hans">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://www.alsoapp.com/favicon.svg">
+    <link href="{% static 'hipmessageservice/datatables/dataTables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'hipmessageservice/bootstrap.min.css' %}" rel="stylesheet">
+    {#    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">#}
+
+    <title>alsoapp.com</title>
+    <style rel="stylesheet">
+        body {
+            background: #F0F2F5;
+            font-family: -apple-system-font, BlinkMacSystemFont, Microsoft YaHei, Microsoft YaHei UI, Helvetica Neue, PingFang SC, Hiragino Sans GB, Arial, sans-serif;
+            /* font-size: .875rem;
+            font-size: 14px; */
+
+        }
+    </style>
+</head>
+<body class="container-fluid">
+<div class="text-bg-primary p-3 text-center bg-dark">
+    <B>医院信息化平台交互规范-交互场景 | <span class="text-center"><a
+            href="mailto:liaozhimingandy@qq.com" class="text-light" style="text-decoration: none;"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+            data-bs-title="通过邮件联系我们;邮箱地址: liaozhimingandy@qq.com">联系我们补充</a></span></B>
+</div>
+
+<div class="mt-3 mb-4 table-responsive">
+    <table class="table table-bordered border-primary table-striped table-hover align-middle table-light"
+           id="datatables">
+        <thead class="text-bg-light">
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            {% for application in applications %}
+                <th scope="col">{{ application.firm.firm_name_short }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">序号</th>
+            {% for application in applications %}
+                <th scope="col">{{ application.application_name }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for service in services %}
+            <tr>
+                {% if service.is_v3 %}
+                    <th scope="row" class="text-bg-primary">{{ service.service_name }}({{ service.service_code }})</th>
+                {% else %}
+                    <th scope="row">{{ service.service_name }}({{ service.service_code }})</th>
+                {% endif %}
+                <td>{{ forloop.counter }}</td>
+                {% for application in applications %}
+                    <td>
+                        {% if status %}
+                            {% for item in status %}
+                                {% if item.service_id == service.id and item.application_id == application.id %}
+                                    {{ item.get_status_display }}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}-
+                        {% endif %}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{#<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>#}
+<script src="{% static 'hipmessageservice/jquery-3.7.0.min.js' %}"></script>
+<script src="{% static 'hipmessageservice/datatables/dataTables.min.js' %}"></script>
+<script src="{% static 'hipmessageservice/bootstrap.min.js' %}"></script>
+{#<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/js/bootstrap.min.js"></script>#}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        const datatables = $('#datatables').DataTable({
+            fixedHeader: true,　//这个是用来固定头部
+            pageLength: 10,
+            searching: true,//本地搜索
+            bAutoWidth: false, //是否自适应宽度
+            sScrollX: "100%",
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            ordering: false, //排序功能
+            order: [
+                [0, null]
+            ],
+            language: {　　// 这是修改语言的显示
+                sLengthMenu: "每页显示 _MENU_ 条记录",
+                buttons: {
+                    pageLength: {
+                        _: "显示%d条",
+                        '-1': "全部显示"
+                    }
+                },
+                paginate: {
+                    first: "首条",
+                    previous: "前一页",
+                    next: "下一页",
+                    last: "末页"
+                },
+                info: "第_PAGE_页,共_PAGES_页,共 _TOTAL_ 条记录",
+                infoEmpty: "未找到相关数据",
+                search: "关键字",
+                zeroRecords: "未找到相关数据",
+                sInfoFiltered: "(数据表中共为 _MAX_ 条记录)",
+                decimal: ".",
+                thousands: ",",
+                oAria: {
+                    "sSortAscending": ": 以升序排列此列",
+                    "sSortDescending": ": 以降序排列此列"
+                }
+            },
+            fixedColumns: {
+                leftColumns: 2 // 固定左边两列
+            },
+            dom: "<'row mb-2'<'col-md-3'l><'col-md-3'f>r<'col-md-6  text-end 'B>>t<'row'<'col-md-6'i><'col-md-6 text-end'p>>",
+            buttons: [
+                {
+                    text: "导出为Excel数据",
+                    extend: "excelHtml5",
+                    orientation: 'landscape',
+                    className: "btn btn-sm btn-success",
+                    filename: '医院信息化平台交互规范-交互场景表',
+                    title: "医院信息化平台交互规范-交互场景"
+                },
+            ]
+        });
+    });
+</script>
+</body>
+</html>
