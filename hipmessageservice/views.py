@@ -1,12 +1,14 @@
-import itertools
+import datetime
 
-import xlsxwriter
+import openpyxl
 from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import render
-from openpyxl.styles import Alignment, Side, Border
+from openpyxl.styles import Font, Border, Side, Alignment
+from openpyxl.styles.fills import PatternFill
 
 from hipmessageservice.models import Service, Application, StatusShip
+from hipmessageservice.utils.database import read_cda
 
 
 # Create your views here.
@@ -35,52 +37,112 @@ def read_all() -> list:
 
     return list(items)
 
-def read_cda() -> list:
-    sql = """
-        select value, comment, c.firm_name_short, 1 status
-        from hipmessageservice_cda a
-        left join hipmessageservice_cda_firm b on a.id = b.cda_id
-        left join hipmessageservice_firm c on b.firm_id = c.id
-        where a.is_deleted = false
-        order by value asc, b.firm_id asc;
+
+def test_cda(request):
+    """
+    生成cda分工sheet
+    :param request:
+    :return:
     """
 
-    with connection.cursor() as cursor:
-        cursor.execute(sql)
-        items = cursor.fetchall()
-
-    return list(items)
-
-
-def test_data(request):
-
-
+    list_cda = read_cda()
+    str_sheet_name = '分工-CDA'
     import pandas as pd
 
-    items1 = read_all()
-    items2 = read_cda()
+    df = (pd.DataFrame(list_cda, columns=['value','comment', 'firm__firm_name_short', "count"]))
+    result = df.pivot_table(values="count", index=['value', 'comment'],columns=["firm__firm_name_short"])
 
-    df = pd.DataFrame(items1, columns=['firm_name', 'application_name', 'service', "status"])
-    df2 = pd.DataFrame(items2, columns=['value','comment', 'firm_name_short', "status"])
-
-    result = df.pivot_table(values="status", index="service", columns=['firm_name', "application_name"])
-    result2 = df2.pivot_table(values="status", index=['value', 'comment'], columns=["firm_name_short"])
+    # 替换值
+    result.replace(1,'√', inplace=True)
 
     writer = pd.ExcelWriter("hipmessageservice/resutls.xlsx")
-    result.to_excel(writer, index=True, sheet_name="交互场景")
-    result2.to_excel(writer, index=True, sheet_name="分工-CDA")
+    format_sheet = writer.book.add_format({'fg_color': '#D7E4BC', 'bold': True, 'align': 'center', 'valign': 'vcenter',
+                                     'border': 2, 'text_wrap': True})
 
     # 设置样式
-    sheet = writer.sheets['交互场景']
-    format = writer.book.add_format({'fg_color': '#D7E4BC', 'bold': True, 'align': 'center', 'valign': 'vcenter',
-                                     'border': 2, 'text_wrap': True})
-    sheet.set_column('B:AE', 5, cell_format=format)
-    sheet.set_column('A:A', 20)
+    result.to_excel(writer, index=True, sheet_name=str_sheet_name, index_label=['CDA文档代码', 'CDA文档名称'])
+    sheet = writer.sheets[str_sheet_name]
+    sheet.set_column('A1:I47', 10, cell_format=format_sheet)
 
-    sheet2 = writer.sheets['分工-CDA']
-    sheet2.set_column('A:I', 10, cell_format=format)
-
-    # 关闭并保存到文件
     writer.close()
 
-    return HttpResponse(result, status=200)
+    return HttpResponse(list_cda, status=200)
+
+def cell_style(sheet, cell, style_name, style):
+    sheet[cell][style_name] = style
+
+def test_data(request):
+    map_status = {1: '订阅', 2: "发布", 3: "全部"}
+    filename = "hipmessageservice/resutls.xlsx"
+    statuss = StatusShip.objects.filter(is_deleted=False).only("application__firm__firm_name_short").distinct("application__firm__firm_name_short")
+
+    # 样式
+    font = Font(size=16, bold=True, color='FF000000')
+    border = Border(left=Side(border_style='thin', color='FF000000'),
+                    right=Side(border_style='thin', color='FF000000'),
+                    top=Side(border_style='thin', color='FF000000'),
+                    bottom=Side(border_style='thin', color='FF000000'))
+    orange_fill = PatternFill(fill_type='solid', fgColor="1890ff")
+    # 居中所有单元格
+    align = Alignment(horizontal='center', vertical='center', wrapText=False)
+
+    for status in statuss:
+        if not status.application.firm:
+            continue
+
+        book = openpyxl.load_workbook(filename)
+        sheet = book.create_sheet(title=f"交互服务分工-{status.application.firm.firm_name_short}")
+        index = 1
+
+        items = (StatusShip.objects.filter(application__firm__firm_name_short=status.application.firm.firm_name_short,
+                                          service__is_deleted=False).values('service__service_name', 'service__service_code', 'status')
+                 .distinct('service__service_name', 'service__service_code', 'status'))
+
+        sheet[f'A{index}'] = f"以下为您需要完成的交互服务|统计日期:{datetime.datetime.now().strftime('%Y-%m-%d')}"
+        # cell_style(sheet, f'A{index}', "font", font)
+        sheet[f'A{index}'].font = font
+        sheet[f'A{index}'].border = border
+        sheet[f'A{index}'].alignment = align
+        sheet.merge_cells('A1:C1')
+
+        index += 1
+
+        sheet[f'A{index}'] = "服务名称"
+        sheet[f'B{index}'] = "服务代码"
+        sheet[f'C{index}'] = "发布订阅关系"
+        sheet[f'A{index}'].font = font
+        sheet[f'B{index}'].font = font
+        sheet[f'C{index}'].font = font
+        sheet[f'A{index}'].border = border
+        sheet[f'B{index}'].border = border
+        sheet[f'C{index}'].border = border
+        sheet[f'A{index}'].fill = orange_fill
+        sheet[f'B{index}'].fill = orange_fill
+        sheet[f'C{index}'].fill = orange_fill
+        sheet[f'A{index}'].alignment  = align
+        sheet[f'B{index}'].alignment  = align
+        sheet[f'C{index}'].alignment  = align
+
+        for item in items:
+
+            sheet[f'A{index + 1}'] = item['service__service_name']
+            sheet[f'B{index + 1}'] = item['service__service_code']
+            sheet[f'C{index + 1}'] = map_status.get(item['status'])
+
+            sheet[f'A{index + 1}'].font = font
+            sheet[f'B{index + 1}'].font = font
+            sheet[f'C{index + 1}'].font = font
+            sheet[f'A{index + 1}'].border = border
+            sheet[f'B{index + 1}'].border = border
+            sheet[f'C{index + 1}'].border = border
+
+            index += 1
+
+        sheet.column_dimensions["A"].width = 60
+        sheet.column_dimensions["B"].width = 60
+        sheet.column_dimensions["C"].width = 60
+        book.save(filename)
+
+        # break
+
+    return HttpResponse("ok")

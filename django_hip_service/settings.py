@@ -20,11 +20,15 @@ from pathlib import Path
 from import_export.formats import base_formats
 
 # 应用版本号
-VERSION = (1, 0, 1, "alpha", 3)
-__version__ = get_version(VERSION)
-APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
-APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
-APP_ENV = '生产环境' if int(os.environ.get("DEBUG", default=0)) else '非生产环境'
+# VERSION = (1, 0, 1, "alpha", 3)
+__version__ = os.getenv('APP_VERSION', '1.0.3')
+APP_COMMIT_HASH = os.getenv('APP_COMMIT_HASH', '')
+if not APP_COMMIT_HASH:
+    APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
+APP_BRANCH = os.getenv('APP_BRANCH', '')
+if not APP_BRANCH:
+    APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
+APP_ENV = '生产环境' if int(os.environ.get("APP_DEBUG", default=0)) else '非生产环境'
 APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}•{APP_BRANCH}•{APP_COMMIT_HASH})"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,12 +38,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-f7&l8h*wd@arejo#9%4nqg*s_hbzf1a-(%&*+6_*mj4lv2*eum')
+SECRET_KEY = os.getenv("APP_SECRET_KEY", 'django-insecure-f7&l8h*wd@arejo#9%4nqg*s_hbzf1a-(%&*+6_*mj4lv2*eum')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", default=1))
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
+DEBUG = int(os.environ.get("APP_DEBUG", default=1))
+ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
 
 # Application definition
 # APPS
@@ -104,12 +108,12 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 
 DATABASES = {
     "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "hipmessageservice",
-            "USER": "zhiming",
-            "PASSWORD": "zhiming",
-            "HOST": "dev.esb.alsoapp.com",
-            "PORT": "5432",
+            "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
+            "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
+            "USER": os.getenv("APP_DB_USER", "zhiming"),
+            "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+            "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
+            "PORT": os.getenv("APP_DB_PORT", "5432"),
         },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
