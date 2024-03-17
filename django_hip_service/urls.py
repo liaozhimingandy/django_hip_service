@@ -21,15 +21,14 @@ from django.urls import path, include
 from django_hip_service import settings
 
 from esb_standard.views import download
-from hipmessageservice.views import index, test_data, test_cda
+from hipmessageservice.views import index, download as download_count
 
 urlpatterns = [
     path('', index),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
-    path('download/', download),
-    path('test-data/', test_data),
-    path('test-cda/', test_cda)
+    path('download/', download_count, name='download-count'),
+    path('messsage/download/', download),
 ]
 
 # 开发环境提供静态文件和多媒体查看功能

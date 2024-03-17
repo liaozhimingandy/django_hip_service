@@ -16,3 +16,4 @@
 /docker_build_auto.*
 /logs
 /*/sample.json
+temp/*

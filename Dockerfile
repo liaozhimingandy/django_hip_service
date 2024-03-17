@@ -15,8 +15,8 @@ RUN echo "deb http://mirrors.aliyun.com/debian/ buster main non-free contrib" > 
 
 RUN apt-get update && apt-get -y install libpq-dev gcc
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+COPY requirements .
+RUN pip3 install --no-cache-dir -r requirements/production.txt -i https://mirrors.aliyun.com/pypi/simple/
 
 
 FROM python:${TAG}
@@ -26,13 +26,11 @@ COPY --from=builder-image /usr/local/bin /usr/local/bin
 COPY --from=builder-image /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 RUN mkdir /opt/app
-WORKDIR /opt/app
 COPY . /opt/app
 
-RUN ["chmod", "+x", "/opt/app/config/entrypoint.sh"]
-
-# run entrypoint.sh
-ENTRYPOINT ["/opt/app/config/entrypoint.sh"]
+WORKDIR /opt/app
+# command
+CMD ["gunicorn", "django_hip_service.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
 
 # 构建命令
 # docker build -t liaozhiming/django_hip:latest .

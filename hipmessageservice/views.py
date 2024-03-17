@@ -2,7 +2,7 @@ import datetime
 
 import openpyxl
 from django.db import connection
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse, FileResponse
 from django.shortcuts import render
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
@@ -13,6 +13,7 @@ from hipmessageservice.utils.database import read_cda
 
 # Create your views here.
 def index(request):
+
     services = Service.objects.filter(is_deleted=False).order_by("service_queue")
     applications = Application.objects.filter(is_deleted=False, firm__isnull=False).order_by('-firm')
     status = StatusShip.objects.filter(is_deleted=False)
@@ -37,11 +38,9 @@ def read_all() -> list:
 
     return list(items)
 
-
-def test_cda(request):
+def generate_cda():
     """
     生成cda分工sheet
-    :param request:
     :return:
     """
 
@@ -55,25 +54,23 @@ def test_cda(request):
     # 替换值
     result.replace(1,'√', inplace=True)
 
-    writer = pd.ExcelWriter("hipmessageservice/resutls.xlsx")
+    writer = pd.ExcelWriter("temp/results.xlsx")
+    result.to_excel(writer, index=True, sheet_name=str_sheet_name, index_label=['CDA文档代码', 'CDA文档名称'])
+    # 设置样式
     format_sheet = writer.book.add_format({'fg_color': '#D7E4BC', 'bold': True, 'align': 'center', 'valign': 'vcenter',
                                      'border': 2, 'text_wrap': True})
 
-    # 设置样式
-    result.to_excel(writer, index=True, sheet_name=str_sheet_name, index_label=['CDA文档代码', 'CDA文档名称'])
     sheet = writer.sheets[str_sheet_name]
-    sheet.set_column('A1:I47', 10, cell_format=format_sheet)
+    sheet.set_column('A1:I47', 16, cell_format=format_sheet)
 
     writer.close()
-
-    return HttpResponse(list_cda, status=200)
 
 def cell_style(sheet, cell, style_name, style):
     sheet[cell][style_name] = style
 
-def test_data(request):
+def generate_data():
     map_status = {1: '订阅', 2: "发布", 3: "全部"}
-    filename = "hipmessageservice/resutls.xlsx"
+    filename = "temp/results.xlsx"
     statuss = StatusShip.objects.filter(is_deleted=False).only("application__firm__firm_name_short").distinct("application__firm__firm_name_short")
 
     # 样式
@@ -145,4 +142,12 @@ def test_data(request):
 
         # break
 
-    return HttpResponse("ok")
+
+def download(request):
+    # 生成cda统计数据
+    generate_cda()
+
+    # generate_data()
+
+
+    return FileResponse(open('temp/results.xlsx', 'rb'), as_attachment=True, filename='医院信息平台交互规范-交互场景.xlsx')

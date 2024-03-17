@@ -20,22 +20,21 @@ from pathlib import Path
 from import_export.formats import base_formats
 
 # 应用版本号
-# VERSION = (1, 0, 1, "alpha", 3)
-__version__ = os.getenv('APP_VERSION', '1.0.3')
+VERSION = (1, 0, 1, "alpha", 3)
+__version__ = get_version(VERSION)
+
 APP_COMMIT_HASH = os.getenv('APP_COMMIT_HASH', '')
 if not APP_COMMIT_HASH:
     APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
 APP_BRANCH = os.getenv('APP_BRANCH', '')
 if not APP_BRANCH:
     APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
-APP_ENV = '生产环境' if int(os.environ.get("APP_DEBUG", default=0)) else '非生产环境'
-APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}•{APP_BRANCH}•{APP_COMMIT_HASH})"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("APP_SECRET_KEY", 'django-insecure-f7&l8h*wd@arejo#9%4nqg*s_hbzf1a-(%&*+6_*mj4lv2*eum')
@@ -142,9 +141,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = os.getenv('APP_LANGUAGE_CODE', 'zh-hans')
 
-TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai')
 
 USE_I18N = True
 
@@ -153,7 +152,7 @@ USE_TZ = True
 # 静态方式 (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = os.getenv("STATIC_URL", 'static/')
+STATIC_URL = os.getenv("APP_STATIC_URL", 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/zh-hans/5.0/howto/static-files/
@@ -162,7 +161,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # STATICFILES_DIRS = [BASE_DIR / "static", ]
 
 # 多媒体文件
-MEDIA_URL = os.getenv("MEDIA_URL", 'media/')
+MEDIA_URL = os.getenv("APP_MEDIA_URL", 'media/')
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
 # Default primary key field type
