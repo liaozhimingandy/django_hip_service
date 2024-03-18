@@ -17,21 +17,16 @@ from django import get_version
 import os
 from pathlib import Path
 
-from import_export.formats import base_formats
-
 # 应用版本号
 VERSION = (1, 0, 1, "alpha", 3)
 __version__ = get_version(VERSION)
 
-APP_COMMIT_HASH = os.getenv('APP_COMMIT_HASH', '')
-if not APP_COMMIT_HASH:
-    APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
-APP_BRANCH = os.getenv('APP_BRANCH', '')
-if not APP_BRANCH:
-    APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# app git信息
+with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
+    APP_COMMIT_HASH = fp.readline()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -60,7 +55,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',  # 提供api接口专用
-    'import_export',  # 后台管理导入导出功能; 参考链接: https://django-import-export.readthedocs.io/en/latest/index.html
+    # 'import_export', # 后台管理导入导出功能; 参考链接: https://django-import-export.readthedocs.io/en/latest/index.html
+    # "debug_toolbar",
 ]
 
 LOCAL_APPS = [
@@ -74,6 +70,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -168,9 +165,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-IMPORT_EXPORT_USE_TRANSACTIONS = True
-IMPORT_EXPORT_FORMATS = [base_formats.XLS, base_formats.XLSX, base_formats.CSV]
 
 # ######################### 日志配置开始 ######################### #
 # 参考链接: https://www.jb51.net/article/260114.htm
@@ -304,3 +298,8 @@ LOGGING = {
 
 
 SITE_ID = os.getenv('AP_SITE_ID', 2024)
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost'
+]

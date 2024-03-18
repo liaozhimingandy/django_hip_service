@@ -2,12 +2,10 @@ import logging
 
 from django.contrib import admin, messages
 from django.utils.html import format_html
-from import_export.admin import ImportExportModelAdmin, ExportActionModelAdmin
 
 from django_hip_service import settings
 from esb_standard.models import DictMain, Dict, DataSet, DataElement, Service, MessageFormat
-from esb_standard.resources import DictMainModelResource, DictModelResource, DataElementModelResource, \
-    DataSetModelResource
+
 
 admin.AdminSite.site_title = "标准文档后台管理"
 admin.AdminSite.site_header = format_html(f'后台管理|{settings.APP_COMMIT_HASH}</span>')
@@ -19,12 +17,11 @@ logger = logging.getLogger("mylogger")
 
 
 # Register your models here.
-@admin.register(DictMain)
-class DictMainModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
+class DictMainModelResourceAdmin:
     list_display = ["id"] + common_list_display
     list_editable = ["value", "comment"]
     # 导入导出类
-    resource_class = DictMainModelResource
+    resource_class = ''
 
     # def message_user(self, request, message, level=messages.INFO, extra_tags="", fail_silently=False):
     #     return super().message_user(request, message, level, extra_tags, fail_silently)
@@ -69,12 +66,10 @@ class DictMainModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdmin)
         # 已有action导出功能,屏蔽导出所有功能
         return False
 
-
-@admin.register(Dict)
-class DictModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
+class DictModelResourceAdmin:
     list_display = ["value", "comment", "is_deleted", 'value_dict', "gmt_updated"]
     # 导入导出类
-    resource_class = DictModelResource
+    resource_class = ''
 
     def save_model(self, request, obj, form, change):
         """
@@ -116,11 +111,10 @@ class DictModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
         return False
 
 
-@admin.register(DataSet)
-class DataSetModelResourceModelAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
+class DataSetModelResourceModelAdmin:
     list_display = common_list_display
     # 导入导出类
-    resource_class = DataSetModelResource
+    resource_class = ''
 
 
     def save_model(self, request, obj, form, change):
@@ -163,14 +157,13 @@ class DataSetModelResourceModelAdmin(ImportExportModelAdmin, ExportActionModelAd
         return False
 
 
-@admin.register(DataElement)
-class DataElementModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
+class DataElementModelResourceAdmin:
     list_display = ["hd_code", "de_code", "de_en_code", "de_name", "definition", "data_type", "expression",
                     "allowable_value", "length", "data_set"]
     ordering = ("hd_code", )
 
     # 导入导出类
-    resource_class = DataElementModelResource
+    resource_class = ''
 
     def save_model(self, request, obj, form, change):
         """
@@ -214,11 +207,8 @@ class DataElementModelResourceAdmin(ImportExportModelAdmin, ExportActionModelAdm
         return False
 
 
-@admin.register(Service)
 class ServiceModelAdmin(admin.ModelAdmin):
     pass
 
-
-@admin.register(MessageFormat)
 class MessageFormatModelAdmin(admin.ModelAdmin):
     pass

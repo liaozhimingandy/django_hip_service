@@ -17,3 +17,8 @@
 /logs
 /*/sample.json
 temp/*
+/.env/*
+/.pdm-build/*
+.pdm-python
+/__pycache__/*
+/pyproject.toml

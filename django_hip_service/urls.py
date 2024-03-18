@@ -21,13 +21,14 @@ from django.urls import path, include
 from django_hip_service import settings
 
 from esb_standard.views import download
-from hipmessageservice.views import index, download as download_count
+from hipmessageservice.views import index, download as download_count, generate_report
 
 urlpatterns = [
     path('', index),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     path('download/', download_count, name='download-count'),
+    path("test/", generate_report),
     path('messsage/download/', download),
 ]
 
@@ -35,3 +36,5 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # import debug_toolbar
+    # urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]

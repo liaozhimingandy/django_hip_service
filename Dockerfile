@@ -15,9 +15,9 @@ RUN echo "deb http://mirrors.aliyun.com/debian/ buster main non-free contrib" > 
 
 RUN apt-get update && apt-get -y install libpq-dev gcc
 
-COPY requirements .
-RUN pip3 install --no-cache-dir -r requirements/production.txt -i https://mirrors.aliyun.com/pypi/simple/
+COPY pdm.lock .
 
+RUN pip3 install --no-cache-dir pdm -i https://mirrors.aliyun.com/pypi/simple/ && pdm export -o requirements.txt --without-hashes && pip3 install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ && rm -f requirements.txt && rm -f pdm.lock
 
 FROM python:${TAG}
 
