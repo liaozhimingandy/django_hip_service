@@ -1,4 +1,6 @@
 {% load static %}
+{% load filters %}
+{% spaceless %}
 <!doctype html>
 <html lang="zh-hans">
 <head>
@@ -36,15 +38,13 @@
            id="datatables">
         <thead class="text-bg-light">
         <tr>
-            <th scope="col"></th>
-            <th scope="col"></th>
+            <th scope="col" rowspan="2">#</th>
+            <th scope="col"rowspan="2">序号</th>
             {% for application in applications %}
                 <th scope="col">{{ application.firm.firm_name_short }}</th>
             {% endfor %}
         </tr>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">序号</th>
             {% for application in applications %}
                 <th scope="col">{{ application.application_name }}</th>
             {% endfor %}
@@ -62,13 +62,16 @@
                 {% for application in applications %}
                     <td>
                         {% if status %}
-                            {% for item in status %}
-                                {% if item.service_id == service.id and item.application_id == application.id %}
-                                    {{ item.get_status_display }}
-                                {% endif %}
-                            {% endfor %}
+{#                            {% for item in status %}#}
+                                {#                            todo: 下面语句执行慢,耗时20s以上  #}
+{#                                {% if item.service_id == service.id and item.application_id == application.id %}#}
+{#                                    {{ item.get_status_display  }}#}
+{#                                {% endif %}#}
+                                {% getSubjectStatusTag dict_status service application %}
+{#                            {% endfor %}#}
                         {% else %}-
-                        {% endif %}</td>
+                        {% endif %}
+                    </td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -140,3 +143,4 @@
 </script>
 </body>
 </html>
+{% endspaceless %}

@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 
+
 # Create your models here.
 class BaseInfo(models.Model):
     """
@@ -37,6 +38,7 @@ class Firm(BaseInfo):
     class Meta:
         verbose_name = "厂商信息"
         verbose_name_plural = verbose_name
+
 
 class Application(BaseInfo):
     """
@@ -84,6 +86,7 @@ class Service(BaseInfo):
         # 设置数据库中表名
         verbose_name = "服务"
         verbose_name_plural = verbose_name
+
 
 class StatusShip(BaseInfo):
     """

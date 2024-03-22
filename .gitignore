@@ -5,3 +5,4 @@ logs/
 /.pdm-build/*
 .pdm-python
 __pycache__
+temp/*

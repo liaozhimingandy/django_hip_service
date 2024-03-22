@@ -2,8 +2,10 @@ import datetime
 
 import openpyxl
 from django.db import connection
+from django.db import transaction
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page, never_cache
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
 import pandas as pd
@@ -13,12 +15,23 @@ from hipmessageservice.utils.database import read_cda
 
 
 # Create your views here.
+@never_cache
+@transaction.non_atomic_requests
 def index(request):
-    services = Service.objects.filter(is_deleted=False).order_by("service_queue")
-    applications = Application.objects.filter(is_deleted=False, firm__isnull=False).order_by('-firm')
-    status = StatusShip.objects.filter(is_deleted=False)
+
+    services = (Service.objects.filter(is_deleted=False)
+                .only('service_id', 'service_name', 'service_code', 'is_v3', "id"))
+    status = (StatusShip.objects.filter(is_deleted=False, service__is_deleted=False).only("service_id", "application_id", "status"))
+    dict_status = {}
+    for obj in status:
+        dict_status[f"{obj.service_id}-{obj.application_id}"] = obj.status
+
+    applications = (Application.objects.filter(is_deleted=False, firm__isnull=False).order_by('-firm')
+                    .prefetch_related('firm').only("id", 'application_name', "firm_id", 'firm__firm_name_short'))
+
     return render(request, 'hipmessageservice/index.html',
-                  context={'services': services, 'applications': applications, 'status': status})
+                  context={'services': services, 'applications': applications, 'status': status,
+                           'dict_status': dict_status})
 
 
 def read_all() -> list:
@@ -27,6 +40,7 @@ def read_all() -> list:
             right join hipmessageservice_statusship b on a.id = b.service_id and b.is_deleted=False
             right join hipmessageservice_application c on c.id = b.application_id and b.is_deleted=False
             right join hipmessageservice_firm d on d.id = c.firm_id
+            where a.is_deleted = False
             order by a.service_queue asc;
             """
 
@@ -184,3 +198,27 @@ def download(request):
 
     return FileResponse(open('temp/results.xlsx', 'rb'), as_attachment=True,
                         filename=f'医院信息平台交互规范-交互场景-{datetime.datetime.now().strftime("%Y-%m-%d")}.xlsx')
+
+
+def home(request):
+    services = (Service.objects.filter(is_deleted=False)
+                .only('service_id', 'service_name', 'service_code', 'is_v3', "id"))
+    status = (
+        StatusShip.objects.filter(is_deleted=False, service__is_deleted=False).only("service_id", "application_id",
+                                                                                    "status"))
+    dict_status = {}
+    for obj in status:
+        dict_status[f"{obj.service_id}-{obj.application_id}"] = obj.status
+
+    applications = (Application.objects.filter(is_deleted=False, firm__isnull=False).order_by('-firm')
+                    .prefetch_related('firm').only("id", 'application_name', "firm_id", 'firm__firm_name_short'))
+
+    return render(request, 'hipmessageservice/home.html',
+                  context={'services': services, 'applications': applications, 'status': status,
+                           'dict_status': dict_status, 'user': request.user})
+
+
+def test3(request):
+    numbers = range(1, 100)
+    return render(request, 'hipmessageservice/test3.html',
+                  context={'user': request.user, 'numbers': numbers})

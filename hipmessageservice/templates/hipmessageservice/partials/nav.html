@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg bg-body-secondary sticky-top">
+    <div class="collapse navbar-collapse justify-content-start container">
+        <a class="navbar-brand" href="#">
+            <img src="https://www.alsoapp.com/favicon.svg"
+                 alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="nav nav-pills nav-fill ">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">
+                        <i class="bi bi-house-door-fill"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" aria-disabled="true">Features</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="collapse navbar-expand-lg justify-content-end container">
+        <ul class="nav">
+            {% if user.username %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-light" disabled>{{ user.username }}</a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link btn btn-light" href="#">退出登录</a>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,22 @@
+{% extends "hipmessageservice/main.html" %}
+
+{% block main %}
+    {% for item in numbers %}
+    <div class="card" aria-hidden="true" style="width: 18rem;">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='100%' height='100%' fill='%23dee2e6'/%3E%3Ctext x='50%' y='50%' font-size='16' text-anchor='middle' fill='%23333'%3E200x200%3C/text%3E%3C/svg%3E"  class="ard-img-top" alt="Placeholder image">
+        <div class="card-body">
+            <h5 class="card-title placeholder-glow">
+                <span class="placeholder col-6"></span>
+            </h5>
+            <p class="card-text placeholder-glow">
+                <span class="placeholder col-7"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-6"></span>
+                <span class="placeholder col-8"></span>
+            </p>
+            <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

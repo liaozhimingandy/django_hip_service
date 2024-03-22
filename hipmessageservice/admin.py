@@ -1,8 +1,12 @@
 from django.contrib import admin
+from django.utils.html import format_html
 
+from django_hip_service import settings
 from hipmessageservice.models import Service, Application, StatusShip, Firm, CDA
 
 
+admin.AdminSite.site_title = "标准文档后台管理"
+admin.AdminSite.site_header = format_html(f'后台管理|{settings.__version__}|{settings.APP_COMMIT_HASH}</span>')
 # Register your models here.
 
 
@@ -10,9 +14,11 @@ class StatusShipInline(admin.TabularInline):
     """服务系统状态"""
     model = Service.applications.through
 
+
 class CDAStatusAdmin(admin.TabularInline):
     """cda厂商状态"""
     model = CDA.firm.through
+
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
@@ -34,6 +40,7 @@ class ServiceAdmin(admin.ModelAdmin):
             item.is_deleted = True
             item.save()
 
+
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ["application_name", "application_category",]
@@ -52,6 +59,7 @@ class ApplicationAdmin(admin.ModelAdmin):
             item.is_deleted = True
             item.save()
 
+
 @admin.register(StatusShip)
 class StatusShipAdmin(admin.ModelAdmin):
     list_display = ["application", "service", "status", "is_online"]
@@ -68,6 +76,7 @@ class StatusShipAdmin(admin.ModelAdmin):
             item.is_deleted = True
             item.save()
 
+
 @admin.register(Firm)
 class FirmAdmin(admin.ModelAdmin):
     list_display = ["firm_id", "firm_name", "firm_name_short"]
@@ -83,6 +92,7 @@ class FirmAdmin(admin.ModelAdmin):
         for item in queryset:
             item.is_deleted = True
             item.save()
+
 
 @admin.register(CDA)
 class CDAAdmin(admin.ModelAdmin):

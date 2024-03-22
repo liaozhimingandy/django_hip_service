@@ -18,7 +18,7 @@ import os
 from pathlib import Path
 
 # 应用版本号
-VERSION = (1, 0, 1, "alpha", 3)
+VERSION = (1, 0, 1, "alpha", 6)
 __version__ = get_version(VERSION)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,8 +55,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',  # 提供api接口专用
-    # 'import_export', # 后台管理导入导出功能; 参考链接: https://django-import-export.readthedocs.io/en/latest/index.html
-    # "debug_toolbar",
+
 ]
 
 LOCAL_APPS = [
@@ -70,7 +69,6 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -299,7 +297,10 @@ LOGGING = {
 
 SITE_ID = os.getenv('AP_SITE_ID', 2024)
 
-INTERNAL_IPS = [
-    '127.0.0.1',
-    'localhost'
-]
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    INTERNAL_IPS = [
+        '127.0.0.1',
+        'localhost'
+    ]

@@ -5,7 +5,7 @@
 groups = ["default", "develop", "django", "dev", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:d3e731b2f04502384625ae989c0481cd61cf6de93d32f49e89da17866f067731"
+content_hash = "sha256:921448ccfe98d4b080936ddc83c4703ccfe76a15eba7d2450b176722b4560ec0"
 
 [[package]]
 name = "asgiref"
@@ -49,6 +49,17 @@ dependencies = [
 files = [
     {file = "djangorestframework-3.15.0-py3-none-any.whl", hash = "sha256:5fa616048a7ec287fdaab3148aa5151efb73f7f8be1e23a9d18484e61e672695"},
     {file = "djangorestframework-3.15.0.tar.gz", hash = "sha256:3f4a263012e1b263bf49a4907eb4cfe14de840a09b1ba64596d01a9c54835919"},
+]
+
+[[package]]
+name = "docutils"
+version = "0.20.1"
+requires_python = ">=3.7"
+summary = "Docutils -- Python Documentation Utilities"
+groups = ["default"]
+files = [
+    {file = "docutils-0.20.1-py3-none-any.whl", hash = "sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6"},
+    {file = "docutils-0.20.1.tar.gz", hash = "sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"},
 ]
 
 [[package]]
