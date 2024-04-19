@@ -5,8 +5,6 @@ from django_hip_service import settings
 from hipmessageservice.models import Service, Application, StatusShip, Firm, CDA
 
 
-admin.AdminSite.site_title = "标准文档后台管理"
-admin.AdminSite.site_header = format_html(f'后台管理|{settings.__version__}|{settings.APP_COMMIT_HASH}</span>')
 # Register your models here.
 
 

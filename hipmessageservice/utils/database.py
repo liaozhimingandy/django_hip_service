@@ -9,3 +9,4 @@ def read_cda() -> list:
           values('value', 'comment', 'firm__firm_name_short').annotate(count=Count('value')))
 
     return list(qs)
+
