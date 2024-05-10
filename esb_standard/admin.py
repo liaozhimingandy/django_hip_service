@@ -3,13 +3,6 @@ import logging
 from django.contrib import admin, messages
 from django.utils.html import format_html
 
-from django_hip_service import settings
-from esb_standard.models import DictMain, Dict, DataSet, DataElement, Service, MessageFormat
-
-
-admin.AdminSite.site_title = "标准文档后台管理"
-admin.AdminSite.site_header = format_html(f'后台管理|{settings.APP_COMMIT_HASH}</span>')
-
 common_list_display = ["value", "comment", "is_deleted", "gmt_updated"]
 common_set_change = {"value", "comment", "is_deleted"}
 

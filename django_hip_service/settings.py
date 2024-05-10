@@ -17,8 +17,11 @@ from django import get_version
 import os
 from pathlib import Path
 
+from django.contrib import admin
+from django.utils.html import format_html
+
 # 应用版本号
-VERSION = (1, 0, 1, "alpha", 6)
+VERSION = (24, 3, 1, "alpha", 8)
 __version__ = get_version(VERSION)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # app git信息
 with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
-    APP_COMMIT_HASH = fp.readline()
+    APP_COMMIT_HASH = fp.readline().strip()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -36,8 +39,10 @@ SECRET_KEY = os.getenv("APP_SECRET_KEY", 'django-insecure-f7&l8h*wd@arejo#9%4nqg
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("APP_DEBUG", default=1))
-ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
+ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,openapi.esb.alsoapp.com,"
+                                                      "openapi-test.esb.alsoapp.com").split(",")
+
+CSRF_TRUSTED_ORIGINS = [f'http://{item}' for item in ALLOWED_HOSTS]
 
 # Application definition
 # APPS
@@ -294,7 +299,6 @@ LOGGING = {
 # e.g. logger = logging.getLogger("mylogger")
 # ######################### 日志配置结束 ######################### #
 
-
 SITE_ID = os.getenv('AP_SITE_ID', 2024)
 
 if DEBUG:
@@ -304,3 +308,7 @@ if DEBUG:
         '127.0.0.1',
         'localhost'
     ]
+
+
+admin.AdminSite.site_title = "标准文档后台管理"
+admin.AdminSite.site_header = format_html(f'后台管理({__version__}|{APP_COMMIT_HASH})</span>')
