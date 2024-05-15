@@ -1,23 +1,23 @@
 import datetime
-import os.path
 from http import HTTPStatus
 
 import lxml
 import openpyxl
+import pandas as pd
 from django.contrib.staticfiles import finders
 from django.db import connection
 from django.db import transaction
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page, never_cache
+from django.views.decorators.cache import never_cache
+from lxml import etree
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
-import pandas as pd
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet, ModelViewSet
-from lxml import etree
+from rest_framework.viewsets import ModelViewSet
 
+from .authentication import AuthBearer
 from hipmessageservice.models import Service, Application, StatusShip
 from hipmessageservice.serializers import HIPServiceSerializer, HIPCDASerializer
 from hipmessageservice.utils.database import read_cda
@@ -28,7 +28,8 @@ from hipmessageservice.utils.database import read_cda
 @transaction.non_atomic_requests
 def index(request):
     services = (Service.objects.filter(is_deleted=False)
-                .only('service_id', 'service_name', 'service_code', 'is_v3', "id", "service_queue")).order_by("service_queue")
+                .only('service_id', 'service_name', 'service_code', 'is_v3', "id", "service_queue")).order_by(
+        "service_queue")
     status = (
         StatusShip.objects.filter(is_deleted=False, service__is_deleted=False).only("service_id", "application_id",
                                                                                     "status"))
@@ -235,13 +236,15 @@ def test3(request):
 
 
 class verificationViewSet(ModelViewSet):
+    authentication_classes = [AuthBearer]
 
     def get_serializer_class(self):
         return HIPServiceSerializer if self.action == 'service' else HIPCDASerializer
 
-    def validate(self,  schema_name: str, content: str, is_service: bool=False) -> tuple:
+    def validate(self, schema_name: str, content: str, is_service: bool = False) -> tuple:
 
-        schema_file_path = finders.find(f'hipmessageservice\services\schemas\{"services" if is_service else "cdas"}\{schema_name}.xsd')
+        schema_file_path = finders.find(
+            f'hipmessageservice\services\schemas\{"services" if is_service else "cdas"}\{schema_name}.xsd')
 
         # 加载XML Schema文件
         schema_file = etree.parse(schema_file_path)
@@ -250,7 +253,9 @@ class verificationViewSet(ModelViewSet):
         # 加载待验证的XML字符串
         try:
             xml_file = etree.fromstring(content)
-        except (lxml.etree.XMLSyntaxError, ) as e:
+        except ValueError:
+            xml_file = etree.fromstring(content.replace('<?xml version="1.0" encoding="UTF-8"?>', ''))
+        except (lxml.etree.XMLSyntaxError,) as e:
             return False, str(e)
 
         # 验证XML文件是否符合Schema
@@ -268,7 +273,8 @@ class verificationViewSet(ModelViewSet):
 
         valid = self.validate(schema_name=service_name, content=content, is_service=True)
 
-        return Response(data={"message": valid[0] if valid[0] else valid[1]}, status=HTTPStatus.OK if valid[0] else HTTPStatus.BAD_REQUEST)
+        return Response(data={"message": str(valid[0]) if valid[0] else valid[1]},
+                        status=HTTPStatus.OK if valid[0] else HTTPStatus.BAD_REQUEST)
 
     @action(methods=['post'], detail=False)
     def cda(self, request):
@@ -279,9 +285,9 @@ class verificationViewSet(ModelViewSet):
         cda_code = serializer.validated_data['cda_code']
         content = serializer.validated_data['content']
 
-        valid = self.validate(schema_name=cda_code, content=content, is_service=True)
+        valid = self.validate(schema_name=cda_code, content=content, is_service=False)
 
-        return Response(data={"message": valid[0] if valid[0] else valid[1]}, status=HTTPStatus.OK)
+        return Response(data={"message": "ok" if valid[0] else valid[1]}, status=HTTPStatus.OK)
 
     @action(methods=['post'], detail=False, url_path=r'test_service/(?P<service_name>\w+)')
     def test_service(self, request, service_name):

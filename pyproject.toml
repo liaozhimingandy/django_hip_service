@@ -16,6 +16,9 @@ dependencies = [
     "docutils>=0.20.1",
     "lxml>=5.1.0",
     "djangorestframework-xml>=2.0.0",
+    "pypinyin>=0.51.0",
+    "django-ninja>=1.1.0",
+    "pyjwt>=2.8.0",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -30,8 +33,11 @@ build-backend = "pdm.backend"
 distribution = true
 
 test = [
-    "django-debug-toolbar>=4.3.0",
     "pytest>=8.1.1",
 ]
 
 doc = ["mkdocs"]
+[tool.pdm.dev-dependencies]
+dev = [
+    "django-debug-toolbar>=4.3.0",
+]

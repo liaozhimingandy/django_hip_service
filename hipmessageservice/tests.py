@@ -27,3 +27,5 @@ class SchemaTest(TestCase):
                 if response.status_code == 200:
                     print(f"{base_name} 校验通过")
         print(f'#############测试数量:{len(files)}#############')
+
+

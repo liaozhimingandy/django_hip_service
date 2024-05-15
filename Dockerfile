@@ -3,21 +3,19 @@ ARG TAG=3.11.2-slim-buster
 
 FROM python:${TAG} as builder-image
 
-# change apt-get mirror
-RUN echo "deb http://mirrors.aliyun.com/debian/ buster main non-free contrib" > /etc/apt/sources.list \
-    && echo "deb http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.aliyun.com/debian/ buster main non-free contrib" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.aliyun.com/debian-security/ buster/updates main non-free contrib" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.aliyun.com/debian-security/ buster/updates main non-free contrib" >> /etc/apt/sources.list
+# pip镜像源
+ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 
-RUN apt-get update && apt-get -y install libpq-dev gcc
-
+# 赋值pdm.lock文件
 COPY pdm.lock .
 
-RUN pip3 install --no-cache-dir pdm -i https://mirrors.aliyun.com/pypi/simple/ && pdm export -o requirements.txt --without-hashes && pip3 install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ && rm -f requirements.txt && rm -f pdm.lock
+# 安装依赖包
+RUN pip3 install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
+    && pdm export -o requirements.txt  --without-hashes \
+    && pip3 install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
+    && rm -f requirements.txt \
+    && rm -f pdm.lock
+
 
 FROM python:${TAG}
 

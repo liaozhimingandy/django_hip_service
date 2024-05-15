@@ -20,14 +20,14 @@ class CDAStatusAdmin(admin.TabularInline):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ["service_code", "service_name", "service_category",  "service_rank", "service_status",
+    list_display = ["service_code", "service_name", "service_category", "service_rank", "service_status",
                     "service_description", "is_lookup"]
     search_fields = ["service_name"]
     list_filter = ["service_category", "service_rank", "is_v3", "is_lookup", "is_deleted"]
     ordering = ["service_queue", ]
     list_per_page = 10
 
-    inlines = [ StatusShipInline, ]
+    inlines = [StatusShipInline, ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -41,12 +41,13 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ["application_name", "application_category",]
+    list_display = ["application_name", "application_category", ]
     ordering = ["application_category", ]
-    search_fields =  ["application_name"]
+    search_fields = ["application_name"]
     list_filter = ["application_category", "firm__firm_name", "is_customer", "is_deleted"]
     list_per_page = 10
     inlines = [StatusShipInline, ]
+    readonly_fields = ["display_application_id", ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -57,11 +58,16 @@ class ApplicationAdmin(admin.ModelAdmin):
             item.is_deleted = True
             item.save()
 
+    def display_application_id(self, obj):
+        return f"{settings.PREFIX_ID}{obj.application_id}"
+
+    display_application_id.short_description = "您的应用唯一ID"
+
 
 @admin.register(StatusShip)
 class StatusShipAdmin(admin.ModelAdmin):
     list_display = ["application", "service", "status", "is_online"]
-    search_fields = ["service__service_name", "application__application_name",]
+    search_fields = ["service__service_name", "application__application_name", ]
     list_filter = ["service__service_name", "application__application_name", "is_online"]
     list_per_page = 10
 
@@ -81,6 +87,7 @@ class FirmAdmin(admin.ModelAdmin):
     list_editable = ["firm_name", "firm_name_short"]
     search_fields = ["firm_name"]
     list_per_page = 10
+    readonly_fields = ['firm_id', ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -92,6 +99,7 @@ class FirmAdmin(admin.ModelAdmin):
             item.save()
 
 
+
 @admin.register(CDA)
 class CDAAdmin(admin.ModelAdmin):
     list_display = ["value", "comment"]
@@ -100,7 +108,7 @@ class CDAAdmin(admin.ModelAdmin):
     list_per_page = 10
     ordering = ["value", ]
     list_filter = ["firm"]
-    filter_horizontal = ["firm",]
+    filter_horizontal = ["firm", ]
 
     inlines = [CDAStatusAdmin, ]
 

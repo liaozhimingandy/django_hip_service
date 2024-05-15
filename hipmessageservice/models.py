@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+def id_default():
+    return uuid.uuid4().hex[:7]
+
+
 # Create your models here.
 class BaseInfo(models.Model):
     """
@@ -27,7 +31,8 @@ class Firm(BaseInfo):
     """
     厂商信息
     """
-    firm_id = models.UUIDField(verbose_name="厂商唯一标识", db_comment="唯一标识", default=uuid.uuid4, unique=True)
+    firm_id = models.CharField(max_length=7, verbose_name="厂商唯一标识", db_comment="唯一标识", default=id_default,
+                               unique=True, editable=False)
     firm_name = models.CharField(verbose_name="厂商名称", max_length=64, db_comment="厂商名称", unique=True)
     firm_name_en = models.CharField(verbose_name="厂商英文名称", max_length=64, db_comment="厂商英文名称", blank=True, null=True)
     firm_name_short = models.CharField(verbose_name="厂商名称简称", max_length=64, db_comment="厂商名称简称", blank=True, null=True)
@@ -44,7 +49,8 @@ class Application(BaseInfo):
     """
     系统相关
     """
-    application_id = models.UUIDField(verbose_name="系统唯一标识", db_comment="系统唯一标识", default=uuid.uuid4, unique=True)
+    application_id = models.CharField(max_length=7, verbose_name="系统唯一标识", db_comment="系统唯一标识",
+                                      default=id_default, unique=True, editable=False)
     application_code = models.CharField(max_length=32, verbose_name="系统代码", db_comment="系统代码", blank=True, null=True)
     application_name = models.CharField(max_length=32, verbose_name="系统名称", db_comment="系统名称", unique=True)
     application_category = models.CharField(max_length=32, verbose_name="系统分类", db_comment="系统分类", blank=True, null=True)

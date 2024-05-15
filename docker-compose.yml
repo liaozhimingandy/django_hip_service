@@ -7,7 +7,7 @@ services:
 #    for beta
 #    command: python manage.py runserver 0.0.0.0:8000
 #    for producation
-    # command: ${command}
+#    command: gunicorn django_hip_service.wsgi:application -b 0.0.0.0:8000 --preload
     ports:
       - "8000:8000"
     env_file:

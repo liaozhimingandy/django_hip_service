@@ -34,9 +34,11 @@ urlpatterns = [
     path('messsage/download/', download),
 ]
 
-# 开发环境提供静态文件和多媒体查看功能
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    import debug_toolbar
-    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+# 开发环境提供静态文件和多媒体查看功能;这一般会在 DEBUG is set to True 情况下由 runserver 自动完成
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 开发调试时使用
+# if settings.DEBUG:
+#     import debug_toolbar
+#     urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]

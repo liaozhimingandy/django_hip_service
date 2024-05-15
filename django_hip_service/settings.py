@@ -21,8 +21,10 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-VERSION = (24, 3, 1, "alpha", 8)
+VERSION = (24, 3, 1, "alpha", 10)
 __version__ = get_version(VERSION)
+# id前缀
+PREFIX_ID = "esbid_"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,10 +37,10 @@ with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("APP_SECRET_KEY", 'django-insecure-f7&l8h*wd@arejo#9%4nqg*s_hbzf1a-(%&*+6_*mj4lv2*eum')
+SECRET_KEY = os.getenv("APP_SECRET_KEY", 'django-insecure-&(s=fs#s3b9&=8&y_+bhzquk_1-uq)iu@=v=%+&qegp9958%e$')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("APP_DEBUG", default=1))
+DEBUG = int(os.getenv("APP_DEBUG", 0))
 ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,openapi.esb.alsoapp.com,"
                                                       "openapi-test.esb.alsoapp.com").split(",")
 
@@ -116,7 +118,7 @@ DATABASES = {
         },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'hip.db',
     },
 }
 
@@ -299,15 +301,16 @@ LOGGING = {
 # e.g. logger = logging.getLogger("mylogger")
 # ######################### 日志配置结束 ######################### #
 
-SITE_ID = os.getenv('AP_SITE_ID', 2024)
+SITE_ID = int(os.getenv('AP_SITE_ID', 2024))
 
-if DEBUG:
-    INSTALLED_APPS.append('debug_toolbar')
-    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
-    INTERNAL_IPS = [
-        '127.0.0.1',
-        'localhost'
-    ]
+# 以下为本地页面优化调试时开启
+# if DEBUG:
+#     INSTALLED_APPS.append('debug_toolbar')
+#     MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+#     INTERNAL_IPS = [
+#         '127.0.0.1',
+#         'localhost'
+#     ]
 
 
 admin.AdminSite.site_title = "标准文档后台管理"
