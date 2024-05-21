@@ -99,7 +99,6 @@ class FirmAdmin(admin.ModelAdmin):
             item.save()
 
 
-
 @admin.register(CDA)
 class CDAAdmin(admin.ModelAdmin):
     list_display = ["value", "comment"]

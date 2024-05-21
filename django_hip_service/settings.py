@@ -40,7 +40,7 @@ with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
 SECRET_KEY = os.getenv("APP_SECRET_KEY", 'django-insecure-&(s=fs#s3b9&=8&y_+bhzquk_1-uq)iu@=v=%+&qegp9958%e$')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.getenv("APP_DEBUG", 0))
+DEBUG = int(os.getenv("APP_DEBUG", 1))
 ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,openapi.esb.alsoapp.com,"
                                                       "openapi-test.esb.alsoapp.com").split(",")
 
@@ -108,7 +108,7 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
+    "default1": {
             "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
             "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
             "USER": os.getenv("APP_DB_USER", "zhiming"),
@@ -116,7 +116,7 @@ DATABASES = {
             "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
             "PORT": os.getenv("APP_DB_PORT", "5432"),
         },
-    'test': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'hip.db',
     },

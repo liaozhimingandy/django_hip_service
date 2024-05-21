@@ -24,6 +24,8 @@ from esb_standard.views import download
 from hipmessageservice.views import index, download as download_count, generate_report
 from hipmessageservice import urls as service_urls
 
+from .api import api
+
 urlpatterns = [
     path('', index),
     re_path('services/', include((service_urls, 'services'), namespace='services')),
@@ -32,6 +34,8 @@ urlpatterns = [
     path('download/', download_count, name='download-count'),
     path("test/", generate_report),
     path('messsage/download/', download),
+    path('v3/', api.urls)
+
 ]
 
 # 开发环境提供静态文件和多媒体查看功能;这一般会在 DEBUG is set to True 情况下由 runserver 自动完成

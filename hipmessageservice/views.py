@@ -1,3 +1,4 @@
+import base64
 import datetime
 from http import HTTPStatus
 
@@ -236,7 +237,7 @@ def test3(request):
 
 
 class verificationViewSet(ModelViewSet):
-    authentication_classes = [AuthBearer]
+    # authentication_classes = [AuthBearer]
 
     def get_serializer_class(self):
         return HIPServiceSerializer if self.action == 'service' else HIPCDASerializer
@@ -244,7 +245,7 @@ class verificationViewSet(ModelViewSet):
     def validate(self, schema_name: str, content: str, is_service: bool = False) -> tuple:
 
         schema_file_path = finders.find(
-            f'hipmessageservice\services\schemas\{"services" if is_service else "cdas"}\{schema_name}.xsd')
+            f'hipmessageservice/services/schemas/{"services" if is_service else "cdas"}/{schema_name}.xsd')
 
         # 加载XML Schema文件
         schema_file = etree.parse(schema_file_path)
@@ -272,6 +273,17 @@ class verificationViewSet(ModelViewSet):
         content = serializer.validated_data['content']
 
         valid = self.validate(schema_name=service_name, content=content, is_service=True)
+
+        # 如果是CDA
+        if service_name == 'DocumentRegister':
+            from lxml import etree
+            xml_root = etree.fromstring(content)
+
+            cda_code = xml_root.xpath("//*[@codeSystem='2.16.156.10011.2.5.1.23']")[0].get('code')
+            cda_content_base64 = xml_root.find('xmlns:controlActProcess/xmlns:subject/xmlns:clinicalDocument/xmlns:storageCode/xmlns:originalText',
+                                        namespaces={'xmlns': 'urn:hl7-org:v3'}).get('value')
+            cda_data = base64.b64decode(cda_content_base64).decode('utf-8')
+            valid = self.validate(schema_name=cda_code, content=cda_data, is_service=False)
 
         return Response(data={"message": str(valid[0]) if valid[0] else valid[1]},
                         status=HTTPStatus.OK if valid[0] else HTTPStatus.BAD_REQUEST)

@@ -36,6 +36,7 @@ class Firm(BaseInfo):
     firm_name = models.CharField(verbose_name="厂商名称", max_length=64, db_comment="厂商名称", unique=True)
     firm_name_en = models.CharField(verbose_name="厂商英文名称", max_length=64, db_comment="厂商英文名称", blank=True, null=True)
     firm_name_short = models.CharField(verbose_name="厂商名称简称", max_length=64, db_comment="厂商名称简称", blank=True, null=True)
+    api_url = models.URLField(verbose_name="api地址", db_comment="api地址", blank=True, null=True)
 
     def __str__(self):
         return self.firm_name
