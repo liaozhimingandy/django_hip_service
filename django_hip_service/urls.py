@@ -20,7 +20,7 @@ from django.urls import path, include, re_path
 
 from django_hip_service import settings
 
-from esb_standard.views import download
+# from esb_standard.views import download
 from hipmessageservice.views import index, download as download_count, generate_report
 from hipmessageservice import urls as service_urls
 
@@ -33,7 +33,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('download/', download_count, name='download-count'),
     path("test/", generate_report),
-    path('messsage/download/', download),
+    # path('messsage/download/', download),
     path('v3/', api.urls)
 
 ]

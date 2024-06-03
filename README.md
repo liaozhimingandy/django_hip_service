@@ -11,3 +11,12 @@
 ```python
 pdm export -o requirements.txt --without-hashes
 ```
+
+### 数据备份还原
+```python
+# 备份
+python manage.py dumpdata hipmessageservice > hipmessageservice/fixtures/samples.json
+# 还原
+python manage.py loaddata hipmessageservice/fixtures/samples.json
+
+```

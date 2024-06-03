@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-VERSION = (24, 3, 1, "alpha", 10)
+VERSION = (24, 3, 1, "alpha", 16)
 __version__ = get_version(VERSION)
 # id前缀
 PREFIX_ID = "esbid_"
@@ -67,7 +67,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "hipmessageservice",
-    "esb_standard",
+    # "esb_standard",
+    "cdr"
     # Your stuff: custom apps go here
 ]
 
@@ -108,15 +109,23 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default1": {
+    "default": {
             "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
             "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
             "USER": os.getenv("APP_DB_USER", "zhiming"),
             "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-            "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
+            "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
             "PORT": os.getenv("APP_DB_PORT", "5432"),
         },
-    'default': {
+    "default2": {
+            "ENGINE": os.getenv("APP_DB_ENGINE", "mssql"),
+            "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
+            "USER": os.getenv("APP_DB_USER", "sa"),
+            "PASSWORD": os.getenv("APP_DB_PASSWORD", "Knt2020@lh"),
+            "HOST": os.getenv("APP_DB_HOST", "172.16.33.179"),
+            "PORT": os.getenv("APP_DB_PORT", ""),
+        },
+    'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'hip.db',
     },
@@ -174,130 +183,130 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ######################### 日志配置开始 ######################### #
 # 参考链接: https://www.jb51.net/article/260114.htm
 
-BASE_LOG_DIR = os.path.join(BASE_DIR, "logs")
-if not os.path.exists(BASE_LOG_DIR):
-    os.makedirs(BASE_LOG_DIR)
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{asctime:<19}|{levelname:<10}|{process:d}:{thread:d}:{module}:{funcName}:{lineno}|{message}',
-            'style': '{',
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
-        'simple': {
-            'format': '{asctime:<19}|{levelname:<10}|{message}',
-            'style': '{',
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
-        "default": {
-            "format": '{asctime:<19}|{name}|{levelname:<10}|{pathname}:{lineno}|{module}:{funcName}|{message}',
-            'style': '{',
-            "datefmt": "%Y-%m-%d %H:%M:%S"
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': logging.INFO,
-            'class': 'logging.StreamHandler',
-            'formatter': 'default'
-        },
-        'file': {
-            'level': logging.INFO,
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-debug.log"),
-            'filters': ['require_debug_true', ],
-            "when": 'D',  # 时间单位： M, H, D， W0(周一), W6(周日)
-            "interval": 1,
-            "backupCount": 7,  # 备份数量
-            "formatter": "verbose",  # 日志格式
-            "encoding": "utf-8"
-        },
-        "request": {
-            'level': logging.DEBUG,
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-request.log"),
-            'filters': ['require_debug_true', "require_debug_false"],
-            'formatter': 'default'
-        },
-        "server": {
-            'level': logging.DEBUG,
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-server.log"),
-            'filters': ['require_debug_true', ],
-            'formatter': 'default'
-        },
-        "root": {
-            'level': logging.DEBUG,
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-root.log"),
-            'filters': ['require_debug_true', ],
-            'formatter': 'default'
-        },
-        "db_backends": {
-            'level': logging.DEBUG,
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-db_backends.log"),
-            'filters': ['require_debug_true', ],
-            'formatter': 'default'
-        },
-        "autoreload": {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-autoreload.log"),
-            'formatter': 'default'
-        },
-        # 电子邮件发给管理员
-        "mail_admins": {
-            "level": logging.ERROR,
-            "class": "django.utils.log.AdminEmailHandler",
-            "filters": ["require_debug_false"],
-        }
-    },
-    'loggers': {
-        # 应用中自定义日志记录器
-        'mylogger': {
-            'level': os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-            'handlers': ['console', 'file'],
-            'propagate': True,
-        },
-        "django": {
-            "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-            "handlers": ["console", "file"],
-            'propagate': False,
-        },
-        "django.request": {
-            "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-            "handlers": ["request", "console"],
-            'propagate': False,
-        },
-        "django.server": {
-            "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-            "handlers": ["server"],
-            'propagate': False,
-        },
-        "django.db.backends": {
-            "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-            "handlers": ["db_backends"],
-            'propagate': False,
-        },
-        "django.utils.autoreload": {
-            "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-            "handlers": ["autoreload"],
-            'propagate': False,
-        }
-    }
-}
+# BASE_LOG_DIR = os.path.join(BASE_DIR, "logs")
+# if not os.path.exists(BASE_LOG_DIR):
+#     os.makedirs(BASE_LOG_DIR)
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{asctime:<19}|{levelname:<10}|{process:d}:{thread:d}:{module}:{funcName}:{lineno}|{message}',
+#             'style': '{',
+#             "datefmt": "%Y-%m-%d %H:%M:%S",
+#         },
+#         'simple': {
+#             'format': '{asctime:<19}|{levelname:<10}|{message}',
+#             'style': '{',
+#             "datefmt": "%Y-%m-%d %H:%M:%S",
+#         },
+#         "default": {
+#             "format": '{asctime:<19}|{name}|{levelname:<10}|{pathname}:{lineno}|{module}:{funcName}|{message}',
+#             'style': '{',
+#             "datefmt": "%Y-%m-%d %H:%M:%S"
+#         },
+#     },
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': logging.INFO,
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'default'
+#         },
+#         'file': {
+#             'level': logging.INFO,
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-debug.log"),
+#             'filters': ['require_debug_true', ],
+#             "when": 'D',  # 时间单位： M, H, D， W0(周一), W6(周日)
+#             "interval": 1,
+#             "backupCount": 7,  # 备份数量
+#             "formatter": "verbose",  # 日志格式
+#             "encoding": "utf-8"
+#         },
+#         "request": {
+#             'level': logging.DEBUG,
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-request.log"),
+#             'filters': ['require_debug_true', "require_debug_false"],
+#             'formatter': 'default'
+#         },
+#         "server": {
+#             'level': logging.DEBUG,
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-server.log"),
+#             'filters': ['require_debug_true', ],
+#             'formatter': 'default'
+#         },
+#         "root": {
+#             'level': logging.DEBUG,
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-root.log"),
+#             'filters': ['require_debug_true', ],
+#             'formatter': 'default'
+#         },
+#         "db_backends": {
+#             'level': logging.DEBUG,
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-db_backends.log"),
+#             'filters': ['require_debug_true', ],
+#             'formatter': 'default'
+#         },
+#         "autoreload": {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-autoreload.log"),
+#             'formatter': 'default'
+#         },
+#         # 电子邮件发给管理员
+#         "mail_admins": {
+#             "level": logging.ERROR,
+#             "class": "django.utils.log.AdminEmailHandler",
+#             "filters": ["require_debug_false"],
+#         }
+#     },
+#     'loggers': {
+#         # 应用中自定义日志记录器
+#         'mylogger': {
+#             'level': os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
+#             'handlers': ['console', 'file'],
+#             'propagate': True,
+#         },
+#         "django": {
+#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
+#             "handlers": ["console", "file"],
+#             'propagate': False,
+#         },
+#         "django.request": {
+#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
+#             "handlers": ["request", "console"],
+#             'propagate': False,
+#         },
+#         "django.server": {
+#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
+#             "handlers": ["server"],
+#             'propagate': False,
+#         },
+#         "django.db.backends": {
+#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
+#             "handlers": ["db_backends"],
+#             'propagate': False,
+#         },
+#         "django.utils.autoreload": {
+#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
+#             "handlers": ["autoreload"],
+#             'propagate': False,
+#         }
+#     }
+# }
 # e.g. logger = logging.getLogger("mylogger")
 # ######################### 日志配置结束 ######################### #
 
@@ -314,4 +323,6 @@ SITE_ID = int(os.getenv('AP_SITE_ID', 2024))
 
 
 admin.AdminSite.site_title = "标准文档后台管理"
-admin.AdminSite.site_header = format_html(f'后台管理({__version__}|{APP_COMMIT_HASH})</span>')
+admin.AdminSite.site_header = format_html(f'后台管理 |<span style="color:white"> {APP_COMMIT_HASH}</span>')
+
+EMPI_API_URL = os.getenv('EMPI_API_URL', 'http://172.16.33.181:8253/webservice/IndexRegisterService.asmx')
