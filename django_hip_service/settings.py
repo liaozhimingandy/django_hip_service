@@ -21,8 +21,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-VERSION = (24, 3, 1, "alpha", 16)
-__version__ = get_version(VERSION)
+# VERSION = (24, 3, 1, "alpha", 16)
+# __version__ = get_version(VERSION)
 # id前缀
 PREFIX_ID = "esbid_"
 
@@ -326,3 +326,6 @@ admin.AdminSite.site_title = "标准文档后台管理"
 admin.AdminSite.site_header = format_html(f'后台管理 |<span style="color:white"> {APP_COMMIT_HASH}</span>')
 
 EMPI_API_URL = os.getenv('EMPI_API_URL', 'http://172.16.33.181:8253/webservice/IndexRegisterService.asmx')
+# 上传给市互认平台使用
+HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'tGuWgUr8PaS3dl7m')
+HOSPITAL_ID = os.getenv('HOSPITAL_ID', 'ytlyyy_001')

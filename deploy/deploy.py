@@ -65,17 +65,21 @@ class DeployBot:
         cmd_git_hash = ["git", "rev-parse", "--short", "HEAD"]
         # 使用git命令获取当前分支
         cmd_git_branch = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+        # 使用git命令获取提交次数
+        cmd_git_count = ["git", "rev-list", "--count", "HEAD"]
 
         desc_git_hash = subprocess.check_output(cmd_git_hash).strip().decode('utf-8')
         desc_git_branch = subprocess.check_output(cmd_git_branch).strip().decode('utf-8')
+        desc_git_count = subprocess.check_output(cmd_git_count).strip().decode('utf-8')
 
         # 覆盖AppVersionHash文件
         with open('../AppVersionHash.txt', 'w') as fp:
             fp.writelines(desc_git_hash)
 
-        from django_hip_service import settings
-        app_version = settings.__version__
-        image_name = f"django_hip:{app_version}"
+        # from django_hip_service import settings
+        # app_version = settings.__version__
+        app_version = desc_git_count
+        image_name = f"django_hip:a{app_version}"
         dockerfile_path = Path(__file__).resolve().parent.parent
 
         # docker构建镜像命令

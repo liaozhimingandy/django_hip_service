@@ -25,6 +25,8 @@ from lxml import etree
 from ninja import Router, Schema
 from ninja.responses import codes_2xx, codes_4xx
 
+from hipmessageservice.utils.encrypt import EncryptUtils
+
 router = Router(tags=["openim"])
 
 data_mapping = {
@@ -382,11 +384,33 @@ def send_msg(request, payload: SendMsgSchema, msg_id: str = str(uuid.uuid4())):
         return 400, {"code": 400, "message": str(e), "msg_id": msg_id,
                      "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
     ok, message = verification(dict_payload)
-    result = {"code": 0 if ok else 400, "message": message, "msg_id": msg_id,
+    msg = "ok"
+    if not ok:
+        msg = ','.join(message)
+
+    result = {"code": 0 if ok else 400, "message": msg, "msg_id": msg_id,
               "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
     response_code = 200 if ok else 400
 
     return response_code, result
+
+
+@router.post("/service/sign_and_encrypt/")
+def sign_and_encrypt(request):
+    """加密和签名"""
+    hospital_id = settings.HOSPITAL_ID
+    key = settings.HOSPITAL_KEY
+    encrypt = EncryptUtils(key=key, hospital_id=hospital_id)
+    # 数据
+    # data = {"name": "测试11", "id_card_no": "111111"}
+    data = json.loads(request.body.decode('utf-8'))
+    # 签名
+    md5_hash, timestamp = encrypt.sign()
+    # 加密
+    encrypted = encrypt.encrypt(data)
+
+    content = {"sign": md5_hash, "encrypted": encrypted, "timestamp": timestamp}
+    return content
 
 
 if __name__ == "__main__":
