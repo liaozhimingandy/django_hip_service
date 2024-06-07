@@ -57,7 +57,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django.contrib.admindocs",  # 供生成文档使用
-    "django.contrib.sites", # 站点使用
+    "django.contrib.sites",  # 站点使用
 ]
 
 THIRD_PARTY_APPS = [
@@ -107,27 +107,24 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'hip.db',
+    # },
     "default": {
-            "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
-            "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
-            "USER": os.getenv("APP_DB_USER", "zhiming"),
-            "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-            "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
-            "PORT": os.getenv("APP_DB_PORT", "5432"),
-        },
-    "default2": {
-            "ENGINE": os.getenv("APP_DB_ENGINE", "mssql"),
-            "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
-            "USER": os.getenv("APP_DB_USER", "sa"),
-            "PASSWORD": os.getenv("APP_DB_PASSWORD", "Knt2020@lh"),
-            "HOST": os.getenv("APP_DB_HOST", "172.16.33.179"),
-            "PORT": os.getenv("APP_DB_PORT", ""),
-        },
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "hipmessageservice")
+        if os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql") == 'django.db.backends.sqlite3'
+        else os.getenv("APP_DB_NAME", "hipmessageservice"),
+        "USER": os.getenv("APP_DB_USER", "zhiming"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
+        "PORT": os.getenv("APP_DB_PORT", "5432"),
+    },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'hip.db',
+        'NAME': BASE_DIR / 'hip-test.db',
     },
 }
 
