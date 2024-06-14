@@ -9,6 +9,7 @@
     @Desc: 消息校验服务
 ================================================="""
 import base64
+import copy
 import json
 import uuid
 import datetime
@@ -19,12 +20,14 @@ import lxml
 import requests
 from django.conf import settings
 from django.contrib.staticfiles import finders
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from json2xml import json2xml
 from lxml import etree
-from ninja import Router, Schema
+from ninja import Router, Schema, ModelSchema
 from ninja.responses import codes_2xx, codes_4xx
 
+from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport
 from hipmessageservice.utils.encrypt import EncryptUtils
 
 router = Router(tags=["openim"])
@@ -162,8 +165,8 @@ class SendMsgSchemaOut(Schema):
     message: str = "ok"
     msg_id: str
     gmt_created: str
-    data: Optional[str] = None
-    detail: Optional[str] = None
+    data: Optional[str | list] = None
+    detail: Optional[str | list] = None
 
 
 def DealPatient(content):
@@ -204,8 +207,9 @@ def DealPatient(content):
            </soap:Body>
         </soap:Envelope>
         """
+    # 调empi接口进行患者注册
     response = requests.post(settings.EMPI_API_URL, data=payload, headers={'Content-Type': 'text/xml'}, timeout=2)
-    empi = None
+
     if response.status_code == 200:
         # 匹配empi号
         # empi = (re.search('empi_id&gt;\d+&lt;/empi_id', response.text).group().replace('empi_id&gt;', '')
@@ -216,26 +220,24 @@ def DealPatient(content):
 
         if empi_root.find('.//state').text == 'success':
             empi = empi_root.find('.//empi_id').text
+            dict_data.update(**{"empi": empi})
+            # 保存到数据库
+            # 移除不需要的key
+            # list_to_remove = ['id_name', 'sex_name', 'marital_status_name', 'occupation_name', 'ethnic_group_name',
+            #                   'contact_name', 'ins_name']
+            #
+            # for key in list_to_remove:
+            #     dict_data.pop(key, None)
+
+            # 保存到数据库, 耗时比较长
+            # Patient.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
+
+            return True, f"#empi:{empi}#"
         else:
             return False, empi_root.find('.//message').text
 
     else:
         return False, response.text
-
-    dict_data.update(**{"empi": empi})
-
-    # 保存到数据库
-    # 移除不需要的key
-    list_to_remove = ['id_name', 'sex_name', 'marital_status_name', 'occupation_name', 'ethnic_group_name',
-                      'contact_name', 'ins_name']
-
-    for key in list_to_remove:
-        dict_data.pop(key, None)
-
-    # 保存到数据库, 耗时比较长
-    # Patient.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
-
-    return True, f"#empi:{empi}#"
 
 
 def _check_cda(content: str, **kwargs) -> tuple:
@@ -360,8 +362,53 @@ def verification(data: dict) -> tuple:
              | "OperationStatusInfoUpdate" | "OperationStatusInfoQuery":
             return verification_hip(data)
         # 其他非标准服务
-        # case 'CheckResultAdd':
-        #     message = "ok"
+        case 'ExamReportAdd':
+            report = copy.deepcopy(data[content_type])
+            del report['patient'], report['details']
+            exam_report = ExamReport(**report)
+            # 校验检验报告模型
+            try:
+                exam_report.full_clean()
+                # 校验主表
+                for main in data[content_type]['details']:
+                    temp_main = copy.deepcopy(main)
+                    del main['test_items']
+                    exam_main = ExamResultMain(**main)
+                    exam_main.exam_report_id = exam_report.report_id
+                    exam_main.full_clean()
+                    # 校验明细表
+                    for detail in temp_main['test_items']:
+                        temp_detail = copy.deepcopy(detail)
+                        del detail['ast_items']
+                        exam_detail = ExamResultDetail(**detail)
+                        exam_detail.exam_result_main_id = f"{exam_report.report_id}_{exam_main.apply_id}"
+                        exam_detail.full_clean()
+                        # 如果有药敏则校验
+                        if temp_detail['ast_items'] and len(temp_detail['ast_items']) > 0:
+                            for item in temp_detail['ast_items']:
+                                exam_ast = ExamResultDetailAST(**item)
+                                exam_ast.exam_result_detail_id = f"{exam_report.report_id}_{exam_main.apply_id}_{exam_detail.index}"
+                                exam_ast.full_clean()
+
+            except (ValidationError,) as e:
+                ok = False
+                message = [str(item) for item in e]
+            else:
+                ok = True
+                message = 'ok'
+        # 检查报告
+        case 'CheckReportAdd':
+            report = copy.deepcopy(data[content_type])
+            del report['patient'], report['extra_infos']
+            check_report = CheckReport(**report)
+            try:
+                check_report.full_clean()
+            except (ValidationError, ) as e:
+                ok = False
+                message = [str(item) for item in e]
+            else:
+                ok = True
+                message = 'ok'
         case _:
             ok = True
             message = "本消息暂未纳入校验范围!"
@@ -378,19 +425,27 @@ def send_msg(request, payload: SendMsgSchema, msg_id: str = str(uuid.uuid4())):
     dict_payload.update({dict_payload['content_type']: extra.get(dict_payload['content_type'], None)})
     try:
         assert all([dict_payload['content_type'], dict_payload.get(dict_payload['content_type'], None),
-                   dict_payload['client_msg_id'], dict_payload["gmt_create"], dict_payload['gmt_send'],
-                   dict_payload['send_id'], dict_payload['recv_id']]) is True, "请重新检查您的参数,必要参数缺失"
+                    dict_payload['client_msg_id'], dict_payload["gmt_create"], dict_payload['gmt_send'],
+                    dict_payload['send_id'], dict_payload['recv_id']]) is True, "请重新检查您的参数,必要参数缺失"
     except (AssertionError,) as e:
         return 400, {"code": 400, "message": str(e), "msg_id": msg_id,
                      "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
+    # 调用检验函数
     ok, message = verification(dict_payload)
-    msg = "ok"
-    if not ok:
-        msg = ','.join(message)
 
-    result = {"code": 0 if ok else 400, "message": msg, "msg_id": msg_id,
-              "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
     response_code = 200 if ok else 400
+    result = {"code": response_code, "message": 'ok', "msg_id": msg_id,
+              "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds'),
+              "detail": None}
+    # 验证失败
+    if not ok:
+        # msg = ','.join(message) if isinstance(message, list) else message
+        detail = message
+        result.update(**{"detail": detail, "message": "Please recheck your request parameters!"})
+
+    # 如果是同步接口,当处理正常需要返回提示内容时
+    if ok and dict_payload['content_type'] in ("PatientInfoRegister", "PatientInfoUpdate"):
+        result.update(**{"msg": message, "data": message})
 
     return response_code, result
 

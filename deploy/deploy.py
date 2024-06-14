@@ -78,8 +78,8 @@ class DeployBot:
 
         # from django_hip_service import settings
         # app_version = settings.__version__
-        app_version = desc_git_count
-        image_name = f"django_hip:a{app_version}"
+        app_version = f'a{desc_git_count}'
+        image_name = f"django_hip:{app_version}"
         dockerfile_path = Path(__file__).resolve().parent.parent
 
         # docker构建镜像命令

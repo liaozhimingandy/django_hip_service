@@ -27,9 +27,13 @@ RUN mkdir /opt/app
 COPY . /opt/app
 
 WORKDIR /opt/app
-# command
-CMD ["gunicorn", "django_hip_service.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
 
+EXPOSE 8000
+
+RUN ["chmod", "+x", "/opt/app/config/entrypoint.sh"]
+
+# run entrypoint.sh
+ENTRYPOINT ["/opt/app/config/entrypoint.sh"]
 # 构建命令
 # docker build -t liaozhiming/django_hip:latest .
 # 文件格式问题,请保持unix编码;set ff=unix
