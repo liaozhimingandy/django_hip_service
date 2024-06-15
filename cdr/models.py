@@ -293,6 +293,9 @@ class CheckReport(models.Model):
 
     exam_category_code = models.CharField(max_length=3, choices=ExamCategoryChoices, db_comment="检查分类代码",
                                           help_text='检查分类代码', verbose_name='检查分类代码')
+    executor_id = models.CharField(max_length=36, db_comment="检查医生ID", verbose_name='检查医生ID', help_text='检查医生ID')
+    executor = models.CharField(max_length=36, db_comment="检查医生姓名", verbose_name='检查医生姓名', help_text='检查医生姓名')
+    gmt_execute = models.DateTimeField(db_comment="检查时间", verbose_name='检查时间', help_text='检查时间')
     author_id = models.CharField(max_length=36, db_comment="报告人id", verbose_name='报告人id', help_text='报告人id')
     author = models.CharField(max_length=36, db_comment="报告人", verbose_name='报告人', help_text='报告人')
     gmt_author = models.DateTimeField(db_comment="报告日期时间", verbose_name='报告日期时间', help_text='报告日期时间')
