@@ -21,8 +21,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-# VERSION = (24, 3, 1, "alpha", 16)
-# __version__ = get_version(VERSION)
+VERSION = (24, 3, 1, "alpha", 16)
+__version__ = get_version(VERSION)
 # id前缀
 PREFIX_ID = "esbid_"
 
