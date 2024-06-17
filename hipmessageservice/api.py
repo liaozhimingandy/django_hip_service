@@ -399,7 +399,7 @@ def verification(data: dict) -> tuple:
         # 检查报告
         case 'CheckReportAdd':
             report = copy.deepcopy(data[content_type])
-            del report['patient'], report['extra_infos']
+            del report['patient']
             check_report = CheckReport(**report)
             try:
                 check_report.full_clean()

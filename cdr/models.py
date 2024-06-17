@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -236,6 +237,7 @@ class CheckReport(models.Model):
     """
     检查报告
     """
+
     class ExamCategoryChoices(models.TextChoices):
         A = ('ECG', '心电检查')
         B = ('UIS', '超声检查')
@@ -279,7 +281,8 @@ class CheckReport(models.Model):
     content = models.CharField(max_length=255, db_comment="检查所见", verbose_name='检查所见',
                                help_text='检查所见')
     url_report_pdf = models.URLField(db_comment="报告pdf链接", verbose_name='报告pdf链接', help_text='报告pdf链接')
-    url_image = models.URLField(db_comment="图像查链接", verbose_name='图像查链接', help_text='图像查链接', null=True, blank=True)
+    url_image = models.URLField(db_comment="图像查链接", verbose_name='图像查链接', help_text='图像查链接', null=True,
+                                blank=True)
     dept_id = models.CharField(max_length=36, db_comment="报告科室ID", help_text='报告科室ID',
                                verbose_name='报告科室ID')
     dept_name = models.CharField(max_length=36, db_comment="报告科室名称", help_text='报告科室名称',
@@ -293,8 +296,10 @@ class CheckReport(models.Model):
 
     exam_category_code = models.CharField(max_length=3, choices=ExamCategoryChoices, db_comment="检查分类代码",
                                           help_text='检查分类代码', verbose_name='检查分类代码')
-    executor_id = models.CharField(max_length=36, db_comment="检查医生ID", verbose_name='检查医生ID', help_text='检查医生ID')
-    executor = models.CharField(max_length=36, db_comment="检查医生姓名", verbose_name='检查医生姓名', help_text='检查医生姓名')
+    executor_id = models.CharField(max_length=36, db_comment="检查医生ID", verbose_name='检查医生ID',
+                                   help_text='检查医生ID')
+    executor = models.CharField(max_length=36, db_comment="检查医生姓名", verbose_name='检查医生姓名',
+                                help_text='检查医生姓名')
     gmt_execute = models.DateTimeField(db_comment="检查时间", verbose_name='检查时间', help_text='检查时间')
     author_id = models.CharField(max_length=36, db_comment="报告人id", verbose_name='报告人id', help_text='报告人id')
     author = models.CharField(max_length=36, db_comment="报告人", verbose_name='报告人', help_text='报告人')
@@ -302,13 +307,23 @@ class CheckReport(models.Model):
     verifier_id = models.CharField(max_length=36, db_comment="审核者ID", verbose_name='审核者ID', help_text='审核者ID')
     verifier = models.CharField(max_length=36, db_comment="审核者姓名", verbose_name='审核者姓名',
                                 help_text='审核者姓名')
-    gmt_verified = models.DateTimeField(db_comment="审核日期时间", verbose_name='审核日期时间', help_text='审核日期时间')
+    gmt_verified = models.DateTimeField(db_comment="审核日期时间", verbose_name='审核日期时间',
+                                        help_text='审核日期时间')
     device_id = models.CharField(max_length=36, db_comment="设备唯一id", verbose_name='设备唯一id',
                                  help_text='设备唯一id', null=True, blank=True)
     device_name = models.CharField(max_length=64, db_comment="设备名称", verbose_name='设备名称', help_text='设备名称',
                                    null=True, blank=True)
-    extra_infos = models.JSONField(db_comment="补充信息", verbose_name='补充信息', help_text='补充信息', null=True, blank=True)
+    extra_infos = models.JSONField(db_comment="补充信息", verbose_name='补充信息', help_text='补充信息', null=True,
+                                   blank=True)
     from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统', help_text='来源系统')
     org_code = models.CharField(max_length=18, db_comment="医疗卫生机构代码", verbose_name='医疗卫生机构代码',
                                 help_text='社会统一信用代码')
     org_name = models.CharField(max_length=64, db_comment="医疗卫生机构", verbose_name='医疗卫生机构')
+
+    def clean(self):
+        # 先调用父类的clean方法来执行字段级别的验证
+        super().clean()
+        # 自定义验证逻辑
+        if not any((isinstance(self.extra_infos, dict), self.extra_infos is None)):
+            raise ValidationError(message="extra_infos中的值: '%(value)s'必须是一个字典类型或者null",
+                                  code='extra_infos_error', params={'value': self.extra_infos})
