@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-
+from django.utils import timezone
 
 class AdmCodeChoices(models.IntegerChoices):
     A = (1, '门诊')
@@ -185,9 +185,9 @@ class ExamResultDetail(models.Model):
     is_warn = models.BooleanField(default=False, db_comment="危急值标识", help_text='危急值标识',
                                   verbose_name='危急值标识')
     test_method_code = models.CharField(max_length=36, db_comment="检测方法代码", help_text='检测方法代码',
-                                        verbose_name='检测方法代码')
+                                        verbose_name='检测方法代码', null=True, blank=True)
     test_method_name = models.CharField(max_length=36, db_comment="检测方法名称", help_text='检测方法名称',
-                                        verbose_name='检测方法名称')
+                                        verbose_name='检测方法名称', null=True, blank=True)
     is_germ = models.BooleanField(default=False, db_comment="是否为微生物", help_text='是否为微生物',
                                   verbose_name='是否为微生物')
     bacterium_id = models.CharField(max_length=36, db_comment="细菌id", help_text='细菌id', verbose_name='细菌id',
@@ -297,10 +297,10 @@ class CheckReport(models.Model):
     exam_category_code = models.CharField(max_length=3, choices=ExamCategoryChoices, db_comment="检查分类代码",
                                           help_text='检查分类代码', verbose_name='检查分类代码')
     executor_id = models.CharField(max_length=36, db_comment="检查医生ID", verbose_name='检查医生ID',
-                                   help_text='检查医生ID')
+                                   help_text='检查医生ID', default="")
     executor = models.CharField(max_length=36, db_comment="检查医生姓名", verbose_name='检查医生姓名',
-                                help_text='检查医生姓名')
-    gmt_execute = models.DateTimeField(db_comment="检查时间", verbose_name='检查时间', help_text='检查时间')
+                                help_text='检查医生姓名', default="")
+    gmt_execute = models.DateTimeField(db_comment="检查时间", verbose_name='检查时间', help_text='检查时间', default=timezone.now)
     author_id = models.CharField(max_length=36, db_comment="报告人id", verbose_name='报告人id', help_text='报告人id')
     author = models.CharField(max_length=36, db_comment="报告人", verbose_name='报告人', help_text='报告人')
     gmt_author = models.DateTimeField(db_comment="报告日期时间", verbose_name='报告日期时间', help_text='报告日期时间')

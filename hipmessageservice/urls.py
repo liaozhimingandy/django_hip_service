@@ -1,16 +1,14 @@
 # url 命令空间
-from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from hipmessageservice import views
-from hipmessageservice.views import verificationViewSet
+from hipmessageservice.views import VerificationViewset, HIPMessageServiceViewSet
 
-app_name = 'service'
+app_name = 'openim'
 
 urlpatterns = [
 ]
 # api根路由
 router = DefaultRouter()
-router.register(r'verify', verificationViewSet, basename='verify')
-
+router.register(r'verify', VerificationViewset, basename='verify')
+router.register(r'service', HIPMessageServiceViewSet, basename="service")
 urlpatterns += router.urls

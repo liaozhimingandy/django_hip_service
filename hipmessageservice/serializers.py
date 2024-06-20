@@ -9,6 +9,8 @@
 ================================================="""
 from rest_framework import serializers
 
+from cdr import models
+
 
 class HIPServiceSerializer(serializers.Serializer):
     """
@@ -149,6 +151,47 @@ class HIPCDASerializer(serializers.Serializer):
     ]
     cda_code = serializers.ChoiceField(list_cda, help_text="请选择对应的CDA文档", required=True)
     content = serializers.CharField(help_text="请输入需要校验的文档内容", required=True)
+
+
+class PatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Patient
+        exclude = ["id", ]
+
+
+class ExamReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ExamReport
+        exclude = ["id", ]
+
+
+class ExamResultMainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ExamResultMain
+        exclude = ["id", ]
+
+
+class ExamResultDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ExamResultDetail
+        exclude = ["id", ]
+
+
+class ExamResultDetailASTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ExamResultDetailAST
+        exclude = ["id", ]
+
+
+class CheckReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CheckReport
+        exclude = ["id", ]
+
+    def validate_extra_infos(self, value):
+        if not any((isinstance(value, dict), value is None)):
+            raise serializers.ValidationError(f"extra_infos中的值: '{value}'必须是一个字典类型或者null")
+        return value
 
 
 if __name__ == "__main__":

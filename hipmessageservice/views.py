@@ -1,6 +1,9 @@
 import base64
+import copy
 import datetime
+import uuid
 from http import HTTPStatus
+from zoneinfo import ZoneInfo
 
 import lxml
 import openpyxl
@@ -8,6 +11,7 @@ import pandas as pd
 import requests
 from django.conf import settings
 from django.contrib.staticfiles import finders
+from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db import transaction
 from django.http import FileResponse, HttpResponse
@@ -18,15 +22,17 @@ from json2xml import json2xml
 from lxml import etree
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
-from cdr.models import Patient
+from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport
 from .authentication import AuthBearer
 from hipmessageservice.models import Service, Application, StatusShip
-from hipmessageservice.serializers import HIPServiceSerializer, HIPCDASerializer
+from hipmessageservice.serializers import HIPServiceSerializer, HIPCDASerializer, CheckReportSerializer, \
+    ExamReportSerializer, ExamResultMainSerializer
 from hipmessageservice.utils.database import read_cda
+from .utils.encrypt import EncryptUtils
 
 
 # Create your views here.
@@ -235,12 +241,6 @@ def home(request):
                            'dict_status': dict_status, 'user': request.user})
 
 
-def test3(request):
-    numbers = range(1, 100)
-    return render(request, 'hipmessageservice/test3.html',
-                  context={'user': request.user, 'numbers': numbers})
-
-
 data_mapping = {
     "patient_id": "//xmlns:patient/xmlns:id/xmlns:item/@extension",
     "gmt_reg": "//xmlns:patient/xmlns:effectiveTime/xmlns:any/@value",
@@ -395,8 +395,9 @@ def DealPatient(content):
            </soap:Body>
         </soap:Envelope>
         """
+    # 调empi接口进行患者注册
     response = requests.post(settings.EMPI_API_URL, data=payload, headers={'Content-Type': 'text/xml'}, timeout=2)
-    empi = None
+
     if response.status_code == 200:
         # 匹配empi号
         # empi = (re.search('empi_id&gt;\d+&lt;/empi_id', response.text).group().replace('empi_id&gt;', '')
@@ -407,33 +408,39 @@ def DealPatient(content):
 
         if empi_root.find('.//state').text == 'success':
             empi = empi_root.find('.//empi_id').text
+            dict_data.update(**{"empi": empi})
+            # 保存到数据库
+            # 移除不需要的key
+            # list_to_remove = ['id_name', 'sex_name', 'marital_status_name', 'occupation_name', 'ethnic_group_name',
+            #                   'contact_name', 'ins_name']
+            #
+            # for key in list_to_remove:
+            #     dict_data.pop(key, None)
+
+            # 保存到数据库, 耗时比较长
+            # Patient.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
+
+            return True, f"#empi:{empi}#"
         else:
             return False, empi_root.find('.//message').text
 
     else:
         return False, response.text
 
-    dict_data.update(**{"empi": empi})
 
-    # 保存到数据库
-    # 移除不需要的key
-    list_to_remove = ['id_name', 'sex_name', 'marital_status_name', 'occupation_name', 'ethnic_group_name',
-                      'contact_name', 'ins_name']
+class VerificationViewset(viewsets.ViewSet):
+    """
+    单一服务或CDA校验
+    """
 
-    for key in list_to_remove:
-        dict_data.pop(key, None)
-
-    # 保存到数据库, 耗时比较长
-    Patient.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
-
-    return True, f"#empi:{empi}#"
-
-
-class verificationViewSet(ModelViewSet):
     # authentication_classes = [AuthBearer]
-
-    def get_serializer_class(self):
-        return HIPServiceSerializer if self.action == 'service' else HIPCDASerializer
+    def list(self, request):
+        """
+        用于生成根路由地址
+        :param request:
+        :return:
+        """
+        return Response(data="hello world", status=HTTPStatus.OK)
 
     @staticmethod
     def _validate(schema_name: str, content: str, is_service: bool = False) -> tuple:
@@ -573,3 +580,282 @@ class verificationViewSet(ModelViewSet):
             print(schema.error_log)
 
         return Response({"message": "Verified"})
+
+
+class HIPMessageServiceViewSet(viewsets.ViewSet):
+    """
+    实现消息校验及签名
+    """
+
+    def list(self, request):
+        return Response({"message": "This is a list view"})
+
+    def _check_cda(self, content: str, **kwargs) -> tuple:
+        # 对CDA注册服务部分字段校验
+        # 文档流水号, 文档生成日期时间,文档类型代码, 患者类型
+        etree.register_namespace('xmlns', 'urn:hl7-org:v3')
+
+        xml_file = etree.fromstring(content.replace('<?xml version="1.0" encoding="UTF-8"?>', ''))
+        doc_id = xml_file.xpath('xmlns:id/@extension', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+        cda_code = xml_file.xpath('xmlns:code/@code', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+        cda_name = xml_file.xpath('xmlns:title', namespaces={'xmlns': 'urn:hl7-org:v3'})[0].text
+        gmt_created = xml_file.xpath('xmlns:effectiveTime/@value', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+        patient_name = xml_file.xpath('//xmlns:patient/xmlns:name', namespaces={'xmlns': 'urn:hl7-org:v3'})[0].text
+
+        if doc_id == kwargs['doc_id'] and cda_code == kwargs['cda_code'] and cda_name == kwargs[
+            'cda_name'] and gmt_created == kwargs['gmt_created'] and patient_name == kwargs['patient_name']:
+            return True, 'ok'
+        else:
+            return False, f"服务和文档内容不一致,详情:{doc_id} ?== {kwargs['doc_id']} and {cda_code} ?== {kwargs['cda_code']} and {cda_name} ?== {kwargs['cda_name']} and {gmt_created} ?== {kwargs['gmt_created']} and {patient_name} ?== {kwargs['patient_name']}"
+
+    def _verification_hip_detail(self, schema_name: str, content: str, is_service: bool = False) -> tuple:
+        """互联互通服务 schema 校验"""
+        schema_file_path = finders.find(
+            f'hipmessageservice/services/schemas/{"services" if is_service else "cdas"}/{schema_name}.xsd')
+
+        # 加载XML Schema文件
+        schema_file = etree.parse(schema_file_path)
+        schema = etree.XMLSchema(schema_file)
+
+        # 加载待验证的XML字符串
+        try:
+            xml_file = etree.fromstring(content)
+        except ValueError:
+            xml_file = etree.fromstring(content.replace('<?xml version="1.0" encoding="UTF-8"?>', ''))
+        except (lxml.etree.XMLSyntaxError,) as e:
+            return False, str(e)
+
+        # 验证XML文件是否符合Schema
+        valid = schema.validate(xml_file)
+        return valid, (str(item) for item in schema.error_log)
+
+    def _verification_hip(self, data: dict) -> tuple:
+        """对互联互通服务校验"""
+        content_type = data["content_type"]
+        content = base64.b64decode(data[content_type]).decode('utf-8')
+        # 服务schema校验
+        ok, message = self._verification_hip_detail(schema_name=content_type, content=content, is_service=True)
+
+        if not ok:
+            return ok, message
+
+        match content_type:
+            # 个人新增注册和更新
+            case 'PatientInfoRegister' | 'PatientInfoUpdate':
+                return DealPatient(content)
+
+            # 如果是CDA
+            case 'DocumentRegister':
+                etree.register_namespace('xmlns', 'urn:hl7-org:v3')
+                xml_root = etree.fromstring(content)
+
+                cda_code = xml_root.xpath("//*[@codeSystem='2.16.156.10011.2.5.1.23']")[0].get('code')
+
+                cda_content_base64 = xml_root.find('xmlns:controlActProcess/xmlns:subject/xmlns:clinicalDocument/xmlns'
+                                                   ':storageCode/xmlns:originalText',
+                                                   namespaces={'xmlns': 'urn:hl7-org:v3'}).get('value')
+                cda_data = base64.b64decode(cda_content_base64).decode('utf-8')
+                # cda schema校验
+                ok, message = self._verification_hip_detail(schema_name=cda_code, content=cda_data, is_service=False)
+                if not ok:
+                    return ok, message
+
+                # cda服务三重校验
+                cda_name = xml_root.xpath("//xmlns:clinicalDocument/xmlns:code/xmlns:displayName/@value",
+                                          namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+                doc_id = xml_root.xpath("//xmlns:clinicalDocument/xmlns:id/xmlns:item/@extension",
+                                        namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+                gmt_created = xml_root.xpath("//xmlns:effectiveTime/@value", namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+                patient_name = xml_root.xpath(
+                    "//xmlns:recordTarget/xmlns:patient/xmlns:patientPerson/xmlns:name/xmlns:item/xmlns:part/@value",
+                    namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
+
+                ok, message = self._check_cda(content=cda_data, cda_code=cda_code, cda_name=cda_name, doc_id=doc_id,
+                                              gmt_created=gmt_created, patient_name=patient_name)
+                return ok, message
+            case _:
+                pass
+
+        return ok, message
+
+    def _verification(self, data: dict) -> tuple:
+        """
+        校验函数,对请求的消息内容进行校验
+        :param data:
+        :return:
+        """
+        content_type = data["content_type"]
+        """校验"""
+        match content_type:
+            # 互联互通标准服务
+            case "PatientInfoRegister" | "PatientInfoUpdate" | "PatientInfoMerge" | "PatientInfoQuery" \
+                 | "OrganizationInfoRegister" | "OrganizationInfoUpdate" | "OrganizationInfoQuery" | "ProviderInfoRegister" \
+                 | "ProviderInfoUpdate" | "ProviderInfoQuery" | "TerminologyRegister" | "TerminologyUpdate" \
+                 | "TerminologyQuery" | "DocumentRegister" | "DocumentAccess" | "DocumentRetrieve" | "EncounterCardInfoAdd" \
+                 | "EncounterCardInfoUpdate" | "EncounterCardInfoQuery" | "SourceAndScheduleInfoAdd" \
+                 | "SourceAndScheduleInfoUpdate" | "SourceAndScheduleInfoQuery" | "OutPatientInfoAdd" \
+                 | "OutPatientInfoUpdate" | "OutPatientInfoQuery" | "InPatientInfoAdd" | "InPatientInfoUpdate" \
+                 | "InPatientInfoQuery" | "TransferInfoAdd" | "TransferInfoUpdate" | "TransferInfoQuery" \
+                 | "DischargeInfoAdd" | "DischargeInfoUpdate" | "DischargeInfoQuery" | "OrderInfoAdd" \
+                 | "OrderInfoUpdate" | "OrderInfoQuery" | "ExamAppInfoAdd" | "ExamAppInfoUpdate" | "ExamAppInfoQuery" \
+                 | "CheckAppInfoAdd" | "CheckAppInfoUpdate" | "CheckAppInfoQuery" | "PathologyAppInfoAdd" \
+                 | "PathologyAppInfoUpdate" | "PathologyAppInfoQuery" | "BloodTransAppInfoAdd" | "BloodTransAppInfoUpdate" \
+                 | "BloodTransAppInfoQuery" | "OperationAppInfoAdd" | "OperationAppInfoUpdate" | "OperationAppInfoQuery" \
+                 | "OutPatientAppointStatusInfoAdd" | "OutPatientAppointStatusInfoUpdate" \
+                 | "OutPatientAppointStatusInfoQuery" | "CheckAppointStatusInfoAdd" | "CheckAppointStatusInfoUpdate" \
+                 | "CheckAppointStatusInfoQuery" | "OrderFillerStatusInfoUpdate" | "OrderFillerStatusInfoQuery" \
+                 | "CheckStatusInfoUpdate" | "CheckStatusInfoQuery" | "ExamStatusInfoUpdate" | "ExamStatusInfoQuery" \
+                 | "OperationScheduleInfoAdd" | "OperationScheduleInfoUpdate" | "OperationScheduleInfoQuery" \
+                 | "OperationStatusInfoUpdate" | "OperationStatusInfoQuery":
+                return self._verification_hip(data)
+            # 其他非标准服务
+            case 'ExamReportAdd':
+                report = copy.deepcopy(data[content_type])
+                del report['patient'], report['details']
+                # 校验报告
+                instance, created = ExamReport.objects.update_or_create(report_id=report.get("report_id", None),
+                                                                         defaults=report)
+                exam_report_serializer = ExamReportSerializer(data=report, instance=instance)
+                if not exam_report_serializer.is_valid():
+                    return False, exam_report_serializer.errors
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    exam_report_serializer.save()
+                # 校验检验报告模型
+                try:
+                    # 校验主表
+                    for main in data[content_type]['details']:
+                        temp_main = copy.deepcopy(main)
+                        del main['test_items']
+                        exam_main = ExamResultMain(**main)
+                        exam_main.exam_report_id = exam_report_serializer.validated_data['report_id']
+                        exam_main.full_clean()
+                        # 保存到数据库
+                        if settings.IS_SAVE_TO_DB:
+                            ExamResultMain.objects.filter(exam_report_id=exam_main.exam_report_id).delete()
+                            exam_main.save()
+                        # 校验明细表
+                        for detail in temp_main['test_items']:
+                            temp_detail = copy.deepcopy(detail)
+                            del detail['ast_items']
+                            exam_detail = ExamResultDetail(**detail)
+                            exam_detail.exam_result_main_id = f"{exam_report_serializer.validated_data['report_id']}_{exam_main.apply_id}"
+                            exam_detail.full_clean()
+                            # 保存到数据库
+                            if settings.IS_SAVE_TO_DB:
+                                ExamResultDetail.objects.filter(exam_result_main_id= exam_detail.exam_result_main_id).delete()
+                                exam_detail.save()
+                            # 如果有药敏则校验
+                            if temp_detail['ast_items'] and len(temp_detail['ast_items']) > 0:
+                                for item in temp_detail['ast_items']:
+                                    exam_ast = ExamResultDetailAST(**item)
+                                    exam_ast.exam_result_detail_id = f"{exam_report_serializer.validated_data['report_id']}_{exam_main.apply_id}_{exam_detail.index}"
+                                    exam_ast.full_clean()
+                                    # 保存到数据库
+                                    if settings.IS_SAVE_TO_DB:
+                                        ExamResultDetailAST.objects.filter(
+                                            exam_result_detail_id=exam_ast.exam_result_detail_id).delete()
+                                        exam_ast.save()
+                except (ValidationError,) as e:
+                    return False, [str(item) for item in e]
+                else:
+                    return True, 'ok'
+            case "ExamReportDelete" | "PathologyReportDelete" | "CheckReportDelete":
+                report = copy.deepcopy(data[content_type])
+                try:
+                    assert len(report.get('report_id', '')) > 0, "report_id length must be greater than 0"
+                    assert report.get('org_code', '') == settings.HOSPITAL_CODE, ("Please recheck your request "
+                                                                                  "parameters org_code!")
+                    # 数据库操作
+                    if settings.IS_SAVE_TO_DB:
+                        if content_type == "CheckReportDelete":
+                            # 检查报告
+                            CheckReport.objects.filter(report_id=report.get('report_id', '')).delete()
+
+                        if content_type == "ExamReportDelete":
+                            # 检验报告
+                            if ExamReport.objects.filter(report_id=report.get('report_id', '')).exists():
+                                exam_report = ExamReport.objects.get(report_id=report.get('report_id', ''))
+                                if ExamResultMain.objects.filter(exam_report_id=exam_report.report_id).exists():
+                                    exam_mains = ExamResultMain.objects.filter(exam_report_id=exam_report.report_id)
+                                    for exam_main in exam_mains:
+                                        if ExamResultDetail.objects.filter(exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}').exists():
+                                            exam_details = ExamResultDetail.objects.filter(exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}')
+                                            for exam_detail in exam_details:
+                                                ExamResultDetailAST.objects.filter(exam_result_detail_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}_{exam_detail.index}').delete()
+                                            exam_details.delete()
+                                    exam_mains.delete()
+                                exam_report.delete()
+                except AssertionError as e:
+                    return False, str(e)
+                else:
+                    return True, "ok"
+
+            # 检查报告
+            case 'CheckReportAdd':
+                report = copy.deepcopy(data[content_type])
+                del report['patient']
+                instance, created = CheckReport.objects.update_or_create(report_id=report.get("report_id", None),
+                                                                         defaults=report)
+                serializer = CheckReportSerializer(data=report, instance=instance)
+                # 校验
+                if serializer.is_valid():
+                    # 保存到数据库
+                    if settings.IS_SAVE_TO_DB:
+                        serializer.save()
+                    return True, "ok"
+                else:
+                    return False, serializer.errors
+
+            case _:
+                return True, "本消息暂未纳入校验范围!"
+
+    @action(detail=False, methods=['post'], url_path=r'verify')
+    def send_msg(self, request):
+        """
+        服务内容校验 <br>
+        :param request:<br>
+        :return: <br>
+        """
+        payload = request.data
+        try:
+            assert all([payload['content_type'], payload.get(payload['content_type'], None),
+                        payload['client_msg_id'], payload["gmt_create"], payload['gmt_send'],
+                        payload['send_id'], payload['recv_id']]) is True, "请重新检查您的参数,必要参数缺失"
+        except (AssertionError,) as e:
+            return 400, {"code": 400, "message": str(e), "msg_id": uuid.uuid4(),
+                         "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
+        # 调用检验函数
+        ok, message = self._verification(payload)
+
+        response_code = 200 if ok else 400
+        result = {"code": response_code, "message": 'ok', "msg_id": uuid.uuid4(),
+                  "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
+        # 验证失败
+        if not ok:
+            # msg = ','.join(message) if isinstance(message, list) else message
+            detail = message
+            result.update(**{"detail": detail, "message": "Please recheck your request parameters!"})
+
+        # 如果是同步接口,当处理正常需要返回提示内容时
+        if ok and payload['content_type'] in ("PatientInfoRegister", "PatientInfoUpdate"):
+            result.update(**{"msg": message, "data": message})
+
+        return Response(data=result, status=HTTPStatus.OK)
+
+    @action(detail=False, methods=['post'], url_path='sign_and_encrypt')
+    def sign_and_encrypt(self, request):
+        """省互认需要的签名和加密"""
+        hospital_id = settings.HOSPITAL_ID
+        key = settings.HOSPITAL_KEY
+        encrypt = EncryptUtils(key=key, hospital_id=hospital_id)
+        # 数据
+        # data = {"name": "测试11", "id_card_no": "111111"}
+        data = request.data
+        # 签名
+        md5_hash, timestamp = encrypt.sign()
+        # 加密
+        encrypted = encrypt.encrypt(data)
+
+        content = {"sign": md5_hash, "encrypted": encrypted, "timestamp": timestamp}
+        return Response(data=content, status=HTTPStatus.OK)

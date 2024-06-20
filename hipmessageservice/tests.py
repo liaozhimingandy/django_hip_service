@@ -74,7 +74,8 @@ class SchemaTest(TestCase):
                 base_name, extension = os.path.splitext(file)  # 拆分文件名和后缀名
                 with open(os.path.join(sample_path, file), 'r', encoding="utf-8") as fp:
                     content = fp.read()
-                response = self.client.post('/services/verify/service/',
+
+                response = self.client.post('/v3/openim/verify/service/',
                                             data={"service_code": base_name, "content": content}, follow=True)
                 self.assertEqual(response.status_code, 200, response.content.decode())
                 if response.status_code == 200:
@@ -97,7 +98,7 @@ class SchemaTest(TestCase):
                 cda_code = self.CDA_MAPPING[base_name.split('：')[1].replace('住院病程记录 ', '')]
                 with open(os.path.join(sample_path, sample), 'r', encoding="utf-8") as fp:
                     content = fp.read()
-                response = self.client.post('/services/verify/cda/',
+                response = self.client.post('/v3/openim/verify/cda/',
                                             data={"cda_code": cda_code, "content": content}, follow=True)
                 self.assertEqual(response.status_code, 200, response.content.decode())
                 if response.status_code == 200:

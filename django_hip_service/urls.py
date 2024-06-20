@@ -18,24 +18,24 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 
+from hipmessageservice.views import HIPMessageServiceViewSet
+from rest_framework import routers
+
 from django_hip_service import settings
 
 # from esb_standard.views import download
 from hipmessageservice.views import index, download as download_count, generate_report
 from hipmessageservice import urls as service_urls
 
-from .api import api
-
 urlpatterns = [
     path('', index),
-    re_path('services/', include((service_urls, 'services'), namespace='services')),
+    re_path('^v3/openim/', include(service_urls, namespace='openim')),
+    path('download/', download_count, name='download-count'),
+    # django 后台路由
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
-    path('download/', download_count, name='download-count'),
-    path("test/", generate_report),
-    # path('messsage/download/', download),
-    path('v3/', api.urls)
-
+    # drf 框架认证路由
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 # 开发环境提供静态文件和多媒体查看功能;这一般会在 DEBUG is set to True 情况下由 runserver 自动完成

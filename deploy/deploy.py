@@ -89,7 +89,7 @@ class DeployBot:
         self._deploy_docker_env(APP_IMAGE=image_name)
 
         # 自动提交至阿里云镜像仓库
-        self._deploy_docker_push(image_name=image_name)
+        # self._deploy_docker_push(image_name=image_name)
 
         print(
             f"自动构建成功!version: {app_version}, revision: {desc_git_branch}-{desc_git_hash}, docker镜像: {image_name}\n")
