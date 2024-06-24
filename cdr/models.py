@@ -275,9 +275,9 @@ class CheckReport(models.Model):
     extend_name = models.CharField(max_length=64, db_comment="外部项目名称", help_text='外部项目名称',
                                    verbose_name='江西省口腔医院市互认上传使用', null=True, blank=True)
     checkpoint_id = models.CharField(max_length=36, db_comment="检查部位代码", verbose_name='检查部位代码',
-                                     help_text='检查部位代码')
+                                     help_text='检查部位代码', null=True, blank=True)
     checkpoint = models.CharField(max_length=36, db_comment="检查部位", verbose_name='检查部位',
-                                  help_text='检查部位')
+                                  help_text='检查部位', null=True, blank=True)
     content = models.CharField(max_length=255, db_comment="检查所见", verbose_name='检查所见',
                                help_text='检查所见')
     url_report_pdf = models.URLField(db_comment="报告pdf链接", verbose_name='报告pdf链接', help_text='报告pdf链接')

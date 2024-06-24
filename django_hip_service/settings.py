@@ -325,10 +325,10 @@ admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style
 
 EMPI_API_URL = os.getenv('EMPI_API_URL', 'http://172.16.33.181:8253/webservice/IndexRegisterService.asmx')
 # 上传给市互认平台使用
-HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'tGuWgUr8PaS3dl7m')
+HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'ncdxfskqyy')
 HOSPITAL_ID = os.getenv('HOSPITAL_ID', 'ytlyyy_001')
 HOSPITAL_CODE = os.getenv('HOSPITAL_CODE', '12360000491015900T')
-IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 0)
+IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 1)
 
 ##########################################################################################
 # DRF 配置

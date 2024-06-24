@@ -732,7 +732,8 @@ class HIPMessageServiceViewSet(viewsets.ViewSet):
                         exam_main.full_clean()
                         # 保存到数据库
                         if settings.IS_SAVE_TO_DB:
-                            ExamResultMain.objects.filter(exam_report_id=exam_main.exam_report_id).delete()
+                            ExamResultMain.objects.filter(exam_report_id=exam_main.exam_report_id,
+                                                          apply_id=exam_main.apply_id).delete()
                             exam_main.save()
                         # 校验明细表
                         for detail in temp_main['test_items']:
@@ -743,7 +744,8 @@ class HIPMessageServiceViewSet(viewsets.ViewSet):
                             exam_detail.full_clean()
                             # 保存到数据库
                             if settings.IS_SAVE_TO_DB:
-                                ExamResultDetail.objects.filter(exam_result_main_id= exam_detail.exam_result_main_id).delete()
+                                ExamResultDetail.objects.filter(exam_result_main_id=exam_detail.exam_result_main_id,
+                                                                item_code=exam_detail.item_code).delete()
                                 exam_detail.save()
                             # 如果有药敏则校验
                             if temp_detail['ast_items'] and len(temp_detail['ast_items']) > 0:
@@ -754,7 +756,8 @@ class HIPMessageServiceViewSet(viewsets.ViewSet):
                                     # 保存到数据库
                                     if settings.IS_SAVE_TO_DB:
                                         ExamResultDetailAST.objects.filter(
-                                            exam_result_detail_id=exam_ast.exam_result_detail_id).delete()
+                                            exam_result_detail_id=exam_ast.exam_result_detail_id,
+                                            ast_code=exam_ast.ast_code).delete()
                                         exam_ast.save()
                 except (ValidationError,) as e:
                     return False, [str(item) for item in e]
