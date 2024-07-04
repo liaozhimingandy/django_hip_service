@@ -16,6 +16,7 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - data_static:/opt/app/static
+      - /d/Projects/django_hip_service/hipmessageservice/static/hipmessageservice/services:/opt/app/hipmessageservice/static/hipmessageservice/services
 
   web:
       image: ${NGINX_APP_IMAGE}
