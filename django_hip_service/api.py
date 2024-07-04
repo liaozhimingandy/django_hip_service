@@ -12,7 +12,7 @@ from ninja import NinjaAPI
 
 from hipmessageservice.api import router as api_router
 
-api = NinjaAPI(version='1.0.0',
+api = NinjaAPI(version='3.0',
                title='Open API',
                description="内部接口文档",
                auth=None,
@@ -22,11 +22,13 @@ api = NinjaAPI(version='1.0.0',
                    }},
                docs_url="/docs/",
                servers=[
-                   {"url": "https://openapi-test.esb.alsoapp.com", "description": "测试环境"},
                    {"url": "https://openapi.esb.alsoapp.com", "description": "生产环境"},
+                   {"url": "https://openapi-test.esb.alsoapp.com", "description": "测试环境"},
+                   {"url": "http://localhost:8000", "description": "本地测试环境"},
+
                ])
 
-api.add_router("/openim/", api_router)
+api.add_router("openim/", api_router)
 
 
 if __name__ == "__main__":

@@ -18,14 +18,10 @@ from json2xml import json2xml
 from lxml import etree
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
-from cdr.models import Patient
-from .authentication import AuthBearer
+from cdr.models import PatientInfo
+# from .authentication import AuthBearer
 from hipmessageservice.models import Service, Application, StatusShip
-from hipmessageservice.serializers import HIPServiceSerializer, HIPCDASerializer
 from hipmessageservice.utils.database import read_cda
 
 
@@ -424,152 +420,6 @@ def DealPatient(content):
         dict_data.pop(key, None)
 
     # 保存到数据库, 耗时比较长
-    Patient.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
+    PatientInfo.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
 
     return True, f"#empi:{empi}#"
-
-
-class verificationViewSet(ModelViewSet):
-    # authentication_classes = [AuthBearer]
-
-    def get_serializer_class(self):
-        return HIPServiceSerializer if self.action == 'service' else HIPCDASerializer
-
-    @staticmethod
-    def _validate(schema_name: str, content: str, is_service: bool = False) -> tuple:
-        """schema 校验"""
-
-        schema_file_path = finders.find(
-            f'hipmessageservice/services/schemas/{"services" if is_service else "cdas"}/{schema_name}.xsd')
-
-        # 加载XML Schema文件
-        schema_file = etree.parse(schema_file_path)
-        schema = etree.XMLSchema(schema_file)
-
-        # 加载待验证的XML字符串
-        try:
-            xml_file = etree.fromstring(content)
-        except ValueError:
-            xml_file = etree.fromstring(content.replace('<?xml version="1.0" encoding="UTF-8"?>', ''))
-        except (lxml.etree.XMLSyntaxError,) as e:
-            return False, str(e)
-
-        # 验证XML文件是否符合Schema
-        valid = schema.validate(xml_file)
-        return valid, (str(item) for item in schema.error_log)
-
-    @staticmethod
-    def _check_cda(content: str, **kwargs) -> tuple:
-        # 对CDA注册服务部分字段校验
-        # 文档流水号, 文档生成日期时间,文档类型代码, 患者类型
-        etree.register_namespace('xmlns', 'urn:hl7-org:v3')
-
-        xml_file = etree.fromstring(content.replace('<?xml version="1.0" encoding="UTF-8"?>', ''))
-        doc_id = xml_file.xpath('xmlns:id/@extension', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-        cda_code = xml_file.xpath('xmlns:code/@code', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-        cda_name = xml_file.xpath('xmlns:title', namespaces={'xmlns': 'urn:hl7-org:v3'})[0].text
-        gmt_created = xml_file.xpath('xmlns:effectiveTime/@value', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-        patient_name = xml_file.xpath('//xmlns:patient/xmlns:name', namespaces={'xmlns': 'urn:hl7-org:v3'})[0].text
-
-        if doc_id == kwargs['doc_id'] and cda_code == kwargs['cda_code'] and cda_name == kwargs[
-            'cda_name'] and gmt_created == kwargs['gmt_created'] and patient_name == kwargs['patient_name']:
-            return True, 'ok'
-        else:
-            return False, f"服务和文档内容不一致,详情:{doc_id} ?== {kwargs['doc_id']} and {cda_code} ?== {kwargs['cda_code']} and {cda_name} ?== {kwargs['cda_name']} and {gmt_created} ?== {kwargs['gmt_created']} and {patient_name} ?== {kwargs['patient_name']}"
-
-    @action(methods=['post'], detail=False)
-    def service(self, request):
-        """
-        服务校验,对互联互通标准服务进行校验
-        :param request:
-        :return:
-        """
-        # 序列化校验
-        serializer = HIPServiceSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        service_name = serializer.validated_data['service_code']
-        content = serializer.validated_data['content']
-        # 服务schema校验
-        valid = self._validate(schema_name=service_name, content=content, is_service=True)
-
-        # 特殊服务校验
-        match service_name:
-            # 个人信息注册,更新则需要进行empi注册和保存到数据库
-            case 'PatientInfoRegister' | 'PatientInfoUpdate':
-                created, message = DealPatient(content)
-                if created:
-                    return Response(data={"message": message}, status=HTTPStatus.OK)
-                else:
-                    return Response(data={"message": message}, status=HTTPStatus.BAD_REQUEST)
-            # 如果是CDA
-            case 'DocumentRegister':
-                etree.register_namespace('xmlns', 'urn:hl7-org:v3')
-                xml_root = etree.fromstring(content)
-
-                cda_code = xml_root.xpath("//*[@codeSystem='2.16.156.10011.2.5.1.23']")[0].get('code')
-
-                cda_content_base64 = xml_root.find('xmlns:controlActProcess/xmlns:subject/xmlns:clinicalDocument/xmlns'
-                                                   ':storageCode/xmlns:originalText',
-                                                   namespaces={'xmlns': 'urn:hl7-org:v3'}).get('value')
-                cda_data = base64.b64decode(cda_content_base64).decode('utf-8')
-                valid = self._validate(schema_name=cda_code, content=cda_data, is_service=False)
-
-                # cda服务三重校验
-                cda_name = xml_root.xpath("//xmlns:clinicalDocument/xmlns:code/xmlns:displayName/@value",
-                                          namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-                doc_id = xml_root.xpath("//xmlns:clinicalDocument/xmlns:id/xmlns:item/@extension",
-                                        namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-                gmt_created = xml_root.xpath("//xmlns:effectiveTime/@value", namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-                patient_name = xml_root.xpath(
-                    "//xmlns:recordTarget/xmlns:patient/xmlns:patientPerson/xmlns:name/xmlns:item/xmlns:part/@value",
-                    namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
-
-                ok, message = self._check_cda(content=cda_data, cda_code=cda_code, cda_name=cda_name, doc_id=doc_id,
-                                              gmt_created=gmt_created, patient_name=patient_name)
-                if ok:
-                    return Response(data={"message": message}, status=HTTPStatus.OK)
-                else:
-                    return Response(data={"message": message}, status=HTTPStatus.BAD_REQUEST)
-
-        return Response(data={"message": str(valid[0]) if valid[0] else valid[1]},
-                        status=HTTPStatus.OK if valid[0] else HTTPStatus.BAD_REQUEST)
-
-    @action(methods=['post'], detail=False)
-    def cda(self, request):
-        """
-        CDA服务进行校验
-        :param request:
-        :return:
-        """
-        serializer = HIPCDASerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        cda_code = serializer.validated_data['cda_code']
-        content = serializer.validated_data['content']
-
-        valid = self._validate(schema_name=cda_code, content=content, is_service=False)
-
-        return Response(data={"message": "ok" if valid[0] else valid[1]}, status=HTTPStatus.OK)
-
-    @action(methods=['post'], detail=False, url_path=r'test_service/(?P<service_name>\w+)')
-    def test_service(self, request, service_name):
-
-        schema_file_path = finders.find(f'hipmessageservice\services\schemas\services\{service_name}.xsd')
-
-        # 加载XML Schema文件
-        schema_file = etree.parse(schema_file_path)
-        schema = etree.XMLSchema(schema_file)
-
-        # 加载待验证的XML文件
-        xml_file = etree.parse(request.data)
-
-        # 验证XML文件是否符合Schema
-        valid = schema.validate(xml_file)
-        if valid:
-            print("XML文件验证成功！")
-        else:
-            print("XML文件验证失败！")
-            print(schema.error_log)
-
-        return Response({"message": "Verified"})

@@ -16,19 +16,17 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 
 from django_hip_service import settings
 
 # from esb_standard.views import download
 from hipmessageservice.views import index, download as download_count, generate_report
-from hipmessageservice import urls as service_urls
 
 from .api import api
 
 urlpatterns = [
     path('', index),
-    re_path('services/', include((service_urls, 'services'), namespace='services')),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     path('download/', download_count, name='download-count'),

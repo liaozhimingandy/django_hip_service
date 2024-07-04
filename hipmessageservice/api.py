@@ -363,89 +363,145 @@ def verification(data: dict) -> tuple:
             return verification_hip(data)
         # 其他非标准服务
         case 'ExamReportAdd':
+            """校验并保存校验报告信息"""
             report = copy.deepcopy(data[content_type])
             del report['patient'], report['details']
             exam_report = ExamReport(**report)
+            exam_report.patient_id = data[content_type]['patient']['patient_id']
             # 校验检验报告模型
             try:
+                # 校验
                 exam_report.full_clean()
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    ExamReport.objects.update_or_create(report_id=report.get("report_id", None),
+                                                        defaults=report)
                 # 校验主表
                 for main in data[content_type]['details']:
                     temp_main = copy.deepcopy(main)
                     del main['test_items']
                     exam_main = ExamResultMain(**main)
                     exam_main.exam_report_id = exam_report.report_id
+                    # 校验
                     exam_main.full_clean()
+                    # 保存到数据库
+                    if settings.IS_SAVE_TO_DB:
+                        ExamResultMain.objects.filter(exam_report_id=exam_main.exam_report_id,
+                                                      apply_id=exam_main.apply_id).delete()
+                        exam_main.save()
                     # 校验明细表
                     for detail in temp_main['test_items']:
                         temp_detail = copy.deepcopy(detail)
                         del detail['ast_items']
                         exam_detail = ExamResultDetail(**detail)
                         exam_detail.exam_result_main_id = f"{exam_report.report_id}_{exam_main.apply_id}"
+                        # 校验
                         exam_detail.full_clean()
+                        # 保存到数据库
+                        if settings.IS_SAVE_TO_DB:
+                            ExamResultDetail.objects.filter(exam_result_main_id=exam_detail.exam_result_main_id,
+                                                            item_code=exam_detail.item_code).delete()
+                            exam_detail.save()
                         # 如果有药敏则校验
                         if temp_detail['ast_items'] and len(temp_detail['ast_items']) > 0:
                             for item in temp_detail['ast_items']:
                                 exam_ast = ExamResultDetailAST(**item)
-                                exam_ast.exam_result_detail_id = f"{exam_report.report_id}_{exam_main.apply_id}_{exam_detail.index}"
+                                exam_ast.exam_result_detail_id = f"{exam_report.report_id}_{exam_main.apply_id}_{exam_detail.item_code}"
+                                # 校验
                                 exam_ast.full_clean()
+                                # 保存到数据库
+                                if settings.IS_SAVE_TO_DB:
+                                    ExamResultDetailAST.objects.filter(
+                                        exam_result_detail_id=exam_ast.exam_result_detail_id,
+                                        ast_code=exam_ast.ast_code).delete()
+                                    exam_ast.save()
 
             except (ValidationError,) as e:
-                ok = False
-                message = [str(item) for item in e]
+                return False, [str(item) for item in e]
             else:
-                ok = True
-                message = 'ok'
+                return True, "ok"
+        case "ExamReportDelete" | "PathologyReportDelete" | "CheckReportDelete":
+            """检查检验报告删除逻辑"""
+            report = copy.deepcopy(data[content_type])
+            try:
+                assert len(report.get('report_id', '')) > 0, "report_id length must be greater than 0"
+                assert report.get('org_code', '') == settings.HOSPITAL_CODE, ("Please recheck your request "
+                                                                              "parameters org_code!")
+                # 数据库操作
+                if settings.IS_SAVE_TO_DB:
+                    if content_type == "CheckReportDelete":
+                        # 检查报告
+                        CheckReport.objects.filter(report_id=report.get('report_id', '')).delete()
+
+                    if content_type == "ExamReportDelete":
+                        # 检验报告
+                        if ExamReport.objects.filter(report_id=report.get('report_id', '')).exists():
+                            exam_report = ExamReport.objects.get(report_id=report.get('report_id', ''))
+                            if ExamResultMain.objects.filter(exam_report_id=exam_report.report_id).exists():
+                                exam_mains = ExamResultMain.objects.filter(exam_report_id=exam_report.report_id)
+                                for exam_main in exam_mains:
+                                    if ExamResultDetail.objects.filter(
+                                            exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}').exists():
+                                        exam_details = ExamResultDetail.objects.filter(
+                                            exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}')
+                                        for exam_detail in exam_details:
+                                            ExamResultDetailAST.objects.filter(
+                                                exam_result_detail_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}_{exam_detail.index}').delete()
+                                        exam_details.delete()
+                                exam_mains.delete()
+                            exam_report.delete()
+            except AssertionError as e:
+                return False, str(e)
+            else:
+                return True, "ok"
         # 检查报告
         case 'CheckReportAdd':
             report = copy.deepcopy(data[content_type])
             del report['patient']
             check_report = CheckReport(**report)
+            check_report.patient_id = data[content_type]['patient']['patient_id']
             try:
+                # 校验
                 check_report.full_clean()
-            except (ValidationError, ) as e:
-                ok = False
-                message = [str(item) for item in e]
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    CheckReport.objects.update_or_create(report_id=check_report.report_id, defaults=report)
+            except (ValidationError,) as e:
+                return False, [str(item) for item in e]
             else:
-                ok = True
-                message = 'ok'
+                return True, 'ok'
         case _:
-            ok = True
-            message = "本消息暂未纳入校验范围!"
-
-    return ok, message
+            return True, "本消息暂未纳入校验范围!"
 
 
 @router.post("/service/verify/", response={codes_2xx: SendMsgSchemaOut, codes_4xx: SendMsgSchemaOut})
-def send_msg(request, payload: SendMsgSchema, msg_id: str = str(uuid.uuid4())):
+def send_msg(request, payload: SendMsgSchema):
     """服务校验"""
-    dict_payload = payload.dict(exclude_unset=False)
-    extra = json.loads(request.body.decode("utf-8"))
-    # 增加内容
-    dict_payload.update({dict_payload['content_type']: extra.get(dict_payload['content_type'], None)})
+    # dict_payload = payload.dict()
+    dict_payload = json.loads(request.body)
     try:
         assert all([dict_payload['content_type'], dict_payload.get(dict_payload['content_type'], None),
                     dict_payload['client_msg_id'], dict_payload["gmt_create"], dict_payload['gmt_send'],
-                    dict_payload['send_id'], dict_payload['recv_id']]) is True, "请重新检查您的参数,必要参数缺失"
+                    dict_payload['send_id'], dict_payload['recv_id']]) is True, \
+            "Please recheck your request parameters!"
     except (AssertionError,) as e:
-        return 400, {"code": 400, "message": str(e), "msg_id": msg_id,
+        return 400, {"code": 400, "message": str(e), "msg_id": str(uuid.uuid4()),
                      "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds')}
-    # 调用检验函数
+    # 调用校验函数
     ok, message = verification(dict_payload)
 
     response_code = 200 if ok else 400
-    result = {"code": response_code, "message": 'ok', "msg_id": msg_id,
+    result = {"code": response_code, "message": "ok", "msg_id": str(uuid.uuid4()),
               "gmt_created": datetime.datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(timespec='seconds'),
-              "detail": None}
+              }
     # 验证失败
     if not ok:
         # msg = ','.join(message) if isinstance(message, list) else message
-        detail = message
-        result.update(**{"detail": detail, "message": "Please recheck your request parameters!"})
+        result.update(**{"detail": message, "message": "Please recheck your request parameters!"})
 
     # 如果是同步接口,当处理正常需要返回提示内容时
     if ok and dict_payload['content_type'] in ("PatientInfoRegister", "PatientInfoUpdate"):
-        result.update(**{"msg": message, "data": message})
+        result.update(**{"data": message})
 
     return response_code, result
 

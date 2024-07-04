@@ -23,10 +23,10 @@ class EncryptUtils:
     key: str
     hospital_id: str
 
-    def _encrypt_bytes(self, data: bytes) -> bytes:
+    def _encrypt_bytes(self, bytes_data: bytes) -> bytes:
         """
        AES加密
-       :param data: 明文（字节串）
+       :param bytes_data: 明文（字节串）
        :param key: 密钥（字节串），长度应为16（AES-128）, 24（AES-192）, 或 32（AES-256）
        :return: 密文（字节串）
        """
@@ -38,7 +38,7 @@ class EncryptUtils:
         cipher = AES.new(self.key.encode("UTF-8"), AES.MODE_ECB)  # 注意：ECB模式不安全，通常使用CBC, CFB, OFB, CTR, GCM等模式
         # 如果使用CBC模式，你需要一个初始化向量(IV)，并且需要保存它以备解密时使用
         # 在此示例中，我们仅使用ECB模式以简化代码
-        ciphertext = cipher.encrypt(pad(data, AES.block_size))
+        ciphertext = cipher.encrypt(pad(bytes_data, AES.block_size))
         return ciphertext
 
     def encrypt(self, encrypt_data: dict) -> str:
@@ -64,8 +64,8 @@ class EncryptUtils:
         sign_data = f"hospitalId={self.hospital_id}&timestamp={current_timestamp}"
 
         encrypted_data = self._encrypt_bytes(sign_data.encode("UTF-8"))
-        md5_hash = hashlib.md5(encrypted_data).hexdigest()
-        return md5_hash, current_timestamp
+        hash_md5 = hashlib.md5(encrypted_data).hexdigest()
+        return hash_md5, current_timestamp
 
 
 if __name__ == "__main__":
@@ -73,10 +73,9 @@ if __name__ == "__main__":
     hospital_id = "ytlyyy_001"
     encrypt = EncryptUtils(key=key, hospital_id=hospital_id)
     # 数据
-    data = {"name":"测试11", "id_card_no":"111111"}
+    data = {"name": "测试11", "id_card_no": "111111"}
     # 签名
     md5_hash = encrypt.sign()
     # 加密
     encrypted = encrypt.encrypt(data)
     print(encrypted, md5_hash)
-
