@@ -109,9 +109,9 @@ DATABASES = {
     # },
     "default": {
         "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "hipmessageservice")
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr")
         if os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql") == 'django.db.backends.sqlite3'
-        else os.getenv("APP_DB_NAME", "hipmessageservice"),
+        else os.getenv("APP_DB_NAME", "cdr"),
         "USER": os.getenv("APP_DB_USER", "zhiming"),
         "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
         "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),

@@ -22,7 +22,7 @@ services:
       image: ${NGINX_APP_IMAGE}
       restart: unless-stopped
       links:
-        - chat:app
+        - app:app
       ports:
         - "80:80"
         - "443:443"
