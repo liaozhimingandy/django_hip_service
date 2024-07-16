@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-VERSION = (24, 7, 0, "alpha", 1)
+VERSION = (3, 3, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
@@ -107,7 +107,7 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'hip.db',
     # },
-    "default": {
+    "test": {
         "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
         "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr")
         if os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql") == 'django.db.backends.sqlite3'
@@ -117,7 +117,7 @@ DATABASES = {
         "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
         "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
-    'test': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'hip-test.db',
     },

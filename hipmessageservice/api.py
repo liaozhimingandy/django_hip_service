@@ -374,8 +374,9 @@ def verification(data: dict) -> tuple:
                 exam_report.full_clean()
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
-                    ExamReport.objects.update_or_create(report_id=report.get("report_id", None),
-                                                        defaults=report)
+                    # ExamReport.objects.update_or_create(report_id=report.get("report_id", None),
+                    #                                     defaults=exam_report)
+                    exam_report.save()
                 # 校验主表
                 for main in data[content_type]['details']:
                     temp_main = copy.deepcopy(main)
@@ -386,8 +387,8 @@ def verification(data: dict) -> tuple:
                     exam_main.full_clean()
                     # 保存到数据库
                     if settings.IS_SAVE_TO_DB:
-                        ExamResultMain.objects.filter(exam_report_id=exam_main.exam_report_id,
-                                                      apply_id=exam_main.apply_id).delete()
+                        # ExamResultMain.objects.filter(exam_report_id=exam_main.exam_report_id,
+                        #                               apply_id=exam_main.apply_id).delete()
                         exam_main.save()
                     # 校验明细表
                     for detail in temp_main['test_items']:
@@ -399,8 +400,8 @@ def verification(data: dict) -> tuple:
                         exam_detail.full_clean()
                         # 保存到数据库
                         if settings.IS_SAVE_TO_DB:
-                            ExamResultDetail.objects.filter(exam_result_main_id=exam_detail.exam_result_main_id,
-                                                            item_code=exam_detail.item_code).delete()
+                            # ExamResultDetail.objects.filter(exam_result_main_id=exam_detail.exam_result_main_id,
+                            #                                 item_code=exam_detail.item_code).delete()
                             exam_detail.save()
                         # 如果有药敏则校验
                         if temp_detail['ast_items'] and len(temp_detail['ast_items']) > 0:
@@ -411,9 +412,9 @@ def verification(data: dict) -> tuple:
                                 exam_ast.full_clean()
                                 # 保存到数据库
                                 if settings.IS_SAVE_TO_DB:
-                                    ExamResultDetailAST.objects.filter(
-                                        exam_result_detail_id=exam_ast.exam_result_detail_id,
-                                        ast_code=exam_ast.ast_code).delete()
+                                    # ExamResultDetailAST.objects.filter(
+                                    #     exam_result_detail_id=exam_ast.exam_result_detail_id,
+                                    #     ast_code=exam_ast.ast_code).delete()
                                     exam_ast.save()
 
             except (ValidationError,) as e:
@@ -465,7 +466,8 @@ def verification(data: dict) -> tuple:
                 check_report.full_clean()
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
-                    CheckReport.objects.update_or_create(report_id=check_report.report_id, defaults=report)
+                    # CheckReport.objects.update_or_create(report_id=check_report.report_id, defaults=report)
+                    check_report.save()
             except (ValidationError,) as e:
                 return False, [str(item) for item in e]
             else:

@@ -19,7 +19,7 @@ from lxml import etree
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
 
-from cdr.models import PatientInfo
+from cdr.models import Patient
 # from .authentication import AuthBearer
 from hipmessageservice.models import Service, Application, StatusShip
 from hipmessageservice.utils.database import read_cda
