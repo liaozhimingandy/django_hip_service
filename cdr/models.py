@@ -620,15 +620,16 @@ class ExamResultMain(models.Model):
     item_cls_name = models.CharField(max_length=64, db_comment="检验项目名称", verbose_name='检验项目名称', null=True,
                                      blank=True, help_text='江西省口腔医院市互认上传使用')
     exam_report_id = models.CharField(max_length=64, db_comment="检验报告", verbose_name='检验报告')
-
-    indexes = [
-        models.Index(fields=['exam_report_id'])
-    ]
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
     class Meta:
         verbose_name = '检验结果主表'
         verbose_name_plural = '检验结果集合'
         db_table_comment = "检验结果主表"
+
+        indexes = [
+            models.Index(fields=['exam_report_id'])
+        ]
 
 
 class ExamResultDetail(models.Model):
@@ -670,15 +671,21 @@ class ExamResultDetail(models.Model):
     extend_name = models.CharField(max_length=64, db_comment="外部项目名称",
                                    verbose_name='江西省口腔医院市互认上传使用', null=True, blank=True)
     exam_result_main_id = models.CharField(max_length=64, db_comment="检验结果主表", verbose_name='检验结果主表')
-
-    indexes = [
-        models.Index(fields=['exam_result_main_id'])
-    ]
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
     class Meta:
         verbose_name = '检验结果明细表'
         verbose_name_plural = '检验结果明细集合'
         db_table_comment = "检验结果明细表"
+
+        indexes = [
+            models.Index(fields=['exam_result_main_id'])
+        ]
+
+        constraints = [
+            models.UniqueConstraint(fields=['exam_result_main_id', 'index'],
+                                    name='unique_exam_result_main_id_index'),
+        ]
 
 
 class ExamResultDetailAST(models.Model):
@@ -698,6 +705,7 @@ class ExamResultDetailAST(models.Model):
                                     blank=True)
     mic = models.CharField(max_length=16, db_comment="最小抑菌浓度", verbose_name='最小抑菌浓度', null=True, blank=True)
     exam_result_detail_id = models.CharField(max_length=128, db_comment="检验结果明细表", verbose_name='检验结果明细表')
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
     class Meta:
         verbose_name = '检验结果药敏结果'
@@ -708,8 +716,8 @@ class ExamResultDetailAST(models.Model):
             models.Index(fields=['exam_result_detail_id'])
         ]
         constraints = [
-            models.UniqueConstraint(fields=['exam_result_detail_id', 'ast_code'],
-                                    name='unique_exam_result_detail_id_ast_code'),
+            models.UniqueConstraint(fields=['exam_result_detail_id', 'index'],
+                                    name='unique_exam_result_detail_id_index'),
         ]
 
 
@@ -1050,10 +1058,8 @@ class Order(models.Model):
                                 verbose_name='医嘱开立者签名')
     doc_id = models.CharField(max_length=36, db_comment='医务人员工号', verbose_name='医务人员工号')
     doc_name = models.CharField(max_length=64, db_comment='医嘱开立者', verbose_name='医嘱开立者')
-    dept_id = models.CharField(max_length=36, db_comment='医疗卫生机构（科室）ID',
-                               verbose_name='医疗卫生机构（科室）ID')
-    dept_name = models.CharField(max_length=64, db_comment='医嘱开立科室',
-                                 verbose_name='医嘱开立科室')
+    dept_id = models.CharField(max_length=36, db_comment='医疗卫生机构（科室）ID', verbose_name='医疗卫生机构（科室）ID')
+    dept_name = models.CharField(max_length=64, db_comment='医嘱开立科室', verbose_name='医嘱开立科室')
     gmt_review = models.DateTimeField(db_comment='医嘱审核日期时间', verbose_name='医嘱审核日期时间')
     reviewer_sign = models.CharField(max_length=255, db_comment='医嘱审核者签名', verbose_name='医嘱审核者签名')
     reviewer_id = models.CharField(max_length=36, db_comment='医嘱审核者工号', verbose_name='医嘱审核者工号')
@@ -1350,8 +1356,7 @@ class Patient(models.Model):
     gmt_reg = models.DateTimeField(db_comment="患者登记时间", verbose_name='患者登记时间')
     id_no = models.CharField(max_length=36, db_comment="证件号码", verbose_name='证件号码')
     id_code = models.CharField(max_length=2, choices=IdCodeChoices, db_comment="证件类型代码",
-                               verbose_name='证件类型代码',
-                               help_text='来源:身份证件类别代码表(CV02.01.101)')
+                               verbose_name='证件类型代码', help_text='来源:身份证件类别代码表(CV02.01.101)')
     patient_name = models.CharField(max_length=36, db_comment="患者姓名", verbose_name='患者姓名')
     tel_no = models.CharField(max_length=36, db_comment="联系电话", verbose_name='联系电话')
     sex_code = models.PositiveSmallIntegerField(choices=SexCodeChoices, db_comment="性别代码", verbose_name='性别代码')
@@ -1395,13 +1400,14 @@ class Patient(models.Model):
     author_id = models.CharField(max_length=36, db_comment="登记人ID", verbose_name='登记人ID')
     author = models.CharField(max_length=64, db_comment="登记人", verbose_name='登记人')
     from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
-    empi_id = models.CharField(max_length=36, db_comment="EMPI号", verbose_name='EMPI号', null=True, blank=True)
-    gmt_updated = models.DateTimeField(auto_now_add=True, editable=False, verbose_name='最后更新时间')
-    outpatient_id = models.CharField(max_length=36, db_comment="门急诊号标识ID", verbose_name='门急诊号标识ID',
-                                     help_text="门急诊号标识,对于门诊住院患者不同表情况下使用", null=True, blank=True)
-    inpatient_id = models.CharField(max_length=36, db_comment="住院号", verbose_name='住院号',
-                                    help_text='住院号标识,对于门诊住院患者不同表情况下使用', null=True, blank=True)
+    # empi_id = models.CharField(max_length=36, db_comment="EMPI号", verbose_name='EMPI号', null=True, blank=True)
+    # outpatient_id = models.CharField(max_length=36, db_comment="门急诊号标识ID", verbose_name='门急诊号标识ID',
+    #                                  help_text="门急诊号标识,对于门诊住院患者不同表情况下使用", null=True, blank=True)
+    # inpatient_id = models.CharField(max_length=36, db_comment="住院号", verbose_name='住院号',
+    #                                 help_text='住院号标识,对于门诊住院患者不同表情况下使用', null=True, blank=True)
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+    extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息',
+                             help_text="empi_id, outpatient_id, inpatient_id; 如有需要请自行在对应数据库建立索引")
 
     def __str__(self):
         return f"{self.patient_name}-{self.patient_id}"
@@ -1410,6 +1416,12 @@ class Patient(models.Model):
         verbose_name = "个人信息"
         verbose_name_plural = verbose_name
         db_table_comment = '个人信息'
+
+        indexes = (
+            models.Index(fields=['patient_id'], ),
+            models.Index(fields=['id_no'], ),
+            models.Index(fields=['tel_no'], ),
+        )
 
 
 class Provider(models.Model):
@@ -1529,7 +1541,7 @@ class Terminology(models.Model):
 
         indexes = [
             models.Index(fields=('dataset_code',)),
-            models.Index(fields=('item_code',))
+            models.Index(fields=('item_code',)),
         ]
 
         # 唯一约束
@@ -1570,6 +1582,97 @@ class Transfer(models.Model):
         verbose_name = "住院转科信息"
         verbose_name_plural = verbose_name
         db_table_comment = '住院转科信息'
+
+        indexes = [
+            models.Index(fields=('adm_no',)),
+            models.Index(fields=('patient_id',)),
+        ]
+
+
+class Diagnosis(models.Model):
+    """ 诊断信息 """
+
+    adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
+                              help_text="部分厂商为patient_id+times组合成就诊流水号")
+    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
+                                                    verbose_name='就诊类别代码')
+    diagnosis_id = models.CharField(max_length=36, db_comment="诊断ID", verbose_name='诊断ID', unique=True)
+    index = models.PositiveSmallIntegerField(db_comment="诊断排序号", verbose_name='诊断排序号')
+    gmt_diag = models.DateTimeField(auto_now_add=True, db_comment='诊断下达时间', verbose_name='诊断下达时间')
+    diag_dept_id = models.CharField(max_length=36, db_comment="诊断下达科室唯一标识",
+                                    verbose_name='诊断下达科室唯一标识')
+    diag_dept_name = models.CharField(max_length=36, db_comment="诊断下达科室名称",
+                                      verbose_name='诊断下达科室名称')
+    diag_ward_id = models.CharField(max_length=36, db_comment="诊断下达病区唯一标识",
+                                    verbose_name='诊断下达病区唯一标识',
+                                    null=True, blank=True)
+    diag_ward_name = models.CharField(max_length=36, db_comment="诊断下达病区名称", verbose_name='诊断下达病区名称',
+                                      null=True, blank=True)
+    diag_doctor_id = models.CharField(max_length=36, db_comment="下达诊断的医生唯一标识",
+                                      verbose_name='下达诊断的医生唯一标识')
+    diag_doctor_name = models.CharField(max_length=36, db_comment="下达诊断的医生姓名",
+                                        verbose_name='下达诊断的医生姓名')
+    diag_category_code = models.CharField(max_length=36, db_comment="诊断分类代码", verbose_name='诊断分类代码')
+    diag_category_name = models.CharField(max_length=36, db_comment="诊断分类名称", verbose_name='诊断分类名称')
+    diag_code = models.CharField(max_length=36, db_comment="疾病诊断编码", verbose_name='疾病诊断编码')
+    diag_name = models.CharField(max_length=36, db_comment="疾病诊断名称", verbose_name='疾病诊断名称')
+    diag_desc = models.CharField(max_length=64, db_comment="诊断描述", verbose_name='诊断描述', null=True, blank=True)
+    is_parent = models.BooleanField(default=False, db_comment="是否为父诊断", verbose_name='是否为父诊断')
+    parent_id = models.CharField(max_length=36, db_comment="父诊断唯一标识", verbose_name='父诊断唯一标识')
+    is_primary = models.BooleanField(default=False, db_comment="主诊标志", verbose_name='主诊标志')
+    is_uncertain = models.BooleanField(db_comment="待查标志", verbose_name="待查标志", null=True, blank=True)
+    is_infection = models.BooleanField(db_comment="院感标志", verbose_name='院感标志', null=True, blank=True)
+    is_infection_report = models.BooleanField(db_comment="院感上报标志", verbose_name='院感上报标志', null=True,
+                                              blank=True)
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
+                                verbose_name='医疗卫生机构代码')
+    from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.adm_no}-{self.patient_id} - {self.diag_name}'
+
+    class Meta:
+        verbose_name = "诊断信息"
+        verbose_name_plural = verbose_name
+        db_table_comment = '诊断信息'
+
+        indexes = [
+            models.Index(fields=('adm_no',)),
+            models.Index(fields=('patient_id',)),
+        ]
+
+
+class Visit(models.Model):
+    """ 门诊就诊信息 """
+    adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
+                              help_text="部分厂商为patient_id+times组合成就诊流水号")
+    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    times = models.PositiveIntegerField(db_comment='就诊次数', verbose_name='就诊次数')
+    is_first = models.BooleanField(db_comment="初诊标识", verbose_name='初诊标识', default=True)
+    dept_id = models.CharField(max_length=10, db_comment="就诊科室ID", verbose_name='就诊科室ID')
+    dept_name = models.CharField(max_length=36, db_comment="就诊科室名称", verbose_name='就诊科室名称')
+    doctor_id = models.CharField(max_length=10, db_comment="接诊医生ID", verbose_name='接诊医生ID')
+    doctor_name = models.CharField(max_length=36, db_comment="接诊医生姓名", verbose_name='接诊医生姓名')
+    schedule_id = models.CharField(max_length=36, db_comment="排班ID", verbose_name='排班ID', null=True, blank=True)
+    index = models.PositiveSmallIntegerField(db_comment='排队号', verbose_name='排队号', default=1)
+    gmt_visit_start = models.DateTimeField(db_comment='接诊开始时间', verbose_name='接诊开始时间')
+    gmt_visit_end = models.DateTimeField(db_comment='接诊结束时间', verbose_name='接诊结束时间', null=True, blank=True)
+    adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
+                                                    verbose_name='就诊类别代码')
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
+                                verbose_name='医疗卫生机构代码')
+    from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.adm_no}-{self.patient_id}'
+
+    class Meta:
+        verbose_name = "门诊就诊信息"
+        verbose_name_plural = verbose_name
+        db_table_comment = '门诊就诊信息'
 
         indexes = [
             models.Index(fields=('adm_no',)),

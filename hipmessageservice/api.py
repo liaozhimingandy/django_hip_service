@@ -232,7 +232,7 @@ def DealPatient(content):
             # 保存到数据库, 耗时比较长
             # Patient.objects.update_or_create(patient_id=dict_data['patient_id'], defaults=dict_data)
 
-            return True, f"#empi:{empi}#"
+            return True, f"#empi_id:{empi}#"
         else:
             return False, empi_root.find('.//message').text
 
@@ -395,7 +395,7 @@ def verification(data: dict) -> tuple:
                         temp_detail = copy.deepcopy(detail)
                         del detail['ast_items']
                         exam_detail = ExamResultDetail(**detail)
-                        exam_detail.exam_result_main_id = f"{exam_report.report_id}_{exam_main.apply_id}"
+                        exam_detail.exam_result_main_id = f"{exam_report.report_id}_{exam_main.order_id}"
                         # 校验
                         exam_detail.full_clean()
                         # 保存到数据库
@@ -407,7 +407,7 @@ def verification(data: dict) -> tuple:
                         if temp_detail['ast_items'] and len(temp_detail['ast_items']) > 0:
                             for item in temp_detail['ast_items']:
                                 exam_ast = ExamResultDetailAST(**item)
-                                exam_ast.exam_result_detail_id = f"{exam_report.report_id}_{exam_main.apply_id}_{exam_detail.item_code}"
+                                exam_ast.exam_result_detail_id = f"{exam_report.report_id}_{exam_main.order_id}_{exam_detail.item_code}"
                                 # 校验
                                 exam_ast.full_clean()
                                 # 保存到数据库
@@ -442,12 +442,12 @@ def verification(data: dict) -> tuple:
                                 exam_mains = ExamResultMain.objects.filter(exam_report_id=exam_report.report_id)
                                 for exam_main in exam_mains:
                                     if ExamResultDetail.objects.filter(
-                                            exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}').exists():
+                                            exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.order_id}').exists():
                                         exam_details = ExamResultDetail.objects.filter(
-                                            exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}')
+                                            exam_result_main_id=f'{exam_main.exam_report_id}_{exam_main.order_id}')
                                         for exam_detail in exam_details:
                                             ExamResultDetailAST.objects.filter(
-                                                exam_result_detail_id=f'{exam_main.exam_report_id}_{exam_main.apply_id}_{exam_detail.index}').delete()
+                                                exam_result_detail_id=f'{exam_main.exam_report_id}_{exam_main.order_id}_{exam_detail.index}').delete()
                                         exam_details.delete()
                                 exam_mains.delete()
                             exam_report.delete()

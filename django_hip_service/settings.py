@@ -323,3 +323,5 @@ HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'tGuWgUr8PaS3dl7m')
 HOSPITAL_ID = os.getenv('HOSPITAL_ID', 'ytlyyy_001')
 HOSPITAL_CODE = os.getenv('HOSPITAL_CODE', '12360000491015900T')
 IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 1)
+# 单体应用数据库层面创建外键约束
+IS_DB_CONSTRAINT = os.getenv('IS_DB_CONSTRAINT', True)
