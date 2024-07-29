@@ -23,6 +23,17 @@ class SexCodeChoices(models.IntegerChoices):
     D = (9, '未说明的性别')
 
 
+class MaritalStatusCodeChoices(models.TextChoices):
+    A = ('10', '未婚')
+    B = ('20', '已婚')
+    C = ('21', '初婚')
+    D = ('22', '再婚')
+    E = ('23', '复婚')
+    F = ('30', '丧偶')
+    G = ('40', '离婚')
+    H = ('90', '未说明的婚姻状况')
+
+
 class PropertyChoices(models.TextChoices):
     """ 优先（紧急）度代码 """
     A = ('N', 'normal')
@@ -545,6 +556,71 @@ class Exam(models.Model):
         ]
 
 
+class EncounterCard(models.Model):
+    """ 就诊卡信息 """
+
+    class StatusChoices(models.IntegerChoices):
+        A = (1, '激活')
+        B = (2, '作废')
+        C = (3, '退卡')
+
+    card_no = models.CharField(max_length=36, db_comment="就诊卡号", verbose_name='就诊卡号', unique=True)
+    gmt_reg = models.DateTimeField(db_comment="患者登记时间", verbose_name='患者登记时间')
+    status = models.PositiveSmallIntegerField(choices=StatusChoices, db_comment="就诊卡状态", verbose_name='就诊卡状态',
+                                              help_text='1-active-激活;2-作废-diable;3-退卡-retired')
+    id_no = models.CharField(max_length=36, db_comment="证件号码", verbose_name='证件号码')
+    patient_name = models.CharField(max_length=36, db_comment="患者姓名", verbose_name='患者姓名')
+    tel_no = models.CharField(max_length=36, db_comment="联系电话", verbose_name='联系电话')
+    sex_code = models.PositiveSmallIntegerField(choices=SexCodeChoices, db_comment="性别代码", verbose_name='性别代码')
+    gmt_birth = models.DateField(db_comment="出生日期", verbose_name='出生日期')
+    addr_sal = models.CharField(max_length=128, db_comment="完整地址描述", verbose_name='完整地址描述')
+    addr_sta = models.CharField(max_length=36, db_comment="自治区、直辖市", verbose_name='自治区、直辖市', null=True,
+                                blank=True)
+    addr_cty = models.CharField(max_length=36, db_comment="地址-市（地区）", verbose_name='地址-市（地区）', null=True,
+                                blank=True)
+    addr_cnt = models.CharField(max_length=36, db_comment="地址-县（区）", verbose_name='地址-县（区）', null=True,
+                                blank=True)
+    addr_stb = models.CharField(max_length=36, db_comment="地址-乡（镇、街道办事处）",
+                                verbose_name='地址-乡（镇、街道办事处）', null=True, blank=True)
+    addr_str = models.CharField(max_length=36, db_comment="地址-村（街、路、弄等）", verbose_name='地址-村（街、路、弄等）',
+                                null=True, blank=True)
+    addr_bnr = models.CharField(max_length=36, db_comment="地址-门牌号码", verbose_name='地址-门牌号码', null=True,
+                                blank=True)
+    addr_zip = models.CharField(max_length=36, db_comment="邮政编码", verbose_name='邮政编码', null=True, blank=True)
+    marital_status_code = models.CharField(max_length=2, choices=MaritalStatusCodeChoices, db_comment="婚姻状况代码",
+                                           verbose_name='婚姻状况代码')
+    ethnic_group_code = models.CharField(max_length=36, db_comment="民族代码", verbose_name='民族代码')
+    occupation_code = models.CharField(max_length=36, db_comment="职业类别代码", verbose_name='职业类别代码')
+    work_org = models.CharField(max_length=36, db_comment="工作单位", verbose_name='工作单位', null=True, blank=True)
+    work_org_tel = models.CharField(max_length=36, db_comment="工作单位联系电话", verbose_name='工作单位联系电话',
+                                    null=True, blank=True)
+    contact_code = models.CharField(max_length=36, db_comment="联系人关系代码", verbose_name='联系人关系代码')
+    contact_tel = models.CharField(max_length=36, db_comment="联系人电话", verbose_name='联系人电话')
+    contact_cname = models.CharField(max_length=36, db_comment="联系人姓名", verbose_name='联系人姓名')
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="组织机构代码",
+                                verbose_name='组织机构代码')
+    ins_code = models.CharField(max_length=2, choices=InsCodeChoices, db_comment="医疗保险类别代码",
+                                verbose_name='医疗保险类别代码')
+    author_id = models.CharField(max_length=36, db_comment="登记人ID", verbose_name='登记人ID')
+    author = models.CharField(max_length=64, db_comment="登记人", verbose_name='登记人')
+    from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f"{self.patient_name}-{self.card_no}"
+
+    class Meta:
+        verbose_name = "就诊卡信息"
+        verbose_name_plural = verbose_name
+        db_table_comment = '就诊卡信息'
+
+        indexes = (
+            models.Index(fields=['card_no'], ),
+            models.Index(fields=['id_no'], ),
+            models.Index(fields=['tel_no'], ),
+        )
+
+
 class ExamReport(models.Model):
     """检验报告"""
 
@@ -588,6 +664,9 @@ class ExamReport(models.Model):
     reviewer_id = models.CharField(max_length=36, db_comment="复核医生", verbose_name='复核医生')
     reviewer = models.CharField(max_length=64, db_comment="复核医生姓名", verbose_name='复核医生姓名')
     gmt_review = models.DateTimeField(db_comment="复核日期时间", verbose_name='复核日期时间')
+    is_other = models.BooleanField(db_comment="第三方检测机构标识", verbose_name='第三方检测机构标识', default=False)
+    other_name = models.CharField(max_length=64, db_comment="第三方检测机构名称", verbose_name='第三方检测机构名称',
+                                  null=True, blank=True)
     from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
     org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
                                 verbose_name='医疗卫生机构代码')
@@ -1340,16 +1419,6 @@ class Patient(models.Model):
     """
     患者信息
     """
-
-    class MaritalStatusCodeChoices(models.TextChoices):
-        A = ('10', '未婚')
-        B = ('20', '已婚')
-        C = ('21', '初婚')
-        D = ('22', '再婚')
-        E = ('23', '复婚')
-        F = ('30', '丧偶')
-        G = ('40', '离婚')
-        H = ('90', '未说明的婚姻状况')
 
     patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID',
                                   unique=True)

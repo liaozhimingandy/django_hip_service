@@ -467,8 +467,8 @@
 																										<xs:complexType>
 																											<xs:simpleContent>
 																												<xs:extension base="xs:string">
-																													<xs:attribute name="root" type="xs:string"/>
-																													<xs:attribute name="extension">
+																													<xs:attribute name="root" type="xs:string" use="required"/>
+																													<xs:attribute name="extension" use="required">
 																														<xs:simpleType>
 																															<xs:restriction base="xs:string">
 																																<xs:minLength value="1"/>
@@ -668,9 +668,15 @@
 						<xs:attribute name="moodCode" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="extra">
+				<xs:element name="extra" minOccurs="0">
 					<xs:complexType>
-						<xs:attribute name="value" type="xs:string" use="required"/>
+						<xs:attribute name="value" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="4"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>

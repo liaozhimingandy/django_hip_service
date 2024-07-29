@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-VERSION = (3, 3, 0, "alpha", 1)
+VERSION = (3, 4, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
@@ -103,23 +103,25 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'hip.db',
-    # },
-    "test": {
-        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr")
-        if os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql") == 'django.db.backends.sqlite3'
+    "default": {
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
+        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
         else os.getenv("APP_DB_NAME", "cdr"),
         "USER": os.getenv("APP_DB_USER", "zhiming"),
         "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
         "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
         "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'hip-test.db',
+    'test': {
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr-test.db")
+        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
+        else os.getenv("APP_DB_NAME", "cdr-test"),
+        "USER": os.getenv("APP_DB_USER", "zhiming"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
+        "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
 }
 
@@ -324,4 +326,4 @@ HOSPITAL_ID = os.getenv('HOSPITAL_ID', 'ytlyyy_001')
 HOSPITAL_CODE = os.getenv('HOSPITAL_CODE', '12360000491015900T')
 IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 1)
 # 单体应用数据库层面创建外键约束
-IS_DB_CONSTRAINT = os.getenv('IS_DB_CONSTRAINT', True)
+IS_DB_CONSTRAINT = os.getenv('IS_DB_CONSTRAINT', 1)

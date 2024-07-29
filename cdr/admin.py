@@ -4,7 +4,7 @@ from cdr.models import CheckReport, BloodTrans, Patient, Check, CheckAppointStat
     CheckStatus, Exam, ExamStatus, InPatient, Operation, OperationSchedule, \
     OperationStatus, OrderFillerStatus, Order, Organization, OutpatientAppointStatus, \
     OutPatient, Pathology, Provider, SourceAndSchedule, Terminology, Transfer, ExamReport, \
-    ExamResultDetail, ExamResultDetailAST, ExamResultMain, Discharge, Diagnosis, Visit
+    ExamResultDetail, ExamResultDetailAST, ExamResultMain, Discharge, Diagnosis, Visit, EncounterCard
 
 
 # Register your models here.
@@ -46,6 +46,12 @@ class CheckAppointStatusInfoAdmin(admin.ModelAdmin):
 class CheckStatusInfoAdmin(admin.ModelAdmin):
     list_display = ('apply_no', 'adm_no', 'patient_id', 'status_code')
     list_display_links = ('apply_no',)
+
+
+@admin.register(EncounterCard)
+class EncounterCardAdmin(admin.ModelAdmin):
+    list_display = ('card_no', 'patient_name', 'id_no', 'tel_no')
+    list_display_links = ('card_no',)
 
 
 @admin.register(Exam)

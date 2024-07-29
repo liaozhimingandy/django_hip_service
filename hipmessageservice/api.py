@@ -13,6 +13,7 @@ import copy
 import json
 import uuid
 import datetime
+from enum import Enum
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -21,13 +22,14 @@ import requests
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
+from django.db import connection
 from django.utils import timezone
 from json2xml import json2xml
 from lxml import etree
-from ninja import Router, Schema, ModelSchema
+from ninja import Router, Schema, Field
 from ninja.responses import codes_2xx, codes_4xx
 
-from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport
+from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit
 from hipmessageservice.utils.encrypt import EncryptUtils
 
 router = Router(tags=["openim"])
@@ -55,8 +57,8 @@ data_mapping = {
     "marital_status_name": "//xmlns:maritalStatusCode/xmlns:displayName/@value",
     "occupation_code": "//xmlns:occupationCode/@code",
     "occupation_name": "//xmlns:occupationCode/xmlns:displayName/@value",
-    "ethnic_group_code": "//xmlns:ethnicGroupCode/xmlns:item/xmlns:displayName/@value",
-    "ethnic_group_name": "//xmlns:ethnicGroupCode/xmlns:item/@code",
+    "ethnic_group_code": "//xmlns:ethnicGroupCode/xmlns:item/@code",
+    "ethnic_group_name": "//xmlns:ethnicGroupCode/xmlns:item/xmlns:displayName/@value",
     "work_org": "//xmlns:employerOrganization/xmlns:name/xmlns:item/xmlns:part/@value",
     "work_org_tel": "//xmlns:employerOrganization/xmlns:contactParty/xmlns:telecom/xmlns:item/@value",
     "hcard_no": "//xmlns:asOtherIDs/xmlns:id/xmlns:item[@root='2.16.156.10011.1.19']/@extension",
@@ -69,12 +71,12 @@ data_mapping = {
     "contact_name": "//xmlns:personalRelationship/xmlns:code/xmlns:displayName/@value",
     "contact_cname": "//xmlns:relationshipHolder1/xmlns:name/xmlns:item/xmlns:part/@value",
     "contact_tel": "//xmlns:personalRelationship/xmlns:telecom/xmlns:item/@value",
-    "org_code": "//xmlns:providerOrganization/xmlns:name/xmlns:item/xmlns:part/@value",
-    "org_name": "//xmlns:providerOrganization/xmlns:id/xmlns:item/@extension",
+    "org_code": "//xmlns:providerOrganization/xmlns:id/xmlns:item/@extension",
+    "org_name": "//xmlns:providerOrganization/xmlns:name/xmlns:item/xmlns:part/@value",
     "ins_code": "//xmlns:beneficiary/xmlns:code/@code",
     "ins_name": "//xmlns:beneficiary/xmlns:code/xmlns:displayName/@value",
-    "author_id": "//xmlns:author/xmlns:assignedEntity/xmlns:assignedPerson/xmlns:name/xmlns:item/xmlns:part/@value",
-    "author": "//xmlns:author/xmlns:assignedEntity/xmlns:id/xmlns:item/@extension",
+    "author_id": "//xmlns:author/xmlns:assignedEntity/xmlns:id/xmlns:item/@extension",
+    "author": "//xmlns:author/xmlns:assignedEntity/xmlns:assignedPerson/xmlns:name/xmlns:item/xmlns:part/@value",
     "from_src": "//xmlns:sender/xmlns:device/xmlns:id/xmlns:item/@extension"
 }
 
@@ -129,13 +131,13 @@ dict_empi_mapping = {
     "EMPLOYER_CITY": "",
     "EMPLOYER_COUNTY": "",
     "EMPLOYER_POSTAL_CODE": "",
-    "CONTACT_ADDRESS": "",
+    "CONTACT_ADDRESS": "addr_sal",
     "ABO_BLOOD_TYPE_CODE": "",
     "ABO_BLOOD_TYPE_NAME": "",
     "RH_BLOOD_TYPE_CODE": "",
     "RH_BLOOD_TYPE_NAME": "",
-    "CREATE_BY": "",
-    "CREATE_TIME": "",
+    "CREATE_BY": "author",
+    "CREATE_TIME": "gmt_reg",
     "MEDICAL_RECORD_NO": "",
     "OP_MEDICAL_RECORD_NO": "",
     "Passport_GA": "",
@@ -148,16 +150,111 @@ dict_empi_mapping = {
 }
 
 
+# 定义枚举类型
+class ContentTypeEnum(str, Enum):
+    PatientInfoRegister = "PatientInfoRegister"
+    PatientInfoUpdate = "PatientInfoUpdate"
+    PatientInfoMerge = "PatientInfoMerge"
+    PatientInfoQuery = "PatientInfoQuery"
+    OrganizationInfoRegister = "OrganizationInfoRegister"
+    OrganizationInfoUpdate = "OrganizationInfoUpdate"
+    OrganizationInfoQuery = "OrganizationInfoQuery"
+    ProviderInfoRegister = "ProviderInfoRegister"
+    ProviderInfoUpdate = "ProviderInfoUpdate"
+    ProviderInfoQuery = "ProviderInfoQuery"
+    TerminologyRegister = "TerminologyRegister"
+    TerminologyUpdate = "TerminologyUpdate"
+    TerminologyQuery = "TerminologyQuery"
+    DocumentRegister = "DocumentRegister"
+    DocumentAccess = "DocumentAccess"
+    DocumentRetrieve = "DocumentRetrieve"
+    EncounterCardInfoAdd = "EncounterCardInfoAdd"
+    EncounterCardInfoUpdate = "EncounterCardInfoUpdate"
+    EncounterCardInfoQuery = "EncounterCardInfoQuery"
+    OutPatientInfoAdd = "OutPatientInfoAdd"
+    OutPatientInfoUpdate = "OutPatientInfoUpdate"
+    OutPatientInfoQuery = "OutPatientInfoQuery"
+    InPatientInfoAdd = "InPatientInfoAdd"
+    InPatientInfoUpdate = "InPatientInfoUpdate"
+    InPatientInfoQuery = "InPatientInfoQuery"
+    TransferInfoAdd = "TransferInfoAdd"
+    TransferInfoUpdate = "TransferInfoUpdate"
+    TransferInfoQuery = "TransferInfoQuery"
+    DischargeInfoAdd = "DischargeInfoAdd"
+    DischargeInfoUpdate = "DischargeInfoUpdate"
+    DischargeInfoQuery = "DischargeInfoQuery"
+    OrderInfoAdd = "OrderInfoAdd"
+    OrderInfoUpdate = "OrderInfoUpdate"
+    OrderInfoQuery = "OrderInfoQuery"
+    ExamAppInfoAdd = "ExamAppInfoAdd"
+    ExamAppInfoUpdate = "ExamAppInfoUpdate"
+    ExamAppInfoQuery = "ExamAppInfoQuery"
+    CheckAppInfoAdd = "CheckAppInfoAdd"
+    CheckAppInfoUpdate = "CheckAppInfoUpdate"
+    CheckAppInfoQuery = "CheckAppInfoQuery"
+    PathologyAppInfoAdd = "PathologyAppInfoAdd"
+    PathologyAppInfoUpdate = "PathologyAppInfoUpdate"
+    PathologyAppInfoQuery = "PathologyAppInfoQuery"
+    BloodTransAppInfoAdd = "BloodTransAppInfoAdd"
+    BloodTransAppInfoUpdate = "BloodTransAppInfoUpdate"
+    BloodTransAppInfoQuery = "BloodTransAppInfoQuery"
+    OperationAppInfoAdd = "OperationAppInfoAdd"
+    OperationAppInfoUpdate = "OperationAppInfoUpdate"
+    OperationAppInfoQuery = "OperationAppInfoQuery"
+    SourceAndScheduleInfoAdd = "SourceAndScheduleInfoAdd"
+    SourceAndScheduleInfoUpdate = "SourceAndScheduleInfoUpdate"
+    SourceAndScheduleInfoQuery = "SourceAndScheduleInfoQuery"
+    OutPatientAppointStatusInfoAdd = "OutPatientAppointStatusInfoAdd"
+    OutPatientAppointStatusInfoUpdate = "OutPatientAppointStatusInfoUpdate"
+    OutPatientAppointStatusInfoQuery = "OutPatientAppointStatusInfoQuery"
+    CheckAppointStatusInfoAdd = "CheckAppointStatusInfoAdd"
+    CheckAppointStatusInfoUpdate = "CheckAppointStatusInfoUpdate"
+    CheckAppointStatusInfoQuery = "CheckAppointStatusInfoQuery"
+    OrderFillerStatusInfoUpdate = "OrderFillerStatusInfoUpdate"
+    OrderFillerStatusInfoQuery = "OrderFillerStatusInfoQuery"
+    CheckStatusInfoUpdate = "CheckStatusInfoUpdate"
+    CheckStatusInfoQuery = "CheckStatusInfoQuery"
+    ExamStatusInfoUpdate = "ExamStatusInfoUpdate"
+    ExamStatusInfoQuery = "ExamStatusInfoQuery"
+    OperationScheduleInfoAdd = "OperationScheduleInfoAdd"
+    OperationScheduleInfoUpdate = "OperationScheduleInfoUpdate"
+    OperationScheduleInfoQuery = "OperationScheduleInfoQuery"
+    OperationStatusInfoUpdate = "OperationStatusInfoUpdate"
+    OperationStatusInfoQuery = "OperationStatusInfoQuery"
+    ExamReportAdd = "ExamReportAdd"
+    ExamReportDelete = "ExamReportDelete"
+    DrugExamResultDelete = "DrugExamResultDelete"
+    CheckReportAdd = "CheckReportAdd"
+    CheckReportDelete = "CheckReportDelete"
+    PathologyReportAdd = "PathologyReportAdd"
+    PathologyReportDelete = "PathologyReportDelete"
+    VitalSignsAdd = "VitalSignsAdd"
+    VitalSignsDelete = "VitalSignsDelete"
+    DiagIssuedAdd = "DiagIssuedAdd"
+    DiagIssuedUpdate = "DiagIssuedUpdate"
+    DiagIssuedDelete = "DiagIssuedDelete"
+    CriticalValueAdd = "CriticalValueAdd"
+    CriticalValueDelete = "CriticalValueDelete"
+    CriticalValueConfirm = "CriticalValueConfirm"
+    CriticalValueDeal = "CriticalValueDeal"
+    getExamReports = "getExamReports"
+    getCheckReports = "getCheckReports"
+    VisitInfoUpdate = "VisitInfoUpdate"
+    getExamReportPrintInfos = "getExamReportPrintInfos"
+
+
 # 消息统一格式
 class SendMsgSchema(Schema):
     client_msg_id: str
     server_msg_id: Optional[str] = None
-    gmt_create: str
-    gmt_send: str
+    gmt_create: str = Field(..., pattern=r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[\+\-]\d{2}:\d{2})",
+                            description="消息创建时间")
+    gmt_send: str = Field(..., pattern=r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[\+\-]\d{2}:\d{2})",
+                          description="消息发送时间")
     send_id: str
     recv_id: str
     group_id: Optional[str] = None
-    content_type: str
+    content_type: ContentTypeEnum = Field(..., description="消息类型")
 
 
 class SendMsgSchemaOut(Schema):
@@ -195,7 +292,7 @@ def DealPatient(content):
 
     xml_data = json2xml.Json2xml(dict_data_empi, pretty=True, wrapper="EMPI_PERSON").to_xml()
     payload = f"""
-            <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:car="http://www.caradigm.com/">
+           <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:car="http://www.caradigm.com/">
            <soap:Header/>
            <soap:Body>
               <car:IndexRegisterFunc>
@@ -240,7 +337,7 @@ def DealPatient(content):
         return False, response.text
 
 
-def _check_cda(content: str, **kwargs) -> tuple:
+def check_cda(content: str, **kwargs) -> tuple:
     # 对CDA注册服务部分字段校验
     # 文档流水号, 文档生成日期时间,文档类型代码, 患者类型
     etree.register_namespace('xmlns', 'urn:hl7-org:v3')
@@ -322,8 +419,8 @@ def verification_hip(data: dict) -> tuple:
                 "//xmlns:recordTarget/xmlns:patient/xmlns:patientPerson/xmlns:name/xmlns:item/xmlns:part/@value",
                 namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
 
-            ok, message = _check_cda(content=cda_data, cda_code=cda_code, cda_name=cda_name, doc_id=doc_id,
-                                     gmt_created=gmt_created, patient_name=patient_name)
+            ok, message = check_cda(content=cda_data, cda_code=cda_code, cda_name=cda_name, doc_id=doc_id,
+                                    gmt_created=gmt_created, patient_name=patient_name)
             return ok, message
         case _:
             pass
@@ -472,6 +569,45 @@ def verification(data: dict) -> tuple:
                 return False, [str(item) for item in e]
             else:
                 return True, 'ok'
+        case 'VisitInfoUpdate':
+            # 门急诊就诊信息更新
+            visit = copy.deepcopy(data[content_type])
+            fields = set([field.name for field in Visit._meta.local_fields]) - {'id', 'gmt_created'}
+            filtered_data = {key: value for key, value in visit.items() if key in fields}
+            filtered_data.update(**{"from_src": data['send_id']})
+            visit_info = Visit(**filtered_data)
+            visit_info.from_src = data['send_id']
+            try:
+                # 校验
+                visit_info.full_clean(exclude=['adm_no'])
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    Visit.objects.update_or_create(adm_no=visit_info.adm_no, defaults=filtered_data)
+            except (ValidationError,) as e:
+                return False, [str(item) for item in e]
+            else:
+                return True, 'ok'
+        case 'getExamReportPrintInfos':
+            """ 获取检验报告打印信息 """
+            patient_id = data[content_type].get('patient_id', None)
+            # 取最近的就诊流水号对应记录
+            report = ExamReport.objects.filter(patient_id=patient_id).order_by('-adm_no').only('gmt_created').first()
+            if report is None:
+                return False, 'Not Found'
+            report_infos = []
+            with connection.cursor() as cursor:
+                sql = """
+                    select report_id, patient_id, adm_no, url_report_pdf, item_code, item_name
+                    from cdr_examreport a
+                    inner join cdr_examresultmain b on a.report_id = b.exam_report_id
+                    where a.adm_no = %s;
+                """
+                cursor.execute(sql, [report.adm_no, ])
+                for row in cursor.fetchall():
+                    report_infos.append({"report_id": row[0], "patient_id": row[1], "adm_no": row[2],
+                                         "url_report_pdf": row[3], "item_code": row[4], 'item_name': row[5]})
+
+            return True, report_infos
         case _:
             return True, "本消息暂未纳入校验范围!"
 
@@ -502,7 +638,7 @@ def send_msg(request, payload: SendMsgSchema):
         result.update(**{"detail": message, "message": "Please recheck your request parameters!"})
 
     # 如果是同步接口,当处理正常需要返回提示内容时
-    if ok and dict_payload['content_type'] in ("PatientInfoRegister", "PatientInfoUpdate"):
+    if ok and dict_payload['content_type'] in ("PatientInfoRegister", "PatientInfoUpdate", "getExamReportPrintInfos"):
         result.update(**{"data": message})
 
     return response_code, result
