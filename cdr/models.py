@@ -71,7 +71,7 @@ class InsCodeChoices(models.TextChoices):
     H = ('99', '其他')
 
 
-class OrderClsCode(models.TextChoices):
+class OrderClsCode(models.IntegerChoices):
     """ 医嘱类别代码表 """
     A = (1, '长期医嘱')
     B = (2, '临时医嘱')

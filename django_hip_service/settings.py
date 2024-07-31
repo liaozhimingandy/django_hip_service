@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-VERSION = (3, 4, 0, "alpha", 1)
+VERSION = (3, 4, 0, "alpha", 2)
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
