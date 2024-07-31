@@ -358,6 +358,17 @@
 						<xs:attribute name="moodCode" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="extra" minOccurs="0">
+					<xs:complexType>
+						<xs:attribute name="value" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="4"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="ITSVersion" type="xs:string"/>
 		</xs:complexType>

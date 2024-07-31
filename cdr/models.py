@@ -1600,6 +1600,7 @@ class Terminology(models.Model):
     author = models.CharField(max_length=64, db_comment='值集注册者信息注册人姓名',
                               verbose_name='值集注册者信息注册人姓名')
     gmt_author = models.DateTimeField(db_comment='值集注册者时间', verbose_name='值集注册者时间')
+    extra = models.JSONField(db_comment='补充信息', verbose_name="补充信息", null=True, blank=True)
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 

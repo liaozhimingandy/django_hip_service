@@ -28,6 +28,7 @@ from json2xml import json2xml
 from lxml import etree
 from ninja import Router, Schema, Field
 from ninja.responses import codes_2xx, codes_4xx
+from requests.exceptions import ConnectTimeout
 
 from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit
 from hipmessageservice.utils.encrypt import EncryptUtils
@@ -266,8 +267,8 @@ class SendMsgSchemaOut(Schema):
     detail: Optional[str | list] = None
 
 
-def DealPatient(content):
-    """处理个人新增注册,更新接口,调取empi注册接口,并且保存到数据库"""
+def deal_patient_empi_reg(content):
+    """ 处理个人新增注册,更新接口,调取empi注册接口,并且保存到数据库 """
     from lxml import etree
     etree.register_namespace('xmlns', 'urn:hl7-org:v3')
     xml_root = etree.fromstring(content)
@@ -305,7 +306,11 @@ def DealPatient(content):
         </soap:Envelope>
         """
     # 调empi接口进行患者注册
-    response = requests.post(settings.EMPI_API_URL, data=payload, headers={'Content-Type': 'text/xml'}, timeout=2)
+    try:
+        response = requests.post(settings.EMPI_API_URL, data=payload, headers={'Content-Type': 'text/xml'}, timeout=2)
+    except ConnectTimeout as e:
+        # print(str(e))
+        return False, "Connection timed out, please try again later or contact our administrator"
 
     if response.status_code == 200:
         # 匹配empi号
@@ -391,7 +396,7 @@ def verification_hip(data: dict) -> tuple:
     match content_type:
         # 个人新增注册和更新
         case 'PatientInfoRegister' | 'PatientInfoUpdate':
-            return DealPatient(content)
+            return deal_patient_empi_reg(content)
 
         # 如果是CDA
         case 'DocumentRegister':
