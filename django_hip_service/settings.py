@@ -21,11 +21,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
-<<<<<<< HEAD
-VERSION = (2, 1, 1, "alpha", 1)
-=======
 VERSION = (3, 4, 0, "alpha", 1)
->>>>>>> develop
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
@@ -34,13 +30,6 @@ PREFIX_ID = "esbid_"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-<<<<<<< HEAD
-# app git信息
-# with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
-#     APP_COMMIT_HASH = fp.readline().strip()
-
-=======
->>>>>>> develop
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -339,58 +328,9 @@ admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style
 
 EMPI_API_URL = os.getenv('EMPI_API_URL', 'http://172.16.33.181:8253/webservice/IndexRegisterService.asmx')
 # 上传给市互认平台使用
-HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'ncdxfskqyy')
+HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'tGuWgUr8PaS3dl7m')
 HOSPITAL_ID = os.getenv('HOSPITAL_ID', 'ytlyyy_001')
 HOSPITAL_CODE = os.getenv('HOSPITAL_CODE', '12360000491015900T')
 IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 1)
-<<<<<<< HEAD
-
-##########################################################################################
-# DRF 配置
-REST_FRAMEWORK = {
-    # 全局的认证类 (authentication classes)
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    # 全局的权限类 (permission classes)
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
-    # 分页设置 (pagination settings)
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-    # 全局的渲染器 (renderer classes)
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-    # 全局的解析器 (parser classes)
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser',
-    ],
-    # 限流设置 (throttling settings)
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '10000/day',
-        'user': '100000/day'
-    },
-    # 全局的过滤类 (filter classes)
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.OrderingFilter',
-        'rest_framework.filters.SearchFilter',
-    ],
-    # 异常处理
-    # 'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
-}
-##########################################################################################
-=======
 # 单体应用数据库层面创建外键约束
 IS_DB_CONSTRAINT = os.getenv('IS_DB_CONSTRAINT', 1)
->>>>>>> develop

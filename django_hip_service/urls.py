@@ -18,26 +18,22 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from hipmessageservice.views import HIPMessageServiceViewSet
-from rest_framework import routers
-
 from django_hip_service import settings
 
 # from esb_standard.views import download
 from hipmessageservice.views import index, download as download_count, generate_report
 
+from .api import api
+
 urlpatterns = [
     path('', index),
-<<<<<<< HEAD
-    re_path('^v3/openim/', include(service_urls, namespace='openim')),
-    path('download/', download_count, name='download-count'),
-    # django 后台路由
-=======
->>>>>>> develop
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
-    # drf 框架认证路由
-    path('api-auth/', include('rest_framework.urls')),
+    path('download/', download_count, name='download-count'),
+    path("test/", generate_report),
+    # path('messsage/download/', download),
+    path('v3/', api.urls)
+
 ]
 
 # 开发环境提供静态文件和多媒体查看功能;这一般会在 DEBUG is set to True 情况下由 runserver 自动完成
@@ -48,3 +44,5 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # if settings.DEBUG:
 #     import debug_toolbar
 #     urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+
+

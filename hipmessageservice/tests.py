@@ -101,17 +101,11 @@ class SchemaTest(TestCase):
                 print(f"#############{base_name} 正在测试 #############")
                 with open(os.path.join(sample_path, file), 'r', encoding="utf-8") as fp:
                     content = fp.read()
-<<<<<<< HEAD
-
-                response = self.client.post('/v3/openim/verify/service/',
-                                            data={"service_code": base_name, "content": content}, follow=True)
-=======
                 message['content_type'] = base_name
                 message[base_name] = base64.b64encode(content.encode("UTF-8")).decode('UTF-8')
                 response = self.client.post('/v3/openim/service/verify/',
                                             data=message, follow=True, content_type='application/json')
 
->>>>>>> develop
                 self.assertEqual(response.status_code, 200, response.content.decode())
 
                 if response.status_code == 200:
@@ -134,14 +128,6 @@ class SchemaTest(TestCase):
                 cda_code = self.CDA_MAPPING[base_name.split('：')[1].replace('住院病程记录 ', '')]
                 with open(os.path.join(sample_path, sample), 'r', encoding="utf-8") as fp:
                     content = fp.read()
-<<<<<<< HEAD
-                response = self.client.post('/v3/openim/verify/cda/',
-                                            data={"cda_code": cda_code, "content": content}, follow=True)
-                self.assertEqual(response.status_code, 200, response.content.decode())
-                if response.status_code == 200:
-                    print(f"{base_name} 校验通过")
-            print(f'#############测试数量:{len(samples)}#############')
-=======
 
                 ok, message = verification_hip_detail(schema_name=cda_code, content=content, is_service=False)
                 print(ok, message)
@@ -440,4 +426,3 @@ class getExamReportPrintInfosTest(TestCase):
         self.assertEqual(response.status_code, 400, response.content.decode())
         if response.status_code == 400:
             print(f"内容为: {response.content}")
->>>>>>> develop
