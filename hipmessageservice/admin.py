@@ -21,9 +21,9 @@ class CDAStatusAdmin(admin.TabularInline):
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ["service_code", "service_name", "service_category", "service_rank", "service_status",
-                    "service_description", "is_lookup"]
+                    "is_lookup"]
     search_fields = ["service_name"]
-    list_filter = ["service_category", "service_rank", "is_v3", "is_lookup", "is_deleted"]
+    list_filter = ["service_category", "service_rank", "is_v3", "is_lookup", "service_status"]
     ordering = ["service_queue", ]
     list_per_page = 10
 

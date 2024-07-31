@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.conf import settings
 
 
 def id_default():
@@ -17,10 +18,10 @@ class BaseInfo(models.Model):
                                 related_name="%(app_label)s_%(class)s_related_creator",
                                 related_query_name="%(app_label)s_%(class)ss")
     gmt_created = models.DateTimeField("创建时间", auto_now_add=True, db_comment="创建时间")
-    is_deleted = models.BooleanField("删除标记", db_comment="删除标记", default=False)
+    is_deleted = models.BooleanField("删除标记", db_comment="删除标记", default=settings.IS_DB_CONSTRAINT)
     updater = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, default=1, verbose_name="修改者", db_comment="修改者",
                                 related_name="%(app_label)s_%(class)s_related_updater",
-                                related_query_name="%(app_label)s_%(class)ss")
+                                related_query_name="%(app_label)s_%(class)ss", db_constraint=settings.IS_DB_CONSTRAINT)
     gmt_updated = models.DateTimeField("最后更新时间", auto_now=True, db_comment="最后更新时间")
 
     class Meta:
@@ -56,7 +57,8 @@ class Application(BaseInfo):
     application_name = models.CharField(max_length=32, verbose_name="系统名称", db_comment="系统名称", unique=True)
     application_category = models.CharField(max_length=32, verbose_name="系统分类", db_comment="系统分类", blank=True, null=True)
     description = models.CharField(max_length=32, verbose_name="系统描述", db_comment="系统描述", blank=True, null=True)
-    firm = models.ForeignKey(Firm, on_delete=models.PROTECT, null=True, blank=True, verbose_name="厂商名称", db_comment="厂商名称")
+    firm = models.ForeignKey(Firm, on_delete=models.PROTECT, null=True, blank=True, verbose_name="厂商名称",
+                             db_comment="厂商名称", db_constraint=settings.IS_DB_CONSTRAINT)
     is_customer = models.BooleanField(default=True, verbose_name="是否为国家标准外", db_comment="是否为国家标准外", db_default=False)
 
     def __str__(self):
@@ -78,7 +80,7 @@ class Service(BaseInfo):
     service_category = models.CharField(max_length=32, verbose_name="服务分类", db_comment="服务分类", blank=True, null=True)
     service_description = models.CharField(max_length=128, verbose_name="服务描述", db_comment="服务描述", blank=True, null=True)
     service_queue = models.SmallIntegerField(verbose_name="序号", db_comment="序号", unique=True, default=1)
-    service_status = models.BooleanField(db_default=False, verbose_name="服务状态", db_comment="服务状态")
+    service_status = models.BooleanField(db_default=False, verbose_name="服务完成状态", db_comment="服务状态")
     service_rank = models.CharField(max_length=8, verbose_name="服务等级", db_comment="服务等级", blank=True, null=True)
     is_v3 = models.BooleanField(db_default=False, verbose_name="是否是国家标准", db_comment="是否是国家标准")
     is_lookup = models.BooleanField(db_default=False, verbose_name="是否为查询类接口", db_comment="是否为查询类接口",
@@ -104,9 +106,12 @@ class StatusShip(BaseInfo):
         SEND = (2, "发布")
         BOTH = (3, "全部")
 
-    status = models.SmallIntegerField(choices=StatusChoice, default=StatusChoice.SEND, db_comment="发布订阅状态", verbose_name="发布订阅状态")
-    application = models.ForeignKey(Application, verbose_name="系统", db_comment="系统", on_delete=models.PROTECT)
-    service = models.ForeignKey(Service, verbose_name="服务", db_comment="服务", on_delete=models.PROTECT)
+    status = models.SmallIntegerField(choices=StatusChoice, default=StatusChoice.SEND, db_comment="发布订阅状态",
+                                      verbose_name="发布订阅状态")
+    application = models.ForeignKey(Application, verbose_name="系统", db_comment="系统", on_delete=models.PROTECT,
+                                    db_constraint=settings.IS_DB_CONSTRAINT)
+    service = models.ForeignKey(Service, verbose_name="服务", db_comment="服务", on_delete=models.PROTECT,
+                                db_constraint=settings.IS_DB_CONSTRAINT)
     is_online = models.BooleanField(default=False, db_default=False, db_comment="上线状态", verbose_name="上线状态")
 
     def __str__(self):
@@ -122,7 +127,7 @@ class CDA(BaseInfo):
     value = models.CharField(max_length=5, db_comment="文档代码", verbose_name="文档代码", unique=True)
     comment = models.CharField(max_length=20, db_comment="文档名称", verbose_name="文档名称")
     notes = models.TextField(verbose_name="备注说明", db_comment="备注说明", null=True, blank=True)
-    firm = models.ManyToManyField(Firm, related_name="系统", verbose_name="系统")
+    firm = models.ManyToManyField(Firm, related_name="系统", verbose_name="系统", db_constraint=settings.IS_DB_CONSTRAINT)
 
     def __str__(self):
         return f"{self.comment} - {self.value}"

@@ -1,0 +1,2677 @@
+<!-- 被2013 sp1 () 使用XMLSpy v编辑的 (http://www.altova.com) by -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:hl7-org:v3" targetNamespace="urn:hl7-org:v3" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="ClinicalDocument">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="realmCode">
+					<xs:annotation>
+						<xs:documentation>
+********************************************************
+ CDA Header
+********************************************************
+</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="code" type="xs:string"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="typeId">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="extension" type="xs:string"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="templateId">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="root" type="xs:string"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="id">
+					<xs:annotation>
+						<xs:documentation> 文档流水号 </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="extension" use="required">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:minLength value="32"/>
+											<xs:maxLength value="36"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="code">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="code" use="required">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="C0032"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="codeSystem" type="xs:string"/>
+								<xs:attribute name="codeSystemName" type="xs:string"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="title">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="住院病案首页"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="effectiveTime">
+					<xs:annotation>
+						<xs:documentation> 文档机器生成时间 </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="value" use="required">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))([0-1]?[0-9]|2[0-3])([0-5][0-9])([0-5][0-9])"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="confidentialityCode">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="codeSystem" type="xs:string"/>
+								<xs:attribute name="codeSystemName" type="xs:string"/>
+								<xs:attribute name="displayName" type="xs:string"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="languageCode">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="code" type="xs:string"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="setId" type="xs:string"/>
+				<xs:element name="versionNumber" type="xs:string"/>
+				<xs:element name="recordTarget">
+					<xs:annotation>
+						<xs:documentation>文档记录对象（患者）</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="patientRole">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="id" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation> 健康卡号  住院号标识  病案号标识 </xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="root" type="xs:string" use="required"/>
+														<xs:attribute name="extension" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="addr">
+											<xs:annotation>
+												<xs:documentation> 现住址 </xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="houseNumber" type="xs:string"/>
+													<xs:element name="streetName" type="xs:string"/>
+													<xs:element name="township" type="xs:string"/>
+													<xs:element name="county" type="xs:string"/>
+													<xs:element name="city" type="xs:string"/>
+													<xs:element name="state" type="xs:string"/>
+													<xs:element name="postalCode" type="xs:int"/>
+												</xs:sequence>
+												<xs:attribute name="use" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="telecom">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="value" type="xs:string"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="patient">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="id">
+														<xs:annotation>
+															<xs:documentation>患者身份证号</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="root" type="xs:string" use="required"/>
+																	<xs:attribute name="extension" type="xs:string" use="required"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="name" type="xs:string"/>
+													<xs:element name="administrativeGenderCode">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="code" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:byte">
+																				<xs:enumeration value="0"/>
+																				<xs:enumeration value="1"/>
+																				<xs:enumeration value="2"/>
+																				<xs:enumeration value="9"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="displayName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="未知的性别"/>
+																				<xs:enumeration value="男性"/>
+																				<xs:enumeration value="女性"/>
+																				<xs:enumeration value="未说明的性别"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="birthTime">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="value">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="maritalStatusCode">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="code" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="10"/>
+																				<xs:enumeration value="20"/>
+																				<xs:enumeration value="21"/>
+																				<xs:enumeration value="22"/>
+																				<xs:enumeration value="23"/>
+																				<xs:enumeration value="30"/>
+																				<xs:enumeration value="40"/>
+																				<xs:enumeration value="90"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="displayName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="未婚"/>
+																				<xs:enumeration value="已婚"/>
+																				<xs:enumeration value="初婚"/>
+																				<xs:enumeration value="再婚"/>
+																				<xs:enumeration value="复婚"/>
+																				<xs:enumeration value="丧偶"/>
+																				<xs:enumeration value="离婚"/>
+																				<xs:enumeration value="未说明的婚姻状况"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ethnicGroupCode">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="code" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="01"/>
+																				<xs:enumeration value="02"/>
+																				<xs:enumeration value="03"/>
+																				<xs:enumeration value="04"/>
+																				<xs:enumeration value="05"/>
+																				<xs:enumeration value="06"/>
+																				<xs:enumeration value="07"/>
+																				<xs:enumeration value="08"/>
+																				<xs:enumeration value="09"/>
+																				<xs:enumeration value="10"/>
+																				<xs:enumeration value="11"/>
+																				<xs:enumeration value="12"/>
+																				<xs:enumeration value="13"/>
+																				<xs:enumeration value="14"/>
+																				<xs:enumeration value="15"/>
+																				<xs:enumeration value="16"/>
+																				<xs:enumeration value="17"/>
+																				<xs:enumeration value="18"/>
+																				<xs:enumeration value="19"/>
+																				<xs:enumeration value="20"/>
+																				<xs:enumeration value="21"/>
+																				<xs:enumeration value="22"/>
+																				<xs:enumeration value="23"/>
+																				<xs:enumeration value="24"/>
+																				<xs:enumeration value="25"/>
+																				<xs:enumeration value="26"/>
+																				<xs:enumeration value="27"/>
+																				<xs:enumeration value="28"/>
+																				<xs:enumeration value="29"/>
+																				<xs:enumeration value="30"/>
+																				<xs:enumeration value="31"/>
+																				<xs:enumeration value="32"/>
+																				<xs:enumeration value="33"/>
+																				<xs:enumeration value="34"/>
+																				<xs:enumeration value="35"/>
+																				<xs:enumeration value="36"/>
+																				<xs:enumeration value="37"/>
+																				<xs:enumeration value="38"/>
+																				<xs:enumeration value="39"/>
+																				<xs:enumeration value="40"/>
+																				<xs:enumeration value="41"/>
+																				<xs:enumeration value="42"/>
+																				<xs:enumeration value="43"/>
+																				<xs:enumeration value="44"/>
+																				<xs:enumeration value="45"/>
+																				<xs:enumeration value="46"/>
+																				<xs:enumeration value="47"/>
+																				<xs:enumeration value="48"/>
+																				<xs:enumeration value="49"/>
+																				<xs:enumeration value="50"/>
+																				<xs:enumeration value="51"/>
+																				<xs:enumeration value="52"/>
+																				<xs:enumeration value="53"/>
+																				<xs:enumeration value="54"/>
+																				<xs:enumeration value="55"/>
+																				<xs:enumeration value="56"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="displayName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="汉族"/>
+																				<xs:enumeration value="蒙古族"/>
+																				<xs:enumeration value="回族"/>
+																				<xs:enumeration value="藏族"/>
+																				<xs:enumeration value="维吾尔族"/>
+																				<xs:enumeration value="苗族"/>
+																				<xs:enumeration value="彝族"/>
+																				<xs:enumeration value="壮族"/>
+																				<xs:enumeration value="布依族"/>
+																				<xs:enumeration value="朝鲜族"/>
+																				<xs:enumeration value="满族"/>
+																				<xs:enumeration value="侗族"/>
+																				<xs:enumeration value="瑶族"/>
+																				<xs:enumeration value="白族"/>
+																				<xs:enumeration value="土家族"/>
+																				<xs:enumeration value="哈尼族"/>
+																				<xs:enumeration value="哈萨克族"/>
+																				<xs:enumeration value="傣族"/>
+																				<xs:enumeration value="黎族"/>
+																				<xs:enumeration value="傈僳族"/>
+																				<xs:enumeration value="佤族"/>
+																				<xs:enumeration value="畲族"/>
+																				<xs:enumeration value="高山族"/>
+																				<xs:enumeration value="拉祜族"/>
+																				<xs:enumeration value="水族"/>
+																				<xs:enumeration value="东乡族"/>
+																				<xs:enumeration value="纳西族"/>
+																				<xs:enumeration value="景颇族"/>
+																				<xs:enumeration value="柯尔克孜族"/>
+																				<xs:enumeration value="土族"/>
+																				<xs:enumeration value="达斡尔族"/>
+																				<xs:enumeration value="仫佬族"/>
+																				<xs:enumeration value="羌族"/>
+																				<xs:enumeration value="布朗族"/>
+																				<xs:enumeration value="撒拉族"/>
+																				<xs:enumeration value="毛难族"/>
+																				<xs:enumeration value="仡佬族"/>
+																				<xs:enumeration value="锡伯族"/>
+																				<xs:enumeration value="阿昌族"/>
+																				<xs:enumeration value="普米族"/>
+																				<xs:enumeration value="塔吉克族"/>
+																				<xs:enumeration value="怒族"/>
+																				<xs:enumeration value="乌孜别克族"/>
+																				<xs:enumeration value="俄罗斯族"/>
+																				<xs:enumeration value="鄂温克族"/>
+																				<xs:enumeration value="德昂族"/>
+																				<xs:enumeration value="保安族"/>
+																				<xs:enumeration value="裕固族"/>
+																				<xs:enumeration value="京族"/>
+																				<xs:enumeration value="塔塔尔族"/>
+																				<xs:enumeration value="独龙族"/>
+																				<xs:enumeration value="鄂伦春族"/>
+																				<xs:enumeration value="赫哲族"/>
+																				<xs:enumeration value="门巴族"/>
+																				<xs:enumeration value="珞巴族"/>
+																				<xs:enumeration value="基诺族"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="birthplace">
+														<xs:annotation>
+															<xs:documentation> 出生地 </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="place">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="addr">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="county" type="xs:string"/>
+																						<xs:element name="city" type="xs:string"/>
+																						<xs:element name="state" type="xs:string"/>
+																						<xs:element name="postalCode" type="xs:int"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																		<xs:attribute name="classCode" type="xs:string"/>
+																		<xs:attribute name="determinerCode" type="xs:string"/>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="nationality">
+														<xs:annotation>
+															<xs:documentation> 国籍 </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="code" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="004"/>
+																				<xs:enumeration value="008"/>
+																				<xs:enumeration value="010"/>
+																				<xs:enumeration value="012"/>
+																				<xs:enumeration value="016"/>
+																				<xs:enumeration value="020"/>
+																				<xs:enumeration value="024"/>
+																				<xs:enumeration value="028"/>
+																				<xs:enumeration value="031"/>
+																				<xs:enumeration value="032"/>
+																				<xs:enumeration value="036"/>
+																				<xs:enumeration value="040"/>
+																				<xs:enumeration value="044"/>
+																				<xs:enumeration value="048"/>
+																				<xs:enumeration value="050"/>
+																				<xs:enumeration value="051"/>
+																				<xs:enumeration value="052"/>
+																				<xs:enumeration value="056"/>
+																				<xs:enumeration value="060"/>
+																				<xs:enumeration value="064"/>
+																				<xs:enumeration value="068"/>
+																				<xs:enumeration value="070"/>
+																				<xs:enumeration value="072"/>
+																				<xs:enumeration value="074"/>
+																				<xs:enumeration value="076"/>
+																				<xs:enumeration value="084"/>
+																				<xs:enumeration value="086"/>
+																				<xs:enumeration value="090"/>
+																				<xs:enumeration value="092"/>
+																				<xs:enumeration value="096"/>
+																				<xs:enumeration value="100"/>
+																				<xs:enumeration value="104"/>
+																				<xs:enumeration value="108"/>
+																				<xs:enumeration value="112"/>
+																				<xs:enumeration value="116"/>
+																				<xs:enumeration value="120"/>
+																				<xs:enumeration value="124"/>
+																				<xs:enumeration value="132"/>
+																				<xs:enumeration value="136"/>
+																				<xs:enumeration value="140"/>
+																				<xs:enumeration value="144"/>
+																				<xs:enumeration value="148"/>
+																				<xs:enumeration value="152"/>
+																				<xs:enumeration value="156"/>
+																				<xs:enumeration value="158"/>
+																				<xs:enumeration value="162"/>
+																				<xs:enumeration value="166"/>
+																				<xs:enumeration value="170"/>
+																				<xs:enumeration value="174"/>
+																				<xs:enumeration value="175"/>
+																				<xs:enumeration value="178"/>
+																				<xs:enumeration value="180"/>
+																				<xs:enumeration value="184"/>
+																				<xs:enumeration value="188"/>
+																				<xs:enumeration value="191"/>
+																				<xs:enumeration value="192"/>
+																				<xs:enumeration value="196"/>
+																				<xs:enumeration value="203"/>
+																				<xs:enumeration value="204"/>
+																				<xs:enumeration value="208"/>
+																				<xs:enumeration value="212"/>
+																				<xs:enumeration value="214"/>
+																				<xs:enumeration value="218"/>
+																				<xs:enumeration value="222"/>
+																				<xs:enumeration value="226"/>
+																				<xs:enumeration value="231"/>
+																				<xs:enumeration value="232"/>
+																				<xs:enumeration value="233"/>
+																				<xs:enumeration value="234"/>
+																				<xs:enumeration value="238"/>
+																				<xs:enumeration value="239"/>
+																				<xs:enumeration value="242"/>
+																				<xs:enumeration value="246"/>
+																				<xs:enumeration value="250"/>
+																				<xs:enumeration value="254"/>
+																				<xs:enumeration value="258"/>
+																				<xs:enumeration value="260"/>
+																				<xs:enumeration value="262"/>
+																				<xs:enumeration value="266"/>
+																				<xs:enumeration value="268"/>
+																				<xs:enumeration value="270"/>
+																				<xs:enumeration value="275"/>
+																				<xs:enumeration value="276"/>
+																				<xs:enumeration value="288"/>
+																				<xs:enumeration value="292"/>
+																				<xs:enumeration value="296"/>
+																				<xs:enumeration value="300"/>
+																				<xs:enumeration value="304"/>
+																				<xs:enumeration value="308"/>
+																				<xs:enumeration value="312"/>
+																				<xs:enumeration value="316"/>
+																				<xs:enumeration value="320"/>
+																				<xs:enumeration value="324"/>
+																				<xs:enumeration value="328"/>
+																				<xs:enumeration value="332"/>
+																				<xs:enumeration value="334"/>
+																				<xs:enumeration value="336"/>
+																				<xs:enumeration value="340"/>
+																				<xs:enumeration value="344"/>
+																				<xs:enumeration value="348"/>
+																				<xs:enumeration value="352"/>
+																				<xs:enumeration value="356"/>
+																				<xs:enumeration value="360"/>
+																				<xs:enumeration value="364"/>
+																				<xs:enumeration value="368"/>
+																				<xs:enumeration value="372"/>
+																				<xs:enumeration value="376"/>
+																				<xs:enumeration value="380"/>
+																				<xs:enumeration value="384"/>
+																				<xs:enumeration value="388"/>
+																				<xs:enumeration value="392"/>
+																				<xs:enumeration value="398"/>
+																				<xs:enumeration value="400"/>
+																				<xs:enumeration value="404"/>
+																				<xs:enumeration value="408"/>
+																				<xs:enumeration value="410"/>
+																				<xs:enumeration value="414"/>
+																				<xs:enumeration value="417"/>
+																				<xs:enumeration value="418"/>
+																				<xs:enumeration value="422"/>
+																				<xs:enumeration value="426"/>
+																				<xs:enumeration value="428"/>
+																				<xs:enumeration value="430"/>
+																				<xs:enumeration value="434"/>
+																				<xs:enumeration value="438"/>
+																				<xs:enumeration value="440"/>
+																				<xs:enumeration value="442"/>
+																				<xs:enumeration value="446"/>
+																				<xs:enumeration value="450"/>
+																				<xs:enumeration value="454"/>
+																				<xs:enumeration value="458"/>
+																				<xs:enumeration value="462"/>
+																				<xs:enumeration value="466"/>
+																				<xs:enumeration value="470"/>
+																				<xs:enumeration value="474"/>
+																				<xs:enumeration value="478"/>
+																				<xs:enumeration value="480"/>
+																				<xs:enumeration value="484"/>
+																				<xs:enumeration value="492"/>
+																				<xs:enumeration value="496"/>
+																				<xs:enumeration value="498"/>
+																				<xs:enumeration value="500"/>
+																				<xs:enumeration value="504"/>
+																				<xs:enumeration value="508"/>
+																				<xs:enumeration value="512"/>
+																				<xs:enumeration value="516"/>
+																				<xs:enumeration value="520"/>
+																				<xs:enumeration value="524"/>
+																				<xs:enumeration value="528"/>
+																				<xs:enumeration value="530"/>
+																				<xs:enumeration value="533"/>
+																				<xs:enumeration value="540"/>
+																				<xs:enumeration value="548"/>
+																				<xs:enumeration value="554"/>
+																				<xs:enumeration value="558"/>
+																				<xs:enumeration value="562"/>
+																				<xs:enumeration value="566"/>
+																				<xs:enumeration value="570"/>
+																				<xs:enumeration value="574"/>
+																				<xs:enumeration value="578"/>
+																				<xs:enumeration value="580"/>
+																				<xs:enumeration value="581"/>
+																				<xs:enumeration value="583"/>
+																				<xs:enumeration value="584"/>
+																				<xs:enumeration value="585"/>
+																				<xs:enumeration value="586"/>
+																				<xs:enumeration value="591"/>
+																				<xs:enumeration value="598"/>
+																				<xs:enumeration value="600"/>
+																				<xs:enumeration value="604"/>
+																				<xs:enumeration value="608"/>
+																				<xs:enumeration value="612"/>
+																				<xs:enumeration value="616"/>
+																				<xs:enumeration value="620"/>
+																				<xs:enumeration value="624"/>
+																				<xs:enumeration value="626"/>
+																				<xs:enumeration value="630"/>
+																				<xs:enumeration value="634"/>
+																				<xs:enumeration value="638"/>
+																				<xs:enumeration value="642"/>
+																				<xs:enumeration value="643"/>
+																				<xs:enumeration value="646"/>
+																				<xs:enumeration value="654"/>
+																				<xs:enumeration value="659"/>
+																				<xs:enumeration value="660"/>
+																				<xs:enumeration value="662"/>
+																				<xs:enumeration value="666"/>
+																				<xs:enumeration value="670"/>
+																				<xs:enumeration value="674"/>
+																				<xs:enumeration value="678"/>
+																				<xs:enumeration value="682"/>
+																				<xs:enumeration value="686"/>
+																				<xs:enumeration value="690"/>
+																				<xs:enumeration value="694"/>
+																				<xs:enumeration value="702"/>
+																				<xs:enumeration value="703"/>
+																				<xs:enumeration value="704"/>
+																				<xs:enumeration value="705"/>
+																				<xs:enumeration value="706"/>
+																				<xs:enumeration value="710"/>
+																				<xs:enumeration value="716"/>
+																				<xs:enumeration value="724"/>
+																				<xs:enumeration value="732"/>
+																				<xs:enumeration value="736"/>
+																				<xs:enumeration value="740"/>
+																				<xs:enumeration value="744"/>
+																				<xs:enumeration value="748"/>
+																				<xs:enumeration value="752"/>
+																				<xs:enumeration value="756"/>
+																				<xs:enumeration value="760"/>
+																				<xs:enumeration value="762"/>
+																				<xs:enumeration value="764"/>
+																				<xs:enumeration value="768"/>
+																				<xs:enumeration value="772"/>
+																				<xs:enumeration value="776"/>
+																				<xs:enumeration value="780"/>
+																				<xs:enumeration value="784"/>
+																				<xs:enumeration value="788"/>
+																				<xs:enumeration value="792"/>
+																				<xs:enumeration value="795"/>
+																				<xs:enumeration value="796"/>
+																				<xs:enumeration value="798"/>
+																				<xs:enumeration value="800"/>
+																				<xs:enumeration value="804"/>
+																				<xs:enumeration value="807"/>
+																				<xs:enumeration value="818"/>
+																				<xs:enumeration value="826"/>
+																				<xs:enumeration value="834"/>
+																				<xs:enumeration value="840"/>
+																				<xs:enumeration value="850"/>
+																				<xs:enumeration value="854"/>
+																				<xs:enumeration value="858"/>
+																				<xs:enumeration value="860"/>
+																				<xs:enumeration value="862"/>
+																				<xs:enumeration value="876"/>
+																				<xs:enumeration value="882"/>
+																				<xs:enumeration value="887"/>
+																				<xs:enumeration value="891"/>
+																				<xs:enumeration value="894"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="displayName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="阿富汗"/>
+																				<xs:enumeration value="阿尔巴尼亚"/>
+																				<xs:enumeration value="南极洲"/>
+																				<xs:enumeration value="阿尔及利亚"/>
+																				<xs:enumeration value="美属萨摩亚"/>
+																				<xs:enumeration value="安道尔"/>
+																				<xs:enumeration value="安哥拉"/>
+																				<xs:enumeration value="安提瓜和巴布达"/>
+																				<xs:enumeration value="阿塞拜疆"/>
+																				<xs:enumeration value="阿根廷"/>
+																				<xs:enumeration value="澳大利亚"/>
+																				<xs:enumeration value="奥地利"/>
+																				<xs:enumeration value="巴哈马"/>
+																				<xs:enumeration value="巴林"/>
+																				<xs:enumeration value="孟加拉国"/>
+																				<xs:enumeration value="亚美尼亚"/>
+																				<xs:enumeration value="巴巴多斯"/>
+																				<xs:enumeration value="比利时"/>
+																				<xs:enumeration value="百慕大"/>
+																				<xs:enumeration value="不丹"/>
+																				<xs:enumeration value="玻利维亚"/>
+																				<xs:enumeration value="波黑"/>
+																				<xs:enumeration value="博茨瓦纳"/>
+																				<xs:enumeration value="布维岛"/>
+																				<xs:enumeration value="巴西"/>
+																				<xs:enumeration value="伯利兹"/>
+																				<xs:enumeration value="英属印度洋领土"/>
+																				<xs:enumeration value="所罗门群岛"/>
+																				<xs:enumeration value="英属维尔京群岛"/>
+																				<xs:enumeration value="文莱"/>
+																				<xs:enumeration value="保加利亚"/>
+																				<xs:enumeration value="缅甸"/>
+																				<xs:enumeration value="布隆迪"/>
+																				<xs:enumeration value="白俄罗斯"/>
+																				<xs:enumeration value="柬埔寨"/>
+																				<xs:enumeration value="喀麦隆"/>
+																				<xs:enumeration value="加拿大"/>
+																				<xs:enumeration value="佛得角"/>
+																				<xs:enumeration value="开曼群岛"/>
+																				<xs:enumeration value="中非"/>
+																				<xs:enumeration value="斯里兰卡"/>
+																				<xs:enumeration value="乍得"/>
+																				<xs:enumeration value="智利"/>
+																				<xs:enumeration value="中国"/>
+																				<xs:enumeration value="台湾"/>
+																				<xs:enumeration value="圣诞岛"/>
+																				<xs:enumeration value="科科斯(基林)群岛"/>
+																				<xs:enumeration value="哥伦比亚"/>
+																				<xs:enumeration value="科摩罗"/>
+																				<xs:enumeration value="马约特"/>
+																				<xs:enumeration value="刚果(布)"/>
+																				<xs:enumeration value="刚果(金)"/>
+																				<xs:enumeration value="库克群岛"/>
+																				<xs:enumeration value="哥斯达黎加"/>
+																				<xs:enumeration value="克罗地亚"/>
+																				<xs:enumeration value="古巴"/>
+																				<xs:enumeration value="塞浦路斯"/>
+																				<xs:enumeration value="捷克"/>
+																				<xs:enumeration value="贝宁"/>
+																				<xs:enumeration value="丹麦"/>
+																				<xs:enumeration value="多米尼克"/>
+																				<xs:enumeration value="多米尼加共和国"/>
+																				<xs:enumeration value="厄瓜多尔"/>
+																				<xs:enumeration value="萨尔瓦多"/>
+																				<xs:enumeration value="赤道几内亚"/>
+																				<xs:enumeration value="埃塞俄比亚"/>
+																				<xs:enumeration value="厄立特里亚"/>
+																				<xs:enumeration value="爱沙尼亚"/>
+																				<xs:enumeration value="法罗群岛"/>
+																				<xs:enumeration value="福克兰群岛(马尔维纳斯)"/>
+																				<xs:enumeration value="南乔治亚岛和南桑德韦奇岛"/>
+																				<xs:enumeration value="斐济"/>
+																				<xs:enumeration value="芬兰"/>
+																				<xs:enumeration value="法国"/>
+																				<xs:enumeration value="法属圭亚那"/>
+																				<xs:enumeration value="法属波利尼西亚"/>
+																				<xs:enumeration value="法属南部领土"/>
+																				<xs:enumeration value="吉布提"/>
+																				<xs:enumeration value="加蓬"/>
+																				<xs:enumeration value="格鲁吉亚"/>
+																				<xs:enumeration value="冈比亚Gambia"/>
+																				<xs:enumeration value="巴勒斯坦"/>
+																				<xs:enumeration value="德国"/>
+																				<xs:enumeration value="加纳"/>
+																				<xs:enumeration value="直布罗陀"/>
+																				<xs:enumeration value="基里巴斯"/>
+																				<xs:enumeration value="希腊"/>
+																				<xs:enumeration value="格陵兰"/>
+																				<xs:enumeration value="格林纳达"/>
+																				<xs:enumeration value="瓜德罗普"/>
+																				<xs:enumeration value="关岛"/>
+																				<xs:enumeration value="危地马拉"/>
+																				<xs:enumeration value="几内亚"/>
+																				<xs:enumeration value="圭亚那"/>
+																				<xs:enumeration value="海地"/>
+																				<xs:enumeration value="赫德岛和麦克唐纳岛"/>
+																				<xs:enumeration value="梵蒂冈"/>
+																				<xs:enumeration value="洪都拉斯"/>
+																				<xs:enumeration value="香港"/>
+																				<xs:enumeration value="匈牙利"/>
+																				<xs:enumeration value="冰岛"/>
+																				<xs:enumeration value="印度"/>
+																				<xs:enumeration value="印度尼西亚"/>
+																				<xs:enumeration value="伊朗"/>
+																				<xs:enumeration value="伊拉克"/>
+																				<xs:enumeration value="爱尔兰"/>
+																				<xs:enumeration value="以色列"/>
+																				<xs:enumeration value="意大利"/>
+																				<xs:enumeration value="科特迪瓦"/>
+																				<xs:enumeration value="牙买加"/>
+																				<xs:enumeration value="日本"/>
+																				<xs:enumeration value="哈萨克斯坦"/>
+																				<xs:enumeration value="约旦"/>
+																				<xs:enumeration value="肯尼亚"/>
+																				<xs:enumeration value="朝鲜"/>
+																				<xs:enumeration value="韩国"/>
+																				<xs:enumeration value="科威特"/>
+																				<xs:enumeration value="吉尔吉斯斯坦"/>
+																				<xs:enumeration value="老挝"/>
+																				<xs:enumeration value="黎巴嫩"/>
+																				<xs:enumeration value="莱索托"/>
+																				<xs:enumeration value="拉脱维亚"/>
+																				<xs:enumeration value="利比里亚"/>
+																				<xs:enumeration value="利比亚"/>
+																				<xs:enumeration value="列支敦士登"/>
+																				<xs:enumeration value="立陶宛"/>
+																				<xs:enumeration value="卢森堡"/>
+																				<xs:enumeration value="澳门"/>
+																				<xs:enumeration value="马达加斯加"/>
+																				<xs:enumeration value="马拉维"/>
+																				<xs:enumeration value="马来西亚"/>
+																				<xs:enumeration value="马尔代夫"/>
+																				<xs:enumeration value="马里"/>
+																				<xs:enumeration value="马耳他"/>
+																				<xs:enumeration value="马提尼克"/>
+																				<xs:enumeration value="毛里塔尼亚"/>
+																				<xs:enumeration value="毛里求斯"/>
+																				<xs:enumeration value="墨西哥"/>
+																				<xs:enumeration value="摩纳哥"/>
+																				<xs:enumeration value="蒙古"/>
+																				<xs:enumeration value="摩尔多瓦"/>
+																				<xs:enumeration value="蒙特塞拉特"/>
+																				<xs:enumeration value="摩洛哥"/>
+																				<xs:enumeration value="莫桑比克"/>
+																				<xs:enumeration value="阿曼"/>
+																				<xs:enumeration value="纳米比亚"/>
+																				<xs:enumeration value="瑙鲁"/>
+																				<xs:enumeration value="尼泊尔"/>
+																				<xs:enumeration value="荷兰"/>
+																				<xs:enumeration value="荷属安的列斯"/>
+																				<xs:enumeration value="阿鲁巴"/>
+																				<xs:enumeration value="新喀里多尼亚"/>
+																				<xs:enumeration value="瓦努阿图"/>
+																				<xs:enumeration value="新西兰"/>
+																				<xs:enumeration value="尼加拉瓜"/>
+																				<xs:enumeration value="尼日尔"/>
+																				<xs:enumeration value="尼日利亚"/>
+																				<xs:enumeration value="纽埃"/>
+																				<xs:enumeration value="诺福克岛"/>
+																				<xs:enumeration value="挪威"/>
+																				<xs:enumeration value="北马里亚纳"/>
+																				<xs:enumeration value="美国本土外小岛屿"/>
+																				<xs:enumeration value="密克罗尼西亚联邦"/>
+																				<xs:enumeration value="马绍尔群岛"/>
+																				<xs:enumeration value="帕劳"/>
+																				<xs:enumeration value="巴基斯坦"/>
+																				<xs:enumeration value="巴拿马"/>
+																				<xs:enumeration value="巴布亚新几内亚"/>
+																				<xs:enumeration value="巴拉圭"/>
+																				<xs:enumeration value="秘鲁"/>
+																				<xs:enumeration value="菲律宾"/>
+																				<xs:enumeration value="皮特凯恩群岛"/>
+																				<xs:enumeration value="波兰"/>
+																				<xs:enumeration value="葡萄牙"/>
+																				<xs:enumeration value="几内亚比绍"/>
+																				<xs:enumeration value="东帝汶"/>
+																				<xs:enumeration value="波多黎各"/>
+																				<xs:enumeration value="卡塔尔"/>
+																				<xs:enumeration value="留尼汪"/>
+																				<xs:enumeration value="罗马尼亚"/>
+																				<xs:enumeration value="俄罗斯联邦"/>
+																				<xs:enumeration value="卢旺达"/>
+																				<xs:enumeration value="圣赫勒拿"/>
+																				<xs:enumeration value="圣基茨和尼维斯"/>
+																				<xs:enumeration value="安圭拉"/>
+																				<xs:enumeration value="圣卢西亚"/>
+																				<xs:enumeration value="圣皮埃尔和密克隆"/>
+																				<xs:enumeration value="圣文森特和格林纳丁斯"/>
+																				<xs:enumeration value="圣马力诺"/>
+																				<xs:enumeration value="圣多美和普林西比"/>
+																				<xs:enumeration value="沙特阿拉伯"/>
+																				<xs:enumeration value="塞内加尔"/>
+																				<xs:enumeration value="塞舌尔"/>
+																				<xs:enumeration value="塞拉利昂"/>
+																				<xs:enumeration value="新加坡"/>
+																				<xs:enumeration value="斯洛伐克"/>
+																				<xs:enumeration value="越南"/>
+																				<xs:enumeration value="斯洛文尼亚"/>
+																				<xs:enumeration value="索马里"/>
+																				<xs:enumeration value="南非"/>
+																				<xs:enumeration value="津巴布韦"/>
+																				<xs:enumeration value="西班牙"/>
+																				<xs:enumeration value="西撒哈拉"/>
+																				<xs:enumeration value="苏丹"/>
+																				<xs:enumeration value="苏里南"/>
+																				<xs:enumeration value="斯瓦尔巴群岛"/>
+																				<xs:enumeration value="斯威士兰"/>
+																				<xs:enumeration value="瑞典"/>
+																				<xs:enumeration value="瑞士"/>
+																				<xs:enumeration value="叙利亚"/>
+																				<xs:enumeration value="塔吉克斯坦"/>
+																				<xs:enumeration value="泰国"/>
+																				<xs:enumeration value="多哥"/>
+																				<xs:enumeration value="托克劳"/>
+																				<xs:enumeration value="汤加"/>
+																				<xs:enumeration value="特立尼达和多巴哥"/>
+																				<xs:enumeration value="阿联酋"/>
+																				<xs:enumeration value="突尼斯"/>
+																				<xs:enumeration value="土耳其"/>
+																				<xs:enumeration value="土库曼斯坦"/>
+																				<xs:enumeration value="特克斯科斯群岛"/>
+																				<xs:enumeration value="图瓦卢"/>
+																				<xs:enumeration value="乌干达"/>
+																				<xs:enumeration value="乌克兰"/>
+																				<xs:enumeration value="前南马其顿"/>
+																				<xs:enumeration value="埃及"/>
+																				<xs:enumeration value="英国"/>
+																				<xs:enumeration value="坦桑尼亚"/>
+																				<xs:enumeration value="美国"/>
+																				<xs:enumeration value="美属维尔京群岛"/>
+																				<xs:enumeration value="布基纳法索"/>
+																				<xs:enumeration value="乌拉圭"/>
+																				<xs:enumeration value="乌兹别克斯坦"/>
+																				<xs:enumeration value="委内瑞拉"/>
+																				<xs:enumeration value="瓦利斯和富图纳"/>
+																				<xs:enumeration value="萨摩亚"/>
+																				<xs:enumeration value="也门"/>
+																				<xs:enumeration value="南斯拉夫"/>
+																				<xs:enumeration value="赞比亚"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="age">
+														<xs:annotation>
+															<xs:documentation> 年龄 </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="unit" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="岁"/>
+																				<xs:enumeration value="月"/>
+																				<xs:enumeration value="周"/>
+																				<xs:enumeration value="天"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="value" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:int">
+																				<xs:minInclusive value="0"/>
+																				<xs:maxInclusive value="150"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="employerOrganization">
+														<xs:annotation>
+															<xs:documentation> 工作单位 </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="name" type="xs:string"/>
+																<xs:element name="telecom">
+																	<xs:complexType>
+																		<xs:simpleContent>
+																			<xs:extension base="xs:string">
+																				<xs:attribute name="value" type="xs:string"/>
+																			</xs:extension>
+																		</xs:simpleContent>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="addr">
+																	<xs:annotation>
+																		<xs:documentation> 工作地址 </xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="houseNumber" type="xs:string"/>
+																			<xs:element name="streetName" type="xs:string"/>
+																			<xs:element name="township" type="xs:string"/>
+																			<xs:element name="county" type="xs:string"/>
+																			<xs:element name="city" type="xs:string"/>
+																			<xs:element name="state" type="xs:string"/>
+																			<xs:element name="postalCode" type="xs:int"/>
+																		</xs:sequence>
+																		<xs:attribute name="use" type="xs:string"/>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="household">
+														<xs:annotation>
+															<xs:documentation> 户口信息 </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="place">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="addr">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="houseNumber" type="xs:string"/>
+																						<xs:element name="streetName" type="xs:string"/>
+																						<xs:element name="township" type="xs:string"/>
+																						<xs:element name="county" type="xs:string"/>
+																						<xs:element name="city" type="xs:string"/>
+																						<xs:element name="state" type="xs:string"/>
+																						<xs:element name="postalCode" type="xs:string"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																		<xs:attribute name="classCode" type="xs:string"/>
+																		<xs:attribute name="determinerCode" type="xs:string"/>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="nativePlace">
+														<xs:annotation>
+															<xs:documentation> 籍贯信息 </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="place">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="addr">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="city" type="xs:string"/>
+																						<xs:element name="state" type="xs:string"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																		<xs:attribute name="classCode" type="xs:string"/>
+																		<xs:attribute name="determinerCode" type="xs:string"/>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="occupation">
+														<xs:annotation>
+															<xs:documentation>职业状况</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="occupationCode">
+																	<xs:complexType>
+																		<xs:simpleContent>
+																			<xs:extension base="xs:string">
+																				<xs:attribute name="code" use="required">
+																					<xs:simpleType>
+																						<xs:restriction base="xs:string">
+																							<xs:enumeration value="11"/>
+																							<xs:enumeration value="13"/>
+																							<xs:enumeration value="17"/>
+																							<xs:enumeration value="21"/>
+																							<xs:enumeration value="24"/>
+																							<xs:enumeration value="27"/>
+																							<xs:enumeration value="31"/>
+																							<xs:enumeration value="37"/>
+																							<xs:enumeration value="51"/>
+																							<xs:enumeration value="54"/>
+																							<xs:enumeration value="70"/>
+																							<xs:enumeration value="80"/>
+																							<xs:enumeration value="90"/>
+																						</xs:restriction>
+																					</xs:simpleType>
+																				</xs:attribute>
+																				<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																				<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																				<xs:attribute name="displayName" use="required">
+																					<xs:simpleType>
+																						<xs:restriction base="xs:string">
+																							<xs:enumeration value="国家公务员"/>
+																							<xs:enumeration value="专业技术人员"/>
+																							<xs:enumeration value="职员"/>
+																							<xs:enumeration value="企业管理人员"/>
+																							<xs:enumeration value="工人"/>
+																							<xs:enumeration value="农民"/>
+																							<xs:enumeration value="学生"/>
+																							<xs:enumeration value="现役军人"/>
+																							<xs:enumeration value="自由职业者"/>
+																							<xs:enumeration value="个体经营者"/>
+																							<xs:enumeration value="无业人员"/>
+																							<xs:enumeration value="退(离)休人员"/>
+																							<xs:enumeration value="其他"/>
+																						</xs:restriction>
+																					</xs:simpleType>
+																				</xs:attribute>
+																			</xs:extension>
+																		</xs:simpleContent>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="classCode" type="xs:string"/>
+												<xs:attribute name="determinerCode" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="providerOrganization">
+											<xs:annotation>
+												<xs:documentation>提供患者服务机构</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="id">
+														<xs:annotation>
+															<xs:documentation>机构标识号</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="root" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string"/>
+																		</xs:simpleType>
+																	</xs:attribute>
+																	<xs:attribute name="extension" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:length value="18"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="name" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>住院机构名称</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="classCode" type="xs:string"/>
+												<xs:attribute name="determinerCode" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="classCode" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="contextControlCode" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="author">
+					<xs:annotation>
+						<xs:documentation>文档创作者 </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="time">
+								<xs:annotation>
+									<xs:documentation> 文档日期 </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="assignedAuthor">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="id">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="root" type="xs:string"/>
+														<xs:attribute name="extension" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="1"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="assignedPerson">
+											<xs:annotation>
+												<xs:documentation> 医师姓名 </xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="name" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="classCode" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="contextControlCode" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="custodian">
+					<xs:annotation>
+						<xs:documentation> 保管机构 </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="assignedCustodian">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="representedCustodianOrganization">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="id">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="root" type="xs:string"/>
+																	<xs:attribute name="extension" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:length value="18"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="name" type="xs:string"/>
+												</xs:sequence>
+												<xs:attribute name="classCode" type="xs:string"/>
+												<xs:attribute name="determinerCode" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="classCode" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="typeCode" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="legalAuthenticator">
+					<xs:annotation>
+						<xs:documentation> 科主任签名 </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="time" type="xs:string"/>
+							<xs:element name="signatureCode" type="xs:string"/>
+							<xs:element name="assignedEntity">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="id">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="root" type="xs:string" use="required"/>
+														<xs:attribute name="extension" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="code">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="displayName" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="assignedPerson">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="name" type="xs:string"/>
+												</xs:sequence>
+												<xs:attribute name="classCode" type="xs:string"/>
+												<xs:attribute name="determinerCode" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="authenticator" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation> 主(副主)任医师签名  主治医师签名  住院医师签名  责任护士签名  进修医师签名  实习医师签名  编码员签名 </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="time" type="xs:string"/>
+							<xs:element name="signatureCode" type="xs:string"/>
+							<xs:element name="assignedEntity">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="id">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="root" type="xs:string" use="required"/>
+														<xs:attribute name="extension" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="code">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="displayName" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="assignedPerson">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="name" type="xs:string"/>
+												</xs:sequence>
+												<xs:attribute name="classCode" type="xs:string" use="optional"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="optional"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="participant">
+					<xs:annotation>
+						<xs:documentation>其他参与者（联系人）@typeCode: NOT(ugent notification contact)，固定值，表示不同的参与者</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="associatedEntity">
+								<xs:annotation>
+									<xs:documentation>联系人@classCode：CON，固定值，表示角色是联系人 </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="code">
+											<xs:annotation>
+												<xs:documentation>联系人类别，表示与患者之间的关系</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="code" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:enumeration value="0"/>
+																	<xs:enumeration value="01"/>
+																	<xs:enumeration value="02"/>
+																	<xs:enumeration value="1"/>
+																	<xs:enumeration value="10"/>
+																	<xs:enumeration value="11"/>
+																	<xs:enumeration value="12"/>
+																	<xs:enumeration value="2"/>
+																	<xs:enumeration value="20"/>
+																	<xs:enumeration value="21"/>
+																	<xs:enumeration value="22"/>
+																	<xs:enumeration value="23"/>
+																	<xs:enumeration value="24"/>
+																	<xs:enumeration value="25"/>
+																	<xs:enumeration value="26"/>
+																	<xs:enumeration value="27"/>
+																	<xs:enumeration value="28"/>
+																	<xs:enumeration value="29"/>
+																	<xs:enumeration value="3"/>
+																	<xs:enumeration value="30"/>
+																	<xs:enumeration value="31"/>
+																	<xs:enumeration value="32"/>
+																	<xs:enumeration value="33"/>
+																	<xs:enumeration value="34"/>
+																	<xs:enumeration value="35"/>
+																	<xs:enumeration value="36"/>
+																	<xs:enumeration value="37"/>
+																	<xs:enumeration value="38"/>
+																	<xs:enumeration value="39"/>
+																	<xs:enumeration value="4"/>
+																	<xs:enumeration value="40"/>
+																	<xs:enumeration value="41"/>
+																	<xs:enumeration value="42"/>
+																	<xs:enumeration value="43"/>
+																	<xs:enumeration value="44"/>
+																	<xs:enumeration value="45"/>
+																	<xs:enumeration value="46"/>
+																	<xs:enumeration value="47"/>
+																	<xs:enumeration value="48"/>
+																	<xs:enumeration value="49"/>
+																	<xs:enumeration value="5"/>
+																	<xs:enumeration value="50"/>
+																	<xs:enumeration value="51"/>
+																	<xs:enumeration value="52"/>
+																	<xs:enumeration value="53"/>
+																	<xs:enumeration value="54"/>
+																	<xs:enumeration value="55"/>
+																	<xs:enumeration value="56"/>
+																	<xs:enumeration value="57"/>
+																	<xs:enumeration value="58"/>
+																	<xs:enumeration value="59"/>
+																	<xs:enumeration value="6"/>
+																	<xs:enumeration value="60"/>
+																	<xs:enumeration value="61"/>
+																	<xs:enumeration value="62"/>
+																	<xs:enumeration value="63"/>
+																	<xs:enumeration value="64"/>
+																	<xs:enumeration value="65"/>
+																	<xs:enumeration value="66"/>
+																	<xs:enumeration value="67"/>
+																	<xs:enumeration value="68"/>
+																	<xs:enumeration value="69"/>
+																	<xs:enumeration value="7"/>
+																	<xs:enumeration value="70"/>
+																	<xs:enumeration value="71"/>
+																	<xs:enumeration value="72"/>
+																	<xs:enumeration value="73"/>
+																	<xs:enumeration value="74"/>
+																	<xs:enumeration value="75"/>
+																	<xs:enumeration value="76"/>
+																	<xs:enumeration value="77"/>
+																	<xs:enumeration value="78"/>
+																	<xs:enumeration value="79"/>
+																	<xs:enumeration value="8"/>
+																	<xs:enumeration value="80"/>
+																	<xs:enumeration value="81"/>
+																	<xs:enumeration value="82"/>
+																	<xs:enumeration value="83"/>
+																	<xs:enumeration value="84"/>
+																	<xs:enumeration value="85"/>
+																	<xs:enumeration value="86"/>
+																	<xs:enumeration value="87"/>
+																	<xs:enumeration value="88"/>
+																	<xs:enumeration value="89"/>
+																	<xs:enumeration value="90"/>
+																	<xs:enumeration value="91"/>
+																	<xs:enumeration value="92"/>
+																	<xs:enumeration value="93"/>
+																	<xs:enumeration value="94"/>
+																	<xs:enumeration value="95"/>
+																	<xs:enumeration value="96"/>
+																	<xs:enumeration value="97"/>
+																	<xs:enumeration value="99"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="displayName" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:enumeration value="本人或户主"/>
+																	<xs:enumeration value="本人"/>
+																	<xs:enumeration value="户主"/>
+																	<xs:enumeration value="配偶"/>
+																	<xs:enumeration value="配偶"/>
+																	<xs:enumeration value="夫"/>
+																	<xs:enumeration value="妻"/>
+																	<xs:enumeration value="子"/>
+																	<xs:enumeration value="子"/>
+																	<xs:enumeration value="独生子"/>
+																	<xs:enumeration value="长子"/>
+																	<xs:enumeration value="次子"/>
+																	<xs:enumeration value="三子"/>
+																	<xs:enumeration value="四子"/>
+																	<xs:enumeration value="五子"/>
+																	<xs:enumeration value="养子或继子"/>
+																	<xs:enumeration value="女婿"/>
+																	<xs:enumeration value="其他儿子"/>
+																	<xs:enumeration value="女"/>
+																	<xs:enumeration value="女"/>
+																	<xs:enumeration value="独生女"/>
+																	<xs:enumeration value="长女"/>
+																	<xs:enumeration value="次女"/>
+																	<xs:enumeration value="三女"/>
+																	<xs:enumeration value="四女"/>
+																	<xs:enumeration value="五女"/>
+																	<xs:enumeration value="养女或继女"/>
+																	<xs:enumeration value="儿媳"/>
+																	<xs:enumeration value="其他女儿"/>
+																	<xs:enumeration value="孙子、孙女、或外孙子、外孙女"/>
+																	<xs:enumeration value="孙子、孙女或外孙子、外孙女"/>
+																	<xs:enumeration value="孙子"/>
+																	<xs:enumeration value="孙女"/>
+																	<xs:enumeration value="外孙子"/>
+																	<xs:enumeration value="外孙女"/>
+																	<xs:enumeration value="孙媳妇或外孙媳妇"/>
+																	<xs:enumeration value="孙女婿或外孙女婿"/>
+																	<xs:enumeration value="曾孙子或外曾孙子"/>
+																	<xs:enumeration value="曾孙女或外曾孙女"/>
+																	<xs:enumeration value="其他孙子、孙女或外孙子、外孙女"/>
+																	<xs:enumeration value="父母"/>
+																	<xs:enumeration value="父母"/>
+																	<xs:enumeration value="父亲"/>
+																	<xs:enumeration value="母亲"/>
+																	<xs:enumeration value="公公"/>
+																	<xs:enumeration value="婆婆"/>
+																	<xs:enumeration value="岳父"/>
+																	<xs:enumeration value="岳母"/>
+																	<xs:enumeration value="继父或养父"/>
+																	<xs:enumeration value="继母或养母"/>
+																	<xs:enumeration value="其他父母关系"/>
+																	<xs:enumeration value="祖父母或外祖父母"/>
+																	<xs:enumeration value="祖父母或外祖父母"/>
+																	<xs:enumeration value="祖父"/>
+																	<xs:enumeration value="祖母"/>
+																	<xs:enumeration value="外祖父"/>
+																	<xs:enumeration value="外祖母"/>
+																	<xs:enumeration value="配偶的祖父母或外祖父母"/>
+																	<xs:enumeration value="曾祖父"/>
+																	<xs:enumeration value="曾祖母"/>
+																	<xs:enumeration value="配偶的曾祖父母或外曾祖父母"/>
+																	<xs:enumeration value="其他祖父母或外祖父母关系"/>
+																	<xs:enumeration value="兄、弟、姐、妹"/>
+																	<xs:enumeration value="兄弟姐妹"/>
+																	<xs:enumeration value="兄"/>
+																	<xs:enumeration value="嫂"/>
+																	<xs:enumeration value="弟"/>
+																	<xs:enumeration value="弟媳"/>
+																	<xs:enumeration value="姐姐"/>
+																	<xs:enumeration value="姐夫"/>
+																	<xs:enumeration value="妹妹"/>
+																	<xs:enumeration value="妹夫"/>
+																	<xs:enumeration value="其他兄弟姐妹"/>
+																	<xs:enumeration value="其他"/>
+																	<xs:enumeration value="其他"/>
+																	<xs:enumeration value="伯父"/>
+																	<xs:enumeration value="伯母"/>
+																	<xs:enumeration value="叔父"/>
+																	<xs:enumeration value="婶母"/>
+																	<xs:enumeration value="舅父"/>
+																	<xs:enumeration value="舅母"/>
+																	<xs:enumeration value="姨父"/>
+																	<xs:enumeration value="姨母"/>
+																	<xs:enumeration value="姑父"/>
+																	<xs:enumeration value="姑母"/>
+																	<xs:enumeration value="堂兄弟、堂姐妹"/>
+																	<xs:enumeration value="表兄弟、表姐妹"/>
+																	<xs:enumeration value="侄子"/>
+																	<xs:enumeration value="侄女"/>
+																	<xs:enumeration value="外甥"/>
+																	<xs:enumeration value="外甥女"/>
+																	<xs:enumeration value="其他亲属"/>
+																	<xs:enumeration value="非亲属"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+														<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="addr">
+											<xs:annotation>
+												<xs:documentation>联系人地址</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="houseNumber" type="xs:string"/>
+													<xs:element name="streetName" type="xs:string"/>
+													<xs:element name="township" type="xs:string"/>
+													<xs:element name="county" type="xs:string"/>
+													<xs:element name="city" type="xs:string"/>
+													<xs:element name="state" type="xs:string"/>
+													<xs:element name="postalCode" type="xs:short"/>
+												</xs:sequence>
+												<xs:attribute name="use" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="telecom">
+											<xs:annotation>
+												<xs:documentation>电话号码</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="use" type="xs:string"/>
+														<xs:attribute name="value" type="xs:string"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="associatedPerson">
+											<xs:annotation>
+												<xs:documentation>联系人</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="name" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>姓名</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="classCode" type="xs:string"/>
+												<xs:attribute name="determinerCode" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="classCode" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="typeCode" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="relatedDocument">
+					<xs:annotation>
+						<xs:documentation>相关文档</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parentDocument">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="id" type="xs:string"/>
+										<xs:element name="setId" type="xs:string"/>
+										<xs:element name="versionNumber" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="typeCode" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="componentOf">
+					<xs:annotation>
+						<xs:documentation>文档中医疗卫生事件的就诊场景,即入院场景记录</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="encompassingEncounter">
+								<xs:annotation>
+									<xs:documentation>就诊</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="code">
+											<xs:annotation>
+												<xs:documentation>入院途径 </xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="code" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:byte">
+																	<xs:enumeration value="1"/>
+																	<xs:enumeration value="2"/>
+																	<xs:enumeration value="3"/>
+																	<xs:enumeration value="9"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="displayName" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:enumeration value="门诊"/>
+																	<xs:enumeration value="急诊"/>
+																	<xs:enumeration value="住院"/>
+																	<xs:enumeration value="其他"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+														<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="effectiveTime">
+											<xs:annotation>
+												<xs:documentation>就诊时间</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="low">
+														<xs:annotation>
+															<xs:documentation>入院日期</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="value" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))([0-1]?[0-9]|2[0-3])([0-5][0-9])([0-5][0-9])"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="high">
+														<xs:annotation>
+															<xs:documentation>出院日期</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="value" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))([0-1]?[0-9]|2[0-3])([0-5][0-9])([0-5][0-9])"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="location">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="healthCareFacility">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="serviceProviderOrganization">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="asOrganizationPartOf">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="wholeOrganization">
+																							<xs:annotation>
+																								<xs:documentation> DE01.00.026.00	病床号 </xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="id">
+																										<xs:complexType>
+																											<xs:simpleContent>
+																												<xs:extension base="xs:string">
+																													<xs:attribute name="root" type="xs:string" use="required"/>
+																													<xs:attribute name="extension" use="required">
+																														<xs:simpleType>
+																															<xs:restriction base="xs:string">
+																																<xs:minLength value="1"/>
+																															</xs:restriction>
+																														</xs:simpleType>
+																													</xs:attribute>
+																												</xs:extension>
+																											</xs:simpleContent>
+																										</xs:complexType>
+																									</xs:element>
+																									<xs:element name="name">
+																										<xs:simpleType>
+																											<xs:restriction base="xs:string">
+																												<xs:minLength value="1"/>
+																											</xs:restriction>
+																										</xs:simpleType>
+																									</xs:element>
+																									<xs:element name="asOrganizationPartOf">
+																										<xs:annotation>
+																											<xs:documentation> DE01.00.019.00	病房号 </xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="wholeOrganization">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="id">
+																																<xs:complexType>
+																																	<xs:simpleContent>
+																																		<xs:extension base="xs:string">
+																																			<xs:attribute name="root" type="xs:string" use="required"/>
+																																			<xs:attribute name="extension" type="xs:string" use="required"/>
+																																		</xs:extension>
+																																	</xs:simpleContent>
+																																</xs:complexType>
+																															</xs:element>
+																															<xs:element name="name">
+																																<xs:simpleType>
+																																	<xs:restriction base="xs:string">
+																																		<xs:minLength value="1"/>
+																																	</xs:restriction>
+																																</xs:simpleType>
+																															</xs:element>
+																															<xs:element name="asOrganizationPartOf">
+																																<xs:annotation>
+																																	<xs:documentation> DE08.10.026.00	科室名称 </xs:documentation>
+																																</xs:annotation>
+																																<xs:complexType>
+																																	<xs:sequence>
+																																		<xs:element name="wholeOrganization">
+																																			<xs:complexType>
+																																				<xs:sequence>
+																																					<xs:element name="id">
+																																						<xs:complexType>
+																																							<xs:simpleContent>
+																																								<xs:extension base="xs:string">
+																																									<xs:attribute name="root" type="xs:string" use="required"/>
+																																									<xs:attribute name="extension" type="xs:string" use="required"/>
+																																								</xs:extension>
+																																							</xs:simpleContent>
+																																						</xs:complexType>
+																																					</xs:element>
+																																					<xs:element name="name" type="xs:string"/>
+																																					<xs:element name="asOrganizationPartOf">
+																																						<xs:annotation>
+																																							<xs:documentation> DE08.10.054.00	病区名称 </xs:documentation>
+																																						</xs:annotation>
+																																						<xs:complexType>
+																																							<xs:sequence>
+																																								<xs:element name="wholeOrganization">
+																																									<xs:complexType>
+																																										<xs:sequence>
+																																											<xs:element name="id">
+																																												<xs:complexType>
+																																													<xs:simpleContent>
+																																														<xs:extension base="xs:string">
+																																															<xs:attribute name="root" type="xs:string" use="required"/>
+																																															<xs:attribute name="extension" type="xs:string" use="required"/>
+																																														</xs:extension>
+																																													</xs:simpleContent>
+																																												</xs:complexType>
+																																											</xs:element>
+																																											<xs:element name="name" type="xs:string"/>
+																																											<xs:element name="asOrganizationPartOf">
+																																												<xs:annotation>
+																																													<xs:documentation>XXX医院 </xs:documentation>
+																																												</xs:annotation>
+																																												<xs:complexType>
+																																													<xs:sequence>
+																																														<xs:element name="wholeOrganization">
+																																															<xs:complexType>
+																																																<xs:sequence>
+																																																	<xs:element name="id">
+																																																		<xs:complexType>
+																																																			<xs:simpleContent>
+																																																				<xs:extension base="xs:string">
+																																																					<xs:attribute name="root" type="xs:string" use="required"/>
+																																																					<xs:attribute name="extension" use="required">
+																																																						<xs:simpleType>
+																																																							<xs:restriction base="xs:string">
+																																																								<xs:length value="18"/>
+																																																							</xs:restriction>
+																																																						</xs:simpleType>
+																																																					</xs:attribute>
+																																																				</xs:extension>
+																																																			</xs:simpleContent>
+																																																		</xs:complexType>
+																																																	</xs:element>
+																																																	<xs:element name="name" type="xs:string"/>
+																																																</xs:sequence>
+																																																<xs:attribute name="classCode" type="xs:string"/>
+																																																<xs:attribute name="determinerCode" type="xs:string"/>
+																																															</xs:complexType>
+																																														</xs:element>
+																																													</xs:sequence>
+																																													<xs:attribute name="classCode" type="xs:string"/>
+																																												</xs:complexType>
+																																											</xs:element>
+																																										</xs:sequence>
+																																										<xs:attribute name="classCode" type="xs:string"/>
+																																										<xs:attribute name="determinerCode" type="xs:string"/>
+																																									</xs:complexType>
+																																								</xs:element>
+																																							</xs:sequence>
+																																							<xs:attribute name="classCode" type="xs:string"/>
+																																						</xs:complexType>
+																																					</xs:element>
+																																				</xs:sequence>
+																																				<xs:attribute name="classCode" type="xs:string"/>
+																																				<xs:attribute name="determinerCode" type="xs:string"/>
+																																			</xs:complexType>
+																																		</xs:element>
+																																	</xs:sequence>
+																																	<xs:attribute name="classCode" type="xs:string"/>
+																																</xs:complexType>
+																															</xs:element>
+																														</xs:sequence>
+																														<xs:attribute name="classCode" type="xs:string"/>
+																														<xs:attribute name="determinerCode" type="xs:string"/>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																											<xs:attribute name="classCode" type="xs:string"/>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="classCode" type="xs:string"/>
+																								<xs:attribute name="determinerCode" type="xs:string"/>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																					<xs:attribute name="classCode" type="xs:string"/>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																		<xs:attribute name="classCode" type="xs:string" use="optional" fixed="ORG"/>
+																		<xs:attribute name="determinerCode" type="xs:string" use="optional" fixed="INSTANCE"/>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+															<xs:attribute name="classCode" type="xs:string" use="optional" fixed="SDLOC"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="typeCode" type="xs:string" use="optional" fixed="LOC"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="moodCode" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="typeCode" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="component">
+					<xs:annotation>
+						<xs:documentation>***************************************************
+文档体Body
+*******************************************************
+</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="structuredBody">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="component" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>
+********************************************************
+生命体征章节
+********************************************************
+ 
+********************************************************
+诊断章节
+********************************************************
+ 
+********************************************************
+主要健康问题章节
+********************************************************
+
+********************************************************
+转科记录章节
+********************************************************
+ 
+********************************************************
+出院诊断章节
+********************************************************
+ 
+********************************************************
+过敏史章节
+********************************************************
+
+********************************************************
+实验室检查章节
+********************************************************
+
+********************************************************
+手术操作章节
+********************************************************
+ 
+*******************************************************
+住院史章节 
+*******************************************************
+
+*******************************************************
+ 住院过程章节 
+*******************************************************
+
+********************************************************
+行政管理章节
+********************************************************
+
+***********************************************
+治疗计划章节
+***********************************************
+
+********************************************************
+费用章节
+********************************************************
+</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="section">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="code">
+																	<xs:complexType>
+																		<xs:simpleContent>
+																			<xs:extension base="xs:string">
+																				<xs:attribute name="code" type="xs:string" use="optional"/>
+																				<xs:attribute name="displayName" type="xs:string" use="required"/>
+																				<xs:attribute name="codeSystem" type="xs:string" use="optional"/>
+																				<xs:attribute name="codeSystemName" type="xs:string" use="optional"/>
+																			</xs:extension>
+																		</xs:simpleContent>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="text" type="xs:string"/>
+																<xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+																	<xs:annotation>
+																		<xs:documentation>门（急）诊诊断病理诊断住院患者损伤和中毒外部原因颅脑损伤患者入院前昏迷时间颅脑损伤患者入院后昏迷时间转科条目出院诊断-主要诊断条目出院诊断-其他诊断条目离院方式住院次数  　实际住院天数　亡患者尸检标志病案质量 有否出院31天内再住院计划 医疗付费方式 住院总费用 综合医疗服务费 诊断类服务费 治疗类服务费 康复费类服务费 中医治疗费 西药费 中药费  血液和血液制品类服务费  耗材类费用 其他费 </xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:choice minOccurs="0" maxOccurs="unbounded">
+																			<xs:element name="observation">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="code">
+																							<xs:complexType mixed="true">
+																								<xs:sequence>
+																									<xs:element name="qualifier" minOccurs="0">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="name">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="code" type="xs:string" use="optional"/>
+																								<xs:attribute name="codeSystem" type="xs:string" use="optional"/>
+																								<xs:attribute name="codeSystemName" type="xs:string" use="optional"/>
+																								<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="effectiveTime" minOccurs="0">
+																							<xs:annotation>
+																								<xs:documentation> 质控日期 </xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:simpleContent>
+																									<xs:extension base="xs:string">
+																										<xs:attribute name="value">
+																											<xs:simpleType>
+																												<xs:restriction base="xs:int">
+																													<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))"/>
+																												</xs:restriction>
+																											</xs:simpleType>
+																										</xs:attribute>
+																									</xs:extension>
+																								</xs:simpleContent>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="value" minOccurs="0"/>
+																						<xs:element name="entryRelationship" minOccurs="0">
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="observation">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="code">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="code" type="xs:string" use="required"/>
+																																<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																																<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																																<xs:attribute name="displayName" type="xs:string" use="required"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="value"/>
+																											</xs:sequence>
+																											<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																											<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="typeCode" type="xs:string" use="optional"/>
+																								<xs:attribute name="negationInd" type="xs:string" use="optional"/>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="author" minOccurs="0" maxOccurs="unbounded">
+																							<xs:annotation>
+																								<xs:documentation>转科原因（数据元）</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="time" type="xs:string"/>
+																									<xs:element name="assignedAuthor">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="id">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="root" type="xs:string" use="optional"/>
+																																<xs:attribute name="extension" type="xs:string" use="optional"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="representedOrganization" minOccurs="0">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="name" type="xs:string">
+																																<xs:annotation>
+																																	<xs:documentation>住院患者转科科室名称</xs:documentation>
+																																</xs:annotation>
+																															</xs:element>
+																														</xs:sequence>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="code" minOccurs="0">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="assignedPerson" minOccurs="0">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="name" type="xs:string"/>
+																														</xs:sequence>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																					<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																					<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="organizer">
+																				<xs:annotation>
+																					<xs:documentation> 血型</xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="code" minOccurs="0">
+																							<xs:complexType>
+																								<xs:simpleContent>
+																									<xs:extension base="xs:string">
+																										<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																									</xs:extension>
+																								</xs:simpleContent>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="statusCode" type="xs:string"/>
+																						<xs:element name="component" minOccurs="0" maxOccurs="unbounded">
+																							<xs:annotation>
+																								<xs:documentation> 凝血因子类制品费 细胞因子类制品费 </xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="observation">
+																										<xs:annotation>
+																											<xs:documentation> ABO血型  Rh血型 </xs:documentation>
+																										</xs:annotation>
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="id" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation> 病理号标识 </xs:documentation>
+																													</xs:annotation>
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="root" type="xs:string" use="required"/>
+																																<xs:attribute name="extension" type="xs:string" use="required"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="code">
+																													<xs:annotation>
+																														<xs:documentation>住院患者疾病诊断类型-代码/住院患者疾病诊断类型-详细描述住院患者疾病诊断类型-代码/住院患者疾病诊断类型-详细描述</xs:documentation>
+																													</xs:annotation>
+																													<xs:complexType mixed="true">
+																														<xs:sequence>
+																															<xs:element name="qualifier" minOccurs="0">
+																																<xs:complexType>
+																																	<xs:sequence>
+																																		<xs:element name="name">
+																																			<xs:complexType>
+																																				<xs:simpleContent>
+																																					<xs:extension base="xs:string">
+																																						<xs:attribute name="displayName" type="xs:string" use="required"/>
+																																					</xs:extension>
+																																				</xs:simpleContent>
+																																			</xs:complexType>
+																																		</xs:element>
+																																	</xs:sequence>
+																																</xs:complexType>
+																															</xs:element>
+																														</xs:sequence>
+																														<xs:attribute name="code" type="xs:string" use="required"/>
+																														<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																														<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																														<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="effectiveTime" minOccurs="0">
+																													<xs:annotation>
+																														<xs:documentation>确诊日期确诊日期</xs:documentation>
+																													</xs:annotation>
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="value" use="required">
+																																	<xs:simpleType>
+																																		<xs:restriction base="xs:string">
+																																			<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))([0-1]?[0-9]|2[0-3])([0-5][0-9])([0-5][0-9])"/>
+																																		</xs:restriction>
+																																	</xs:simpleType>
+																																</xs:attribute>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="value">
+																													<xs:annotation>
+																														<xs:documentation>疾病诊断代码/疾病诊断名称疾病诊断代码/疾病诊断名称</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element name="entryRelationship" minOccurs="0" maxOccurs="unbounded">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="observation">
+																																<xs:complexType>
+																																	<xs:sequence>
+																																		<xs:element name="code">
+																																			<xs:complexType>
+																																				<xs:simpleContent>
+																																					<xs:extension base="xs:string">
+																																						<xs:attribute name="code" type="xs:string" use="required"/>
+																																						<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																																						<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																																						<xs:attribute name="displayName" type="xs:string" use="required"/>
+																																					</xs:extension>
+																																				</xs:simpleContent>
+																																			</xs:complexType>
+																																		</xs:element>
+																																		<xs:element name="value"/>
+																																	</xs:sequence>
+																																	<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																																	<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																																</xs:complexType>
+																															</xs:element>
+																														</xs:sequence>
+																														<xs:attribute name="typeCode" type="xs:string" use="optional"/>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																											<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																											<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="typeCode" type="xs:string" use="optional"/>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																					<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																					<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="act">
+																				<xs:annotation>
+																					<xs:documentation>出院科室及病房 </xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="code">
+																							<xs:complexType>
+																								<xs:simpleContent>
+																									<xs:extension base="xs:string">
+																										<xs:attribute name="nullFlavor" type="xs:string" use="optional"/>
+																									</xs:extension>
+																								</xs:simpleContent>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="entryRelationship" minOccurs="0">
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="observation">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="code">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="code" type="xs:string" use="required"/>
+																																<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																																<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																																<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="value"/>
+																												<xs:element name="participant">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="participantRole">
+																																<xs:complexType>
+																																	<xs:sequence>
+																																		<xs:element name="playingEntity">
+																																			<xs:complexType>
+																																				<xs:sequence>
+																																					<xs:element name="code">
+																																						<xs:annotation>
+																																							<xs:documentation>住院患者过敏源</xs:documentation>
+																																						</xs:annotation>
+																																						<xs:complexType>
+																																							<xs:simpleContent>
+																																								<xs:extension base="xs:string">
+																																									<xs:attribute name="code" type="xs:string" use="required"/>
+																																									<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																																									<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																																									<xs:attribute name="displayName" type="xs:string" use="required"/>
+																																								</xs:extension>
+																																							</xs:simpleContent>
+																																						</xs:complexType>
+																																					</xs:element>
+																																					<xs:element name="desc" type="xs:string"/>
+																																				</xs:sequence>
+																																				<xs:attribute name="classCode" type="xs:string"/>
+																																			</xs:complexType>
+																																		</xs:element>
+																																	</xs:sequence>
+																																	<xs:attribute name="classCode" type="xs:string"/>
+																																</xs:complexType>
+																															</xs:element>
+																														</xs:sequence>
+																														<xs:attribute name="typeCode" type="xs:string"/>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																											<xs:attribute name="classCode" type="xs:string"/>
+																											<xs:attribute name="moodCode" type="xs:string"/>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="typeCode" type="xs:string"/>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="author" minOccurs="0">
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="time" type="xs:string"/>
+																									<xs:element name="assignedAuthor">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="id" type="xs:string"/>
+																												<xs:element name="representedOrganization">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="id">
+																																<xs:annotation>
+																																	<xs:documentation>住院患者出院病房、科室名称</xs:documentation>
+																																</xs:annotation>
+																																<xs:complexType>
+																																	<xs:simpleContent>
+																																		<xs:extension base="xs:string">
+																																			<xs:attribute name="root" type="xs:string" use="required"/>
+																																			<xs:attribute name="extension" type="xs:byte" use="required"/>
+																																		</xs:extension>
+																																	</xs:simpleContent>
+																																</xs:complexType>
+																															</xs:element>
+																															<xs:element name="name" type="xs:string"/>
+																															<xs:element name="asOrganizationPartOf">
+																																<xs:complexType>
+																																	<xs:sequence>
+																																		<xs:element name="wholeOrganization">
+																																			<xs:complexType>
+																																				<xs:sequence>
+																																					<xs:element name="id">
+																																						<xs:complexType>
+																																							<xs:simpleContent>
+																																								<xs:extension base="xs:string">
+																																									<xs:attribute name="root" type="xs:string" use="required"/>
+																																									<xs:attribute name="extension" type="xs:short" use="required"/>
+																																								</xs:extension>
+																																							</xs:simpleContent>
+																																						</xs:complexType>
+																																					</xs:element>
+																																					<xs:element name="name" type="xs:string"/>
+																																				</xs:sequence>
+																																				<xs:attribute name="classCode" type="xs:string"/>
+																																				<xs:attribute name="determinerCode" type="xs:string"/>
+																																			</xs:complexType>
+																																		</xs:element>
+																																	</xs:sequence>
+																																	<xs:attribute name="classCode" type="xs:string"/>
+																																</xs:complexType>
+																															</xs:element>
+																														</xs:sequence>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																					<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																					<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="procedure">
+																				<xs:annotation>
+																					<xs:documentation> 1..1 手术记录 </xs:documentation>
+																				</xs:annotation>
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="code">
+																							<xs:complexType>
+																								<xs:simpleContent>
+																									<xs:extension base="xs:string">
+																										<xs:attribute name="code" type="xs:string" use="required"/>
+																										<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																										<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																										<xs:attribute name="displayName" type="xs:string" use="required"/>
+																									</xs:extension>
+																								</xs:simpleContent>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="statusCode" type="xs:string"/>
+																						<xs:element name="effectiveTime">
+																							<xs:annotation>
+																								<xs:documentation>操作日期/时间</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:simpleContent>
+																									<xs:extension base="xs:string">
+																										<xs:attribute name="value">
+																											<xs:simpleType>
+																												<xs:restriction base="xs:string">
+																													<xs:pattern value="((([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))0229))([0-1]?[0-9]|2[0-3])([0-5][0-9])([0-5][0-9])"/>
+																												</xs:restriction>
+																											</xs:simpleType>
+																										</xs:attribute>
+																									</xs:extension>
+																								</xs:simpleContent>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="performer">
+																							<xs:annotation>
+																								<xs:documentation>手术者</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="assignedEntity">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="id">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="root" type="xs:string" use="required"/>
+																																<xs:attribute name="extension" type="xs:string" use="required"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="assignedPerson">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="name" type="xs:string"/>
+																														</xs:sequence>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="participant" minOccurs="0" maxOccurs="unbounded">
+																							<xs:annotation>
+																								<xs:documentation>第一助手第二助手</xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="participantRole">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="id">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="root" type="xs:string" use="required"/>
+																																<xs:attribute name="extension" type="xs:string" use="required"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="code">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="displayName" type="xs:string" use="optional"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="playingEntity">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="name" type="xs:string"/>
+																														</xs:sequence>
+																														<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																														<xs:attribute name="determinerCode" type="xs:string" use="optional"/>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																											<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="typeCode" type="xs:string" use="optional"/>
+																							</xs:complexType>
+																						</xs:element>
+																						<xs:element name="entryRelationship" minOccurs="0" maxOccurs="unbounded">
+																							<xs:annotation>
+																								<xs:documentation>手术级别 手术切口类别 手术切口愈合等级 0..1 麻醉信息 </xs:documentation>
+																							</xs:annotation>
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="observation">
+																										<xs:complexType>
+																											<xs:sequence>
+																												<xs:element name="code">
+																													<xs:complexType>
+																														<xs:simpleContent>
+																															<xs:extension base="xs:string">
+																																<xs:attribute name="code" type="xs:string" use="required"/>
+																																<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																																<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																																<xs:attribute name="displayName" type="xs:string" use="required"/>
+																															</xs:extension>
+																														</xs:simpleContent>
+																													</xs:complexType>
+																												</xs:element>
+																												<xs:element name="value">
+																													<xs:annotation>
+																														<xs:documentation>手术级别 手术级别 手术切口愈合等级</xs:documentation>
+																													</xs:annotation>
+																												</xs:element>
+																												<xs:element name="performer" minOccurs="0">
+																													<xs:complexType>
+																														<xs:sequence>
+																															<xs:element name="assignedEntity">
+																																<xs:complexType>
+																																	<xs:sequence>
+																																		<xs:element name="id">
+																																			<xs:complexType>
+																																				<xs:simpleContent>
+																																					<xs:extension base="xs:string">
+																																						<xs:attribute name="root" type="xs:string" use="required"/>
+																																						<xs:attribute name="extension" type="xs:string" use="required"/>
+																																					</xs:extension>
+																																				</xs:simpleContent>
+																																			</xs:complexType>
+																																		</xs:element>
+																																		<xs:element name="assignedPerson">
+																																			<xs:complexType>
+																																				<xs:sequence>
+																																					<xs:element name="name" type="xs:string"/>
+																																				</xs:sequence>
+																																			</xs:complexType>
+																																		</xs:element>
+																																	</xs:sequence>
+																																</xs:complexType>
+																															</xs:element>
+																														</xs:sequence>
+																													</xs:complexType>
+																												</xs:element>
+																											</xs:sequence>
+																											<xs:attribute name="classCode" type="xs:string" use="optional"/>
+																											<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																								<xs:attribute name="typeCode" type="xs:string" use="optional"/>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																					<xs:attribute name="classCode" type="xs:string"/>
+																					<xs:attribute name="moodCode" type="xs:string"/>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:choice>
+																		<xs:attribute name="typeCode" type="xs:string" use="optional"/>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="PQ">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="value" type="xs:float" use="required"/>
+				<xs:attribute name="unit" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="ST">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:complexType name="CD">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="code" type="xs:string" use="required"/>
+				<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+				<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+				<xs:attribute name="displayName" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="BL">
+		<xs:attribute name="value" type="xs:boolean"/>
+	</xs:complexType>
+	<xs:complexType name="INT">
+		<xs:attribute name="value" type="xs:integer"/>
+	</xs:complexType>
+	<xs:complexType name="MO">
+		<xs:attribute name="value" type="xs:int"/>
+		<xs:attribute name="currency" type="xs:string"/>
+	</xs:complexType>
+</xs:schema>

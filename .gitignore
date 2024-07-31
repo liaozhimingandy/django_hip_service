@@ -6,3 +6,5 @@ logs/
 .pdm-python
 __pycache__
 temp/*
+*.xml
+*.db

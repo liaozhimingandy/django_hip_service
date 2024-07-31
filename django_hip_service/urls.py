@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 
 from hipmessageservice.views import HIPMessageServiceViewSet
 from rest_framework import routers
@@ -25,13 +25,15 @@ from django_hip_service import settings
 
 # from esb_standard.views import download
 from hipmessageservice.views import index, download as download_count, generate_report
-from hipmessageservice import urls as service_urls
 
 urlpatterns = [
     path('', index),
+<<<<<<< HEAD
     re_path('^v3/openim/', include(service_urls, namespace='openim')),
     path('download/', download_count, name='download-count'),
     # django 后台路由
+=======
+>>>>>>> develop
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     # drf 框架认证路由

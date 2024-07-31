@@ -19,9 +19,9 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from json2xml import json2xml
-from lxml import etree
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.styles.fills import PatternFill
+<<<<<<< HEAD
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -31,6 +31,11 @@ from .authentication import AuthBearer
 from hipmessageservice.models import Service, Application, StatusShip
 from hipmessageservice.serializers import HIPServiceSerializer, HIPCDASerializer, CheckReportSerializer, \
     ExamReportSerializer, ExamResultMainSerializer
+=======
+
+# from .authentication import AuthBearer
+from hipmessageservice.models import Service, Application, StatusShip
+>>>>>>> develop
 from hipmessageservice.utils.database import read_cda
 from .utils.encrypt import EncryptUtils
 
@@ -241,6 +246,7 @@ def home(request):
                            'dict_status': dict_status, 'user': request.user})
 
 
+<<<<<<< HEAD
 data_mapping = {
     "patient_id": "//xmlns:patient/xmlns:id/xmlns:item/@extension",
     "gmt_reg": "//xmlns:patient/xmlns:effectiveTime/xmlns:any/@value",
@@ -862,3 +868,9 @@ class HIPMessageServiceViewSet(viewsets.ViewSet):
 
         content = {"sign": md5_hash, "encrypted": encrypted, "timestamp": timestamp}
         return Response(data=content, status=HTTPStatus.OK)
+=======
+def test3(request):
+    numbers = range(1, 100)
+    return render(request, 'hipmessageservice/test3.html',
+                  context={'user': request.user, 'numbers': numbers})
+>>>>>>> develop

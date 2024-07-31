@@ -21,7 +21,11 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # 应用版本号
+<<<<<<< HEAD
 VERSION = (2, 1, 1, "alpha", 1)
+=======
+VERSION = (3, 4, 0, "alpha", 1)
+>>>>>>> develop
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
@@ -30,10 +34,13 @@ PREFIX_ID = "esbid_"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+<<<<<<< HEAD
 # app git信息
 # with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
 #     APP_COMMIT_HASH = fp.readline().strip()
 
+=======
+>>>>>>> develop
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -62,8 +69,6 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'rest_framework',  # 提供api接口专用
-
 ]
 
 LOCAL_APPS = [
@@ -109,23 +114,32 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'hip.db',
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": "cdr",
+    #     "USER": "postgres",
+    #     "PASSWORD": "postgres",
+    #     "HOST": "localhost"
     # },
     "default": {
-        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "hipmessageservice")
-        if os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql") == 'django.db.backends.sqlite3'
-        else os.getenv("APP_DB_NAME", "hipmessageservice"),
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
+        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
+        else os.getenv("APP_DB_NAME", "cdr"),
         "USER": os.getenv("APP_DB_USER", "zhiming"),
         "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
         "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
         "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
     'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'hip-test.db',
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr-test.db")
+        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
+        else os.getenv("APP_DB_NAME", "cdr-test"),
+        "USER": os.getenv("APP_DB_USER", "zhiming"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
+        "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
 }
 
@@ -329,6 +343,7 @@ HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'ncdxfskqyy')
 HOSPITAL_ID = os.getenv('HOSPITAL_ID', 'ytlyyy_001')
 HOSPITAL_CODE = os.getenv('HOSPITAL_CODE', '12360000491015900T')
 IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 1)
+<<<<<<< HEAD
 
 ##########################################################################################
 # DRF 配置
@@ -375,3 +390,7 @@ REST_FRAMEWORK = {
     # 'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
 }
 ##########################################################################################
+=======
+# 单体应用数据库层面创建外键约束
+IS_DB_CONSTRAINT = os.getenv('IS_DB_CONSTRAINT', 1)
+>>>>>>> develop

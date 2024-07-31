@@ -8,7 +8,6 @@
 /static/*
 /.idea/*
 /./assets/*
-/db.sqlite3
 /config/.env
 /*/migrations/*
 /_pycache_/*
