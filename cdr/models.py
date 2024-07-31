@@ -1020,7 +1020,7 @@ class OperationStatus(models.Model):
     手术状态信息
     """
 
-    class StatusCodeChoices(models.TextChoices):
+    class StatusCodeChoices(models.IntegerChoices):
         """手术状态"""
         A = (1, '入手术间')
         B = (2, '开始麻醉')
@@ -1265,7 +1265,7 @@ class OutpatientAppointStatus(models.Model):
     门诊预约状态
     """
 
-    class BookingCodeChoices(models.TextChoices):
+    class BookingCodeChoices(models.IntegerChoices):
         """预约状态"""
         A = (1, "患者预约")
         B = (9, "取消预约")
