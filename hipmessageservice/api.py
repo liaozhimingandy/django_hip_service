@@ -309,7 +309,7 @@ def deal_patient_empi_reg(content):
         """
     # 调empi接口进行患者注册
     try:
-        response = requests.post(settings.EMPI_API_URL, data=payload, headers={'Content-Type': 'text/xml'}, timeout=2)
+        response = requests.post(settings.EMPI_API_URL, data=payload, headers={'Content-Type': 'text/xml;charset=UTF-8'}, timeout=2)
     except ConnectTimeout as e:
         # print(str(e))
         return False, "Connection timed out, please try again later or contact our administrator"
