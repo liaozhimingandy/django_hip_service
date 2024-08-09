@@ -21,3 +21,6 @@ temp/*
 .pdm-python
 /__pycache__/*
 /pyproject.toml
+/deploy/*
+/config/default.conf.template
+.env

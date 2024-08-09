@@ -19,9 +19,10 @@ from pathlib import Path
 
 from django.contrib import admin
 from django.utils.html import format_html
+from loguru import logger
 
 # 应用版本号
-VERSION = (3, 4, 0, "alpha", 1)
+VERSION = (3, 5, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
@@ -225,7 +226,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #         'file': {
 #             'level': logging.INFO,
 #             'class': 'logging.handlers.TimedRotatingFileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-debug.log"),
+#             'filename': os.path.join(BASE_DIR, f"logs/django-{time.strftime('%Y-%m-%d')}.log"),
 #             'filters': ['require_debug_true', ],
 #             "when": 'D',  # 时间单位： M, H, D， W0(周一), W6(周日)
 #             "interval": 1,
@@ -244,13 +245,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #             'level': logging.DEBUG,
 #             'class': 'logging.FileHandler',
 #             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-server.log"),
-#             'filters': ['require_debug_true', ],
-#             'formatter': 'default'
-#         },
-#         "root": {
-#             'level': logging.DEBUG,
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-root.log"),
 #             'filters': ['require_debug_true', ],
 #             'formatter': 'default'
 #         },
@@ -274,6 +268,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #             "filters": ["require_debug_false"],
 #         }
 #     },
+#     "root": {
+#             "handlers": ["console"],
+#             "level": "WARNING",
+#         },
 #     'loggers': {
 #         # 应用中自定义日志记录器
 #         'mylogger': {
@@ -281,10 +279,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #             'handlers': ['console', 'file'],
 #             'propagate': True,
 #         },
+#         # django这个日志记录器（logger）是用来记录Django框架本身生成的日志消息的
 #         "django": {
 #             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
 #             "handlers": ["console", "file"],
-#             'propagate': False,
+#             'propagate': False,  # 阻止Django日志传播到根记录器
 #         },
 #         "django.request": {
 #             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
@@ -311,6 +310,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # e.g. logger = logging.getLogger("mylogger")
 # ######################### 日志配置结束 ######################### #
 
+##########################################################################################
+# 配置 loguru（可选）
+logger.add("logs/django.log", level="INFO", rotation="10 MB", compression="zip", retention="8 days")
+logger.level("INFO")  # 设置全局日志级别
+##########################################################################################
+
+
 SITE_ID = int(os.getenv('AP_SITE_ID', 2024))
 
 # 以下为本地页面优化调试时开启
@@ -322,10 +328,9 @@ SITE_ID = int(os.getenv('AP_SITE_ID', 2024))
 #         'localhost'
 #     ]
 
-
 admin.AdminSite.site_title = format(f"{APP_NAME}后台管理")
 admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')
-
+# 患者注册,恺恩泰empi接口
 EMPI_API_URL = os.getenv('EMPI_API_URL', 'http://172.16.33.181:8253/webservice/IndexRegisterService.asmx')
 # 上传给市互认平台使用
 HOSPITAL_KEY = os.getenv('HOSPITAL_KEY', 'tGuWgUr8PaS3dl7m')

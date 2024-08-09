@@ -16,22 +16,24 @@ import datetime
 from enum import Enum
 from typing import Optional
 from zoneinfo import ZoneInfo
-
 import lxml
 import requests
+
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.utils import timezone
+
 from json2xml import json2xml
 from lxml import etree
 from ninja import Router, Schema, Field
 from ninja.responses import codes_2xx, codes_4xx
 from requests.exceptions import ConnectTimeout
 
-from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit
+from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit, Diagnosis
 from hipmessageservice.utils.encrypt import EncryptUtils
+
 
 router = Router(tags=["openim"])
 
@@ -354,8 +356,8 @@ def check_cda(content: str, **kwargs) -> tuple:
     gmt_created = xml_file.xpath('xmlns:effectiveTime/@value', namespaces={'xmlns': 'urn:hl7-org:v3'})[0]
     patient_name = xml_file.xpath('//xmlns:patient/xmlns:name', namespaces={'xmlns': 'urn:hl7-org:v3'})[0].text
 
-    if doc_id == kwargs['doc_id'] and cda_code == kwargs['cda_code'] and cda_name == kwargs[
-        'cda_name'] and gmt_created == kwargs['gmt_created'] and patient_name == kwargs['patient_name']:
+    if (doc_id == kwargs['doc_id'] and cda_code == kwargs['cda_code'] and cda_name == kwargs['cda_name']
+            and gmt_created == kwargs['gmt_created'] and patient_name == kwargs['patient_name']):
         return True, 'ok'
     else:
         return False, f"服务和文档内容不一致,详情:{doc_id} ?== {kwargs['doc_id']} and {cda_code} ?== {kwargs['cda_code']} and {cda_name} ?== {kwargs['cda_name']} and {gmt_created} ?== {kwargs['gmt_created']} and {patient_name} ?== {kwargs['patient_name']}"
@@ -463,6 +465,7 @@ def verification(data: dict) -> tuple:
              | "OperationScheduleInfoAdd" | "OperationScheduleInfoUpdate" | "OperationScheduleInfoQuery" \
              | "OperationStatusInfoUpdate" | "OperationStatusInfoQuery":
             return verification_hip(data)
+
         # 其他非标准服务
         case 'ExamReportAdd':
             """校验并保存校验报告信息"""
@@ -523,6 +526,7 @@ def verification(data: dict) -> tuple:
                 return False, [str(item) for item in e]
             else:
                 return True, "ok"
+
         case "ExamReportDelete" | "PathologyReportDelete" | "CheckReportDelete":
             """检查检验报告删除逻辑"""
             report = copy.deepcopy(data[content_type])
@@ -557,6 +561,7 @@ def verification(data: dict) -> tuple:
                 return False, str(e)
             else:
                 return True, "ok"
+
         # 检查报告
         case 'CheckReportAdd':
             report = copy.deepcopy(data[content_type])
@@ -574,14 +579,14 @@ def verification(data: dict) -> tuple:
                 return False, [str(item) for item in e]
             else:
                 return True, 'ok'
+
+        # 门急诊就诊信息更新
         case 'VisitInfoUpdate':
-            # 门急诊就诊信息更新
             visit = copy.deepcopy(data[content_type])
             fields = set([field.name for field in Visit._meta.local_fields]) - {'id', 'gmt_created'}
             filtered_data = {key: value for key, value in visit.items() if key in fields}
             filtered_data.update(**{"from_src": data['send_id']})
             visit_info = Visit(**filtered_data)
-            visit_info.from_src = data['send_id']
             try:
                 # 校验
                 visit_info.full_clean(exclude=['adm_no'])
@@ -592,6 +597,7 @@ def verification(data: dict) -> tuple:
                 return False, [str(item) for item in e]
             else:
                 return True, 'ok'
+
         case 'getExamReportPrintInfos':
             """ 获取检验报告打印信息 """
             patient_id = data[content_type].get('patient_id', None)
@@ -613,6 +619,32 @@ def verification(data: dict) -> tuple:
                                          "url_report_pdf": row[3], "item_code": row[4], 'item_name': row[5]})
 
             return True, report_infos
+
+        case 'DiagIssuedAdd' | 'DiagIssuedUpdate':
+            """ 诊断信息新增或更新逻辑 """
+            diagnosiss = data[content_type]
+            # 获取需要保存的数据模型字段列表
+            fields = set([field.name for field in Diagnosis._meta.local_fields]) - {'id', 'gmt_created'}
+            for diagnosis in diagnosiss:
+                filtered_data = {key: value for key, value in diagnosis.items() if key in fields}
+                diagnosis_info = Diagnosis(**copy.deepcopy(filtered_data))
+                # 校验
+                try:
+                    diagnosis_info.full_clean(exclude=('diagnosis_id', ))
+                    # 保存到数据库
+                    if settings.IS_SAVE_TO_DB:
+                        Diagnosis.objects.update_or_create(diagnosis_id=diagnosis_info.diagnosis_id, defaults=filtered_data)
+                except ValidationError as e:
+                    return False, [str(item) for item in e]
+            return True, 'ok'
+
+        case 'DiagIssuedDelete':
+            """ 诊断信息撤回 """
+            diagnosiss = data[content_type]
+            for diagnosis in diagnosiss:
+                Diagnosis.objects.filter(diagnosis_id=diagnosis.get('diagnosis_id', None)).delete()
+            return True, 'ok'
+
         case _:
             return True, "本消息暂未纳入校验范围!"
 

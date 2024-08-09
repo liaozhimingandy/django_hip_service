@@ -71,7 +71,7 @@ class InsCodeChoices(models.TextChoices):
     H = ('99', '其他')
 
 
-class OrderClsCode(models.TextChoices):
+class OrderClsCode(models.IntegerChoices):
     """ 医嘱类别代码表 """
     A = (1, '长期医嘱')
     B = (2, '临时医嘱')
@@ -1020,7 +1020,7 @@ class OperationStatus(models.Model):
     手术状态信息
     """
 
-    class StatusCodeChoices(models.TextChoices):
+    class StatusCodeChoices(models.IntegerChoices):
         """手术状态"""
         A = (1, '入手术间')
         B = (2, '开始麻醉')
@@ -1253,6 +1253,7 @@ class Organization(models.Model):
                                            verbose_name="申请者医务人员科室联系人")
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name="来源系统")
     gmt_created = models.DateTimeField(db_comment='申请时间', verbose_name="申请时间")
+    extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息')
 
     class Meta:
         verbose_name = "医疗机构信息"
@@ -1265,7 +1266,7 @@ class OutpatientAppointStatus(models.Model):
     门诊预约状态
     """
 
-    class BookingCodeChoices(models.TextChoices):
+    class BookingCodeChoices(models.IntegerChoices):
         """预约状态"""
         A = (1, "患者预约")
         B = (9, "取消预约")
@@ -1501,6 +1502,7 @@ class Provider(models.Model):
     emp_name = models.CharField(max_length=64, db_comment='姓名', verbose_name='姓名')
     job_code = models.CharField(max_length=10, db_comment='专业技术职务代码', verbose_name='专业技术职务代码')
     job_name = models.CharField(max_length=64, db_comment='专业技术职务名称', verbose_name='专业技术职务名称')
+    telecom = models.CharField(max_length=64, db_comment='工作联系电话', verbose_name='工作联系电话')
     gmt_effect_high = models.DateTimeField(db_comment='角色有效期间开始时间', verbose_name='角色有效期间开始时间')
     gmt_effect_low = models.DateTimeField(db_comment='角色有效期间结束时间', verbose_name='角色有效期间结束时间')
     id_no = models.CharField(max_length=32, db_comment='身份证号', verbose_name='身份证号')
@@ -1600,7 +1602,7 @@ class Terminology(models.Model):
     author = models.CharField(max_length=64, db_comment='值集注册者信息注册人姓名',
                               verbose_name='值集注册者信息注册人姓名')
     gmt_author = models.DateTimeField(db_comment='值集注册者时间', verbose_name='值集注册者时间')
-    extra = models.JSONField(db_comment='补充信息', verbose_name="补充信息", null=True, blank=True)
+    extra = models.JSONField(db_comment='补充信息', verbose_name="补充信息")
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
@@ -1727,7 +1729,7 @@ class Visit(models.Model):
     doctor_name = models.CharField(max_length=36, db_comment="接诊医生姓名", verbose_name='接诊医生姓名')
     schedule_id = models.CharField(max_length=36, db_comment="排班ID", verbose_name='排班ID', null=True, blank=True)
     index = models.PositiveSmallIntegerField(db_comment='排队号', verbose_name='排队号', default=1)
-    gmt_visit_start = models.DateTimeField(db_comment='接诊开始时间', verbose_name='接诊开始时间')
+    gmt_visit_start = models.DateTimeField(db_comment='接诊开始时间', verbose_name='接诊开始时间', null=True, blank=True)
     gmt_visit_end = models.DateTimeField(db_comment='接诊结束时间', verbose_name='接诊结束时间', null=True, blank=True)
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')

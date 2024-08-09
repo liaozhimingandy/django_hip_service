@@ -178,9 +178,15 @@ class TransferInfoAdmin(admin.ModelAdmin):
 
 @admin.register(Diagnosis)
 class DiagnosisAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('adm_no', 'patient_id', 'diag_code', 'diag_name', 'adm_cls_code')
+    list_display_links = ('adm_no',)
+
+    search_fields = ('adm_no', 'patient_id')
 
 
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('adm_no', 'patient_id', 'gmt_visit_start', 'gmt_visit_end', 'adm_cls_code', 'index')
+    list_display_links = ('adm_no',)
+
+    search_fields = ('adm_no', 'patient_id')

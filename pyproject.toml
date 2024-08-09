@@ -20,6 +20,7 @@ dependencies = [
     "requests>=2.32.2",
     "json2xml>=5.0.1",
     "pycryptodome>=3.20.0",
+    "loguru>=0.7.2",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

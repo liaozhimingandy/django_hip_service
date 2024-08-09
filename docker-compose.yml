@@ -9,29 +9,29 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - - config/.env
+      - .env
     environment:
       - TZ=Asia/Shanghai
     volumes:
       - data_static:/opt/app/static
-      - /d/Projects/django_hip_service/hipmessageservice/static/hipmessageservice/services:/opt/app/hipmessageservice/static/hipmessageservice/services
+      # - /d/Projects/django_hip_service/hipmessageservice/static/hipmessageservice/services:/opt/app/hipmessageservice/static/hipmessageservice/services
 
-  web:
-      image: ${NGINX_APP_IMAGE}
-      restart: unless-stopped
-      links:
-        - app:app
-      ports:
-        - "80:80"
-        - "443:443"
-      env_file:
-        - config/.env
-      environment:
-        - TZ=Asia/Shanghai
-      volumes:
-        - ./config/default.conf.template:/etc/nginx/templates/default.conf.template
-        - data_nginx_log:/var/log/nginx
-        - data_static:/usr/share/nginx/static
+#  web:
+#      image: ${NGINX_APP_IMAGE}
+#      restart: unless-stopped
+#      links:
+#        - app:app
+#      ports:
+#        - "80:80"
+#        - "443:443"
+#      env_file:
+#        - .env
+#      environment:
+#        - TZ=Asia/Shanghai
+#      volumes:
+#        - ./config/default.conf.template:/etc/nginx/templates/default.conf.template
+#        - data_nginx_log:/var/log/nginx
+#        - data_static:/usr/share/nginx/static
 
 volumes:
   data_nginx_log:
