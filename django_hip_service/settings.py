@@ -22,7 +22,7 @@ from django.utils.html import format_html
 from loguru import logger
 
 # 应用版本号
-VERSION = (3, 5, 0, "alpha", 1)
+VERSION = (3, 6, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "HIP"
 # id前缀
@@ -63,7 +63,6 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "hipmessageservice",
-    # "esb_standard",
     "cdr"
     # Your stuff: custom apps go here
 ]
@@ -104,32 +103,31 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": "cdr",
-    #     "USER": "postgres",
-    #     "PASSWORD": "postgres",
-    #     "HOST": "localhost"
-    # },
     "default": {
-        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
-        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
-        else os.getenv("APP_DB_NAME", "cdr"),
-        "USER": os.getenv("APP_DB_USER", "zhiming"),
-        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
-        "PORT": os.getenv("APP_DB_PORT", "5432"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("APP_DB_NAME", "postgres"),
+        "USER": os.getenv("APP_DB_USER", "postgres.oubccwnopeljdjvbhxxx"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "u-PdRf-ZsRJq5Be"),
+        "HOST":  os.getenv("APP_DB_HOST", "aws-0-ap-southeast-1.pooler.supabase.com"),
+        "PORT": os.getenv("APP_DB_PORT", 5432)
     },
-    'test': {
-        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
+    # "default": {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
+    # },
+    # "default": {
+    #     "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
+    #     "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
+    #     if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
+    #     else os.getenv("APP_DB_NAME", "cdr"),
+    #     "USER": os.getenv("APP_DB_USER", "zhiming"),
+    #     "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+    #     "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
+    #     "PORT": os.getenv("APP_DB_PORT", "5432"),
+    # },
+    "test": {
+        "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr-test.db")
-        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
-        else os.getenv("APP_DB_NAME", "cdr-test"),
-        "USER": os.getenv("APP_DB_USER", "zhiming"),
-        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
-        "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
 }
 
@@ -155,11 +153,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = os.getenv('APP_LANGUAGE_CODE', 'zh-hans')
-
 TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai')
-
 USE_I18N = True
-
 USE_TZ = True
 
 # 静态方式 (CSS, JavaScript, Images)

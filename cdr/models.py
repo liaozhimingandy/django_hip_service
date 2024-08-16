@@ -498,7 +498,7 @@ class Exam(models.Model):
     """
     检验申请信息
     """
-    apply_no = models.CharField(max_length=36, db_comment='电子申请单编号', unique=True, verbose_name='电子申请单编号')
+    apply_no = models.CharField(max_length=36, db_comment='电子申请单编号', verbose_name='电子申请单编号')
     apply_desc = models.CharField(max_length=255, blank=True, null=True, db_comment='申请单描述',
                                   verbose_name='申请单描述')
     apply_status = models.CharField(max_length=8, blank=True, null=True, db_comment='申请单状态',
@@ -522,10 +522,10 @@ class Exam(models.Model):
     gmt_review = models.DateTimeField(db_comment='审核日期时间', verbose_name='审核日期时间')
     reviewer_id = models.CharField(max_length=36, db_comment='审核者编码', verbose_name='审核者编码')
     reviewer = models.CharField(max_length=64, db_comment='审核者姓名', verbose_name='审核者姓名')
-    order_id = models.CharField(max_length=36, db_comment='医嘱ID', unique=True, verbose_name='医嘱ID')
+    order_id = models.CharField(max_length=36, db_comment='医嘱ID', verbose_name='医嘱ID')
     item_code = models.CharField(max_length=36, db_comment='检验项目编码', verbose_name='检验项目编码')
     item_name = models.CharField(max_length=64, db_comment='检验项目名称', verbose_name='检验项目名称')
-    method_code = models.CharField(max_length=8, blank=True, null=True, db_comment='检验方法编码',
+    method_code = models.CharField(max_length=36, blank=True, null=True, db_comment='检验方法编码',
                                    verbose_name='检验方法编码')
     method_name = models.CharField(max_length=64, blank=True, null=True, db_comment='检验方法名称',
                                    verbose_name='检验方法名称')
@@ -538,12 +538,12 @@ class Exam(models.Model):
                             verbose_name='申请注意事项')
     diags = models.JSONField(blank=True, null=True, db_comment='诊断信息', verbose_name='诊断信息',
                              help_text='检验申请原因')
-    adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
     patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+    extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息, 就诊流水号', default=dict, db_default='{}')
 
     class Meta:
         verbose_name = "检验申请信息"
@@ -551,8 +551,11 @@ class Exam(models.Model):
         db_table_comment = '检验申请信息'
 
         indexes = [
-            models.Index(fields=('adm_no',)),
             models.Index(fields=('patient_id',)),
+        ]
+
+        constraints = [
+            models.UniqueConstraint(fields=('apply_no', 'item_code'), name='unique_apply_no_item_code')
         ]
 
 
@@ -1691,7 +1694,8 @@ class Diagnosis(models.Model):
     diag_name = models.CharField(max_length=36, db_comment="疾病诊断名称", verbose_name='疾病诊断名称')
     diag_desc = models.CharField(max_length=64, db_comment="诊断描述", verbose_name='诊断描述', null=True, blank=True)
     is_parent = models.BooleanField(default=False, db_comment="是否为父诊断", verbose_name='是否为父诊断')
-    parent_id = models.CharField(max_length=36, db_comment="父诊断唯一标识", verbose_name='父诊断唯一标识')
+    parent_id = models.CharField(max_length=36, db_comment="父诊断唯一标识", verbose_name='父诊断唯一标识', null=True,
+                                 blank=True)
     is_primary = models.BooleanField(default=False, db_comment="主诊标志", verbose_name='主诊标志')
     is_uncertain = models.BooleanField(db_comment="待查标志", verbose_name="待查标志", null=True, blank=True)
     is_infection = models.BooleanField(db_comment="院感标志", verbose_name='院感标志', null=True, blank=True)

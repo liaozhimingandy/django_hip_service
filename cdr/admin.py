@@ -56,7 +56,7 @@ class EncounterCardAdmin(admin.ModelAdmin):
 
 @admin.register(Exam)
 class ExamAppInfoAdmin(admin.ModelAdmin):
-    list_display = ('adm_no', 'patient_id', 'apply_no', 'item_name')
+    list_display = ('patient_id', 'apply_no', 'item_name')
     list_display_links = ('apply_no',)
 
 
