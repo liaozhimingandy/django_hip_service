@@ -251,6 +251,11 @@ class Check(models.Model):
             models.Index(fields=('patient_id',)),
         ]
 
+        # 唯一约束
+        constraints = [
+            models.UniqueConstraint(fields=('apply_no', 'item_code'), name='unique_apply_no_item_code_check'),
+        ]
+
 
 class CheckAppointStatus(models.Model):
     """
@@ -376,10 +381,10 @@ class CheckReport(models.Model):
             raise ValidationError(message="extra_infos中的值: '%(value)s'必须是一个字典类型或者null",
                                   code='extra_infos_error', params={'value': self.extra_infos})
         try:
-            assert self.gmt_verified >= self.gmt_author, "报告审核日期时间 不能小于 报告日期时间"
-            assert self.gmt_author > self.gmt_apply, "报告日期时间 不能小于 申请时间"
+            assert self.gmt_verified >= self.gmt_author, f"报告审核日期时间({self.gmt_verified}) 不能小于 报告日期时间({self.gmt_author})"
+            assert self.gmt_author > self.gmt_apply, f"报告日期时间({self.gmt_author}) 不能小于 申请时间({self.gmt_apply})"
             assert all([self.gmt_execute > self.gmt_apply, self.gmt_execute < self.gmt_author]), \
-                "检查时间 必须 位于申请时间和报告日期时间之间"
+                f"检查时间({self.gmt_execute}) 必须 位于申请时间({self.gmt_apply})和报告日期时间({self.gmt_author})之间"
         except AssertionError as e:
             raise ValidationError(message=str(e))
 
@@ -553,9 +558,9 @@ class Exam(models.Model):
         indexes = [
             models.Index(fields=('patient_id',)),
         ]
-
+        # 唯一约束
         constraints = [
-            models.UniqueConstraint(fields=('apply_no', 'item_code'), name='unique_apply_no_item_code')
+            models.UniqueConstraint(fields=('apply_no', 'item_code'), name='unique_apply_no_item_code_exam')
         ]
 
 
@@ -1160,12 +1165,12 @@ class Order(models.Model):
                                          verbose_name='医嘱执行频率名称')
     route_code = models.CharField(max_length=3, db_comment='用药途径代码', verbose_name='用药途径代码')
     route_name = models.CharField(max_length=36, db_comment='用药途径名称', verbose_name='用药途径名称')
-    dose = models.CharField(max_length=36, blank=True, null=True, db_comment='用药剂量-单次',
-                            verbose_name='用药剂量-单次')
+    dose = models.DecimalField(max_digits=8, decimal_places=4, db_comment='用药剂量-单次',
+                               verbose_name='用药剂量-单次')
     dose_unit = models.CharField(max_length=36, blank=True, null=True, db_comment='用药剂量-单次-单位',
                                  verbose_name='用药剂量-单次-单位')
-    dose_total = models.CharField(max_length=64, blank=True, null=True, db_comment='药物使用总剂量',
-                                  verbose_name='药物使用总剂量')
+    dose_total = models.DecimalField(max_digits=8, decimal_places=4, db_comment='药物使用总剂量',
+                                     verbose_name='药物使用总剂量')
     dose_total_unit = models.CharField(max_length=36, blank=True, null=True, db_comment='药物使用总剂量-单位',
                                        verbose_name='医嘱开立日期时间')
     dose_total_day = models.PositiveSmallIntegerField(db_default=1, db_comment='药物使用总剂量-天数',
@@ -1192,11 +1197,11 @@ class Order(models.Model):
                                        verbose_name='执行科室编码')
     execute_dept_name = models.CharField(max_length=64, blank=True, null=True, db_comment='执行科室名称',
                                          verbose_name='执行科室名称')
-    pre_order_id = models.CharField(max_length=64, blank=True, null=True, db_comment='父医嘱ID',
+    pre_order_id = models.CharField(max_length=36, blank=True, null=True, db_comment='父医嘱ID',
                                     verbose_name='父医嘱ID', help_text='没有父医嘱可以没有此occurrenceOf节点')
     order_cls_code = models.PositiveSmallIntegerField(choices=OrderClsCode, db_comment='医嘱类别编码',
                                                       verbose_name='医嘱类别编码')
-    amount = models.PositiveSmallIntegerField(default=1, db_comment='领量(给药量)', verbose_name='领量(给药量)')
+    amount = models.DecimalField(max_digits=8, decimal_places=4, db_comment='领量(给药量)', verbose_name='领量(给药量)')
     amount_unit = models.CharField(max_length=36, blank=True, null=True, db_comment='领量(给药量)-单位',
                                    verbose_name='领量(给药量)-单位')
     gmt_start = models.DateTimeField(blank=True, null=True, db_comment='开始时间', verbose_name='开始时间')
@@ -1271,8 +1276,8 @@ class OutpatientAppointStatus(models.Model):
 
     class BookingCodeChoices(models.IntegerChoices):
         """预约状态"""
-        A = (1, "患者预约")
-        B = (9, "取消预约")
+        A = (1, "预约成功")
+        B = (0, "取消预约")
 
     booking_id = models.CharField(max_length=36, db_comment='预约ID', unique=True, verbose_name="预约ID")
     gmt_schedule = models.DateTimeField(db_comment='预约日期时间', verbose_name="预约日期时间")
@@ -1322,7 +1327,7 @@ class OutPatient(models.Model):
                                     verbose_name='医疗保险类别代码')
     patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
     doc_id = models.CharField(max_length=36, db_comment='医生的职工号', verbose_name='医生的职工号')
-    doc_name = models.CharField(max_length=16, db_comment='责任医师姓名', verbose_name='责任医师姓名')
+    doc_name = models.CharField(max_length=32, db_comment='责任医师姓名', verbose_name='责任医师姓名')
     dept_id = models.CharField(max_length=36, db_comment='服务场所科室标识', verbose_name='服务场所科室标识')
     dept_name = models.CharField(max_length=64, db_comment='服务场所科室', verbose_name='服务场所科室')
     org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment='服务机构标识',
@@ -1721,7 +1726,14 @@ class Diagnosis(models.Model):
 
 
 class Visit(models.Model):
-    """ 门诊就诊信息 """
+    """ 门急诊就诊信息 """
+
+    class VisitStatusChoices(models.IntegerChoices):
+        A = (1, '分诊台分诊')
+        B = (2, '医生开始接诊')
+        C = (3, '医生结束接诊')
+        D = (4, '转诊')
+
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
     patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
@@ -1733,7 +1745,9 @@ class Visit(models.Model):
     doctor_name = models.CharField(max_length=36, db_comment="接诊医生姓名", verbose_name='接诊医生姓名')
     schedule_id = models.CharField(max_length=36, db_comment="排班ID", verbose_name='排班ID', null=True, blank=True)
     index = models.PositiveSmallIntegerField(db_comment='排队号', verbose_name='排队号', default=1)
-    gmt_visit_start = models.DateTimeField(db_comment='接诊开始时间', verbose_name='接诊开始时间', null=True, blank=True)
+    visit_status = models.PositiveSmallIntegerField('就诊状态', choices=VisitStatusChoices)
+    gmt_visit_start = models.DateTimeField(db_comment='接诊开始时间', verbose_name='接诊开始时间', null=True,
+                                           blank=True)
     gmt_visit_end = models.DateTimeField(db_comment='接诊结束时间', verbose_name='接诊结束时间', null=True, blank=True)
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
@@ -1754,3 +1768,13 @@ class Visit(models.Model):
             models.Index(fields=('adm_no',)),
             models.Index(fields=('patient_id',)),
         ]
+
+    # def clean(self):
+    #     super().clean()
+    #     # 自定义验证逻辑
+    #     try:
+    #         if self.gmt_visit_start and self.gmt_visit_end:
+    #             assert self.gmt_visit_start < self.gmt_visit_end, f'就诊结束时间({self.gmt_visit_start})理论上不能小于就诊开始时间({self.gmt_visit_start}),请重新核对数据!'
+    #     except AssertionError as e:
+    #         raise ValidationError(message=str(e))
+

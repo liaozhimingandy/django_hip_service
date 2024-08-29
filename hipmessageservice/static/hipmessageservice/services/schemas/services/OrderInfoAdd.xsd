@@ -377,7 +377,7 @@
 															<xs:attribute name="contextControlCode" type="xs:string" use="required"/>
 														</xs:complexType>
 													</xs:element>
-													<xs:element name="component2">
+													<xs:element name="component2" maxOccurs="unbounded">
 														<xs:complexType>
 															<xs:sequence>
 																<xs:element name="sequenceNumber">
@@ -522,6 +522,7 @@
 																													<xs:enumeration value="擦皮肤"/>
 																													<xs:enumeration value="其他局部用药途径"/>
 																													<xs:enumeration value="其他用药途径"/>
+																													<xs:enumeration value="-"/>
 																												</xs:restriction>
 																											</xs:simpleType>
 																										</xs:attribute>
@@ -557,6 +558,7 @@
 																								<xs:enumeration value="612"/>
 																								<xs:enumeration value="699"/>
 																								<xs:enumeration value="9"/>
+																								<xs:enumeration value="-"/>
 																							</xs:restriction>
 																						</xs:simpleType>
 																					</xs:attribute>
@@ -670,6 +672,7 @@
 																													<xs:enumeration value="吸入剂(气体)"/>
 																													<xs:enumeration value="试剂盒(诊断用试剂),药盒"/>
 																													<xs:enumeration value="其他剂型(空心胶囊,绷带,纱布,胶布)"/>
+																													<xs:enumeration value="-"/>
 																												</xs:restriction>
 																											</xs:simpleType>
 																										</xs:attribute>
@@ -756,6 +759,7 @@
 																								<xs:enumeration value="72"/>
 																								<xs:enumeration value="90"/>
 																								<xs:enumeration value="99"/>
+																								<xs:enumeration value="-"/>
 																							</xs:restriction>
 																						</xs:simpleType>
 																					</xs:attribute>
@@ -1471,7 +1475,14 @@
 																																							<xs:simpleContent>
 																																								<xs:extension base="xs:string">
 																																									<xs:attribute name="root" type="xs:string" use="required"/>
-																																									<xs:attribute name="extension" type="xs:byte" use="required"/>
+																																									<xs:attribute name="extension" use="required">
+																																										<xs:simpleType>
+																																											<xs:restriction base="xs:string">
+																																												<xs:minLength value="1"/>
+																																												<xs:maxLength value="36"/>
+																																											</xs:restriction>
+																																										</xs:simpleType>
+																																									</xs:attribute>
 																																								</xs:extension>
 																																							</xs:simpleContent>
 																																						</xs:complexType>
@@ -1604,8 +1615,8 @@
 	<xs:complexType name="PQ">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="unit" type="xs:string"/>
-				<xs:attribute name="value" type="xs:byte"/>
+				<xs:attribute name="unit" type="xs:string" use="required"/>
+				<xs:attribute name="value" type="xs:float"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>

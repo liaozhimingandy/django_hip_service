@@ -273,7 +273,14 @@ def deal_patient_empi_reg(content):
     """ 处理个人新增注册,更新接口,调取empi注册接口,并且保存到数据库 """
     from lxml import etree
     etree.register_namespace('xmlns', 'urn:hl7-org:v3')
-    xml_root = etree.fromstring(content)
+    # 添加带<?xml的情况
+    try:
+        xml_root = etree.fromstring(content)
+    except ValueError:
+        xml_root = etree.fromstring(content.replace('<?xml version="1.0" encoding="UTF-8"?>', ''))
+    except (lxml.etree.XMLSyntaxError,) as e:
+        return False, str(e)
+
     dict_data = data_mapping.copy()
 
     # 解析平台患者个人信息数据集所需要的数据

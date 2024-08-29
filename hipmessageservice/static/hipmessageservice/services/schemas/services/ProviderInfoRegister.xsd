@@ -505,6 +505,7 @@
 																													<xs:enumeration value="政工师"/>
 																													<xs:enumeration value="助理政工师"/>
 																													<xs:enumeration value="政工员"/>
+																													<xs:enumeration value="不便分类的其他人员"/>
 																												</xs:restriction>
 																											</xs:simpleType>
 																										</xs:attribute>
@@ -807,6 +808,7 @@
 																								<xs:enumeration value="983"/>
 																								<xs:enumeration value="984"/>
 																								<xs:enumeration value="985"/>
+																								<xs:enumeration value="000"/>
 																							</xs:restriction>
 																						</xs:simpleType>
 																					</xs:attribute>
