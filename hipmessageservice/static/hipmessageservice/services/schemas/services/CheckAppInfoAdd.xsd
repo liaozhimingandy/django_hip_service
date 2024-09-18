@@ -289,7 +289,14 @@
 																	<xs:complexType>
 																		<xs:simpleContent>
 																			<xs:extension base="xs:string">
-																				<xs:attribute name="value" type="xs:string" use="required"/>
+																				<xs:attribute name="value" use="required">
+																					<xs:simpleType>
+																						<xs:restriction base="xs:string">
+																							<xs:minLength value="1"/>
+																							<xs:maxLength value="102400"/>
+																						</xs:restriction>
+																					</xs:simpleType>
+																				</xs:attribute>
 																			</xs:extension>
 																		</xs:simpleContent>
 																	</xs:complexType>

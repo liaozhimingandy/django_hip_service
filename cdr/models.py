@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -193,7 +195,7 @@ class Check(models.Model):
     property = models.CharField(max_length=1, choices=PropertyChoices, default='N', db_comment='优先（紧急）度代码',
                                 verbose_name='优先（紧急）度代码')
     gmt_apply = models.DateTimeField(blank=True, null=True, db_comment='开单时间', verbose_name='开单时间')
-    doc_sign = models.CharField(max_length=255, blank=True, null=True, db_comment='申请单开立者签名',
+    doc_sign = models.TextField(blank=True, null=True, db_comment='申请单开立者签名',
                                 verbose_name='申请单开立者签名')
     doc_id = models.CharField(max_length=36, blank=True, null=True, db_comment='开单医生编码',
                               verbose_name='开单医生编码')
@@ -470,19 +472,22 @@ class Discharge(models.Model):
     adm_no = models.CharField(max_length=36, db_comment='就诊流水号', verbose_name='就诊流水号', unique=True)
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
+    gmt_adm = models.DateTimeField(blank=True, null=True, db_comment='入院日期时间', verbose_name='入院日期时间')
     gmt_discharge = models.DateTimeField(blank=True, null=True, db_comment='出院日期时间', verbose_name='出院日期时间')
+    reason = models.CharField(max_length=128, blank=True, null=True, db_comment='就诊原因', verbose_name='就诊原因')
     patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
     discharge_doc_id = models.CharField(max_length=36, blank=True, null=True, db_comment='出院登记的职工号',
                                         verbose_name='出院登记职工号')
     discharge_doc_name = models.CharField(max_length=64, blank=True, null=True, db_comment='出院登记职工姓名',
                                           verbose_name='出院登记职工姓名')
-    dept_id = models.CharField(max_length=36, blank=True, null=True, db_comment='出院科室id', verbose_name='出院科室id')
-    dept_name = models.CharField(max_length=64, blank=True, null=True, db_comment='出院科室名称',
-                                 verbose_name='出院科室名称')
-    ward_id = models.CharField(max_length=36, blank=True, null=True, db_comment='出院病区id', verbose_name='出院病区id')
-    ward_name = models.CharField(max_length=64, blank=True, null=True, db_comment='出院病区名称',
-                                 verbose_name='出院病区名称')
-
+    dept_id = models.CharField(max_length=36, db_comment='出院科室id', verbose_name='出院科室id')
+    dept_name = models.CharField(max_length=64, db_comment='出院科室名称', verbose_name='出院科室名称')
+    ward_id = models.CharField(max_length=36, db_comment='出院病区id', verbose_name='出院病区id')
+    ward_name = models.CharField(max_length=64, db_comment='出院病区名称',verbose_name='出院病区名称')
+    room_id = models.CharField(max_length=36, db_comment='病房id', verbose_name='病房id')
+    room_name = models.CharField(max_length=64, db_comment='病房名称', verbose_name='病房名称')
+    bed_id = models.CharField(max_length=36, db_comment='床号ID', verbose_name='床号ID')
+    bed_name = models.CharField(max_length=64, db_comment='床号', verbose_name='床号')
     diags_a = models.JSONField(blank=True, null=True, db_comment='西医诊断', verbose_name='西医诊断')
     diags_b = models.JSONField(blank=True, null=True, db_comment='中医诊断', verbose_name='中医诊断')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -518,7 +523,7 @@ class Exam(models.Model):
     specimen_cls_name = models.CharField(max_length=36, blank=True, null=True, db_comment='标本类别名称',
                                          verbose_name='标本类别名称')
     gmt_apply = models.DateTimeField(db_comment='开单时间', verbose_name='开单时间')
-    doc_sign = models.CharField(max_length=255, blank=True, null=True, db_comment='申请单开立者签名',
+    doc_sign = models.TextField(blank=True, null=True, db_comment='申请单开立者签名',
                                 verbose_name='申请单开立者签名')
     doc_id = models.CharField(max_length=36, db_comment='开单医生编码', verbose_name='开单医生编码')
     doc_name = models.CharField(max_length=64, db_comment='开单医生姓名', verbose_name='开单医生姓名')
@@ -916,9 +921,9 @@ class Operation(models.Model):
     手术申请信息
     """
 
-    class PropertyChoices(models.IntegerChoices):
-        A = (1, '择期')
-        B = (2, '围期')
+    class PropertyChoices(models.TextChoices):
+        A = ('01', '择期')
+        B = ('02', '围期')
 
     class GradeCodeChoices(models.IntegerChoices):
         A = (1, '一级手术')
@@ -934,7 +939,7 @@ class Operation(models.Model):
                                        verbose_name='麻醉方式编码')
     anesthesia_name = models.CharField(max_length=64, blank=True, null=True, db_comment='麻醉方式名称',
                                        verbose_name='麻醉方式名称')
-    property_code = models.PositiveSmallIntegerField(choices=PropertyChoices, db_comment='手术性质编码（择期，围期)',
+    property_code = models.CharField(max_length=2, choices=PropertyChoices, db_comment='手术性质编码（择期，围期)',
                                                      verbose_name='手术性质编码')
     doc_id = models.CharField(max_length=36, blank=True, null=True, db_comment='申请医师工号',
                               verbose_name='申请医师工号')
@@ -1141,14 +1146,14 @@ class Order(models.Model):
         I = ('99', '其他医嘱')
 
     gmt_order = models.DateTimeField(db_comment='医嘱开立日期时间', verbose_name='医嘱开立日期时间')
-    doc_sign = models.CharField(max_length=255, blank=True, null=True, db_comment='医嘱开立者签名',
+    doc_sign = models.TextField(blank=True, null=True, db_comment='医嘱开立者签名',
                                 verbose_name='医嘱开立者签名')
     doc_id = models.CharField(max_length=36, db_comment='医务人员工号', verbose_name='医务人员工号')
     doc_name = models.CharField(max_length=64, db_comment='医嘱开立者', verbose_name='医嘱开立者')
     dept_id = models.CharField(max_length=36, db_comment='医疗卫生机构（科室）ID', verbose_name='医疗卫生机构（科室）ID')
     dept_name = models.CharField(max_length=64, db_comment='医嘱开立科室', verbose_name='医嘱开立科室')
     gmt_review = models.DateTimeField(db_comment='医嘱审核日期时间', verbose_name='医嘱审核日期时间')
-    reviewer_sign = models.CharField(max_length=255, db_comment='医嘱审核者签名', verbose_name='医嘱审核者签名')
+    reviewer_sign = models.TextField(db_comment='医嘱审核者签名', verbose_name='医嘱审核者签名')
     reviewer_id = models.CharField(max_length=36, db_comment='医嘱审核者工号', verbose_name='医嘱审核者工号')
     reviewer = models.CharField(max_length=64, db_comment='医嘱审核者', verbose_name='医嘱审核者')
     index = models.PositiveIntegerField(db_comment='医嘱序号', verbose_name='医嘱序号')
@@ -1595,6 +1600,7 @@ class Terminology(models.Model):
     """
     术语信息
     """
+    tid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     dataset_code = models.CharField(max_length=36, db_comment='值集标识符', verbose_name='值集标识符')
     dataset_name = models.CharField(max_length=64, db_comment='值集描述', verbose_name='值集描述')
     status = models.BooleanField(default=True, db_comment='值集状态代码; 1: 启用，0：未启用',
@@ -1609,10 +1615,12 @@ class Terminology(models.Model):
                                  verbose_name='值集注册者信息注册人ID')
     author = models.CharField(max_length=64, db_comment='值集注册者信息注册人姓名',
                               verbose_name='值集注册者信息注册人姓名')
-    gmt_author = models.DateTimeField(db_comment='值集注册者时间', verbose_name='值集注册者时间')
-    extra = models.JSONField(db_comment='补充信息', verbose_name="补充信息")
+    extra = models.JSONField(db_comment='补充信息', verbose_name="补充信息", null=True, blank=True)
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f"{self.dataset_name} - {self.item_name} - {self.tid}"
 
     class Meta:
         verbose_name = "术语信息"

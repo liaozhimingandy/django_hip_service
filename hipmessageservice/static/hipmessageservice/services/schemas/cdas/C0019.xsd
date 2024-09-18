@@ -38,7 +38,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 								<xs:attribute name="extension" use="required">
 									<xs:simpleType>
 										<xs:restriction base="xs:string">

@@ -17,6 +17,8 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.decorators.csrf import csrf_exempt
+from graphene_django.views import GraphQLView
 
 from django_hip_service import settings
 
@@ -32,7 +34,8 @@ urlpatterns = [
     path('download/', download_count, name='download-count'),
     path("test/", generate_report),
     # path('messsage/download/', download),
-    path('v3/', api.urls)
+    path('v3/', api.urls),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),  # graphiql=True 打开 GraphiQL 浏览器
 
 ]
 

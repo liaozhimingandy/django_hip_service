@@ -238,7 +238,7 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required" fixed="2.16.156.10011.2.3.3.4"/>
 																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>

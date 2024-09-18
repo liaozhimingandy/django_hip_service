@@ -5,7 +5,17 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:140bacc999f592d2a34a0d48f404185878417fb958a35162c27b15c662ba92f0"
+content_hash = "sha256:8cf0b86d8cfccd73decf8edd5f09233cf4e8b8e6aaf337c0c312f92acc09982e"
+
+[[package]]
+name = "aniso8601"
+version = "9.0.1"
+summary = "A library for parsing ISO 8601 strings."
+groups = ["default"]
+files = [
+    {file = "aniso8601-9.0.1-py2.py3-none-any.whl", hash = "sha256:1d2b7ef82963909e93c4f24ce48d4de9e66009a21bf1c1e1c85bdd0812fe412f"},
+    {file = "aniso8601-9.0.1.tar.gz", hash = "sha256:72e3117667eedf66951bb2d93f4296a56b94b078a8a95905a052611fb3f1b973"},
+]
 
 [[package]]
 name = "annotated-types"
@@ -154,6 +164,15 @@ files = [
 ]
 
 [[package]]
+name = "django-json-widget"
+version = "2.0.1"
+summary = "Django json widget is an alternative widget that makes it easy to edit the jsonfield field of django."
+groups = ["default"]
+files = [
+    {file = "django-json-widget-2.0.1.tar.gz", hash = "sha256:adb4cab17fe5a04139037d7d84725369530ef35b912c3790d3a7b13f99351358"},
+]
+
+[[package]]
 name = "django-ninja"
 version = "1.2.2"
 requires_python = ">=3.7"
@@ -200,6 +219,64 @@ dependencies = [
 ]
 files = [
     {file = "gmssl-3.2.2-py3-none-any.whl", hash = "sha256:59f069a91eb19ef59b9e7be4d436ed01c92ce064d3d7d45a8778fc07fd2cd068"},
+]
+
+[[package]]
+name = "graphene"
+version = "3.3"
+summary = "GraphQL Framework for Python"
+groups = ["default"]
+dependencies = [
+    "aniso8601<10,>=8",
+    "graphql-core<3.3,>=3.1",
+    "graphql-relay<3.3,>=3.1",
+]
+files = [
+    {file = "graphene-3.3-py2.py3-none-any.whl", hash = "sha256:bb3810be33b54cb3e6969506671eb72319e8d7ba0d5ca9c8066472f75bf35a38"},
+    {file = "graphene-3.3.tar.gz", hash = "sha256:529bf40c2a698954217d3713c6041d69d3f719ad0080857d7ee31327112446b0"},
+]
+
+[[package]]
+name = "graphene-django"
+version = "3.2.2"
+summary = "Graphene Django integration"
+groups = ["default"]
+dependencies = [
+    "Django>=3.2",
+    "graphene<4,>=3.0",
+    "graphql-core<4,>=3.1.0",
+    "graphql-relay<4,>=3.1.1",
+    "promise>=2.1",
+    "text-unidecode",
+]
+files = [
+    {file = "graphene-django-3.2.2.tar.gz", hash = "sha256:059ccf25d9a5159f28d7ebf1a648c993ab34deb064e80b70ca096aa22a609556"},
+    {file = "graphene_django-3.2.2-py2.py3-none-any.whl", hash = "sha256:0fd95c8c1cbe77ae2a5940045ce276803c3acbf200a156731e0c730f2776ae2c"},
+]
+
+[[package]]
+name = "graphql-core"
+version = "3.2.4"
+requires_python = "<4,>=3.6"
+summary = "GraphQL implementation for Python, a port of GraphQL.js, the JavaScript reference implementation for GraphQL."
+groups = ["default"]
+files = [
+    {file = "graphql-core-3.2.4.tar.gz", hash = "sha256:acbe2e800980d0e39b4685dd058c2f4042660b89ebca38af83020fd872ff1264"},
+    {file = "graphql_core-3.2.4-py3-none-any.whl", hash = "sha256:1604f2042edc5f3114f49cac9d77e25863be51b23a54a61a23245cf32f6476f0"},
+]
+
+[[package]]
+name = "graphql-relay"
+version = "3.2.0"
+requires_python = ">=3.6,<4"
+summary = "Relay library for graphql-core"
+groups = ["default"]
+dependencies = [
+    "graphql-core<3.3,>=3.2",
+]
+files = [
+    {file = "graphql-relay-3.2.0.tar.gz", hash = "sha256:1ff1c51298356e481a0be009ccdff249832ce53f30559c1338f22a0e0d17250c"},
+    {file = "graphql_relay-3.2.0-py3-none-any.whl", hash = "sha256:c9b22bd28b170ba1fe674c74384a8ff30a76c8e26f88ac3aa1584dd3179953e5"},
 ]
 
 [[package]]
@@ -460,6 +537,18 @@ files = [
     {file = "pandas-2.2.2-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:43498c0bdb43d55cb162cdc8c06fac328ccb5d2eabe3cadeb3529ae6f0517c32"},
     {file = "pandas-2.2.2-cp312-cp312-win_amd64.whl", hash = "sha256:d187d355ecec3629624fccb01d104da7d7f391db0311145817525281e2804d23"},
     {file = "pandas-2.2.2.tar.gz", hash = "sha256:9e79019aba43cb4fda9e4d983f8e88ca0373adbb697ae9c6c43093218de28b54"},
+]
+
+[[package]]
+name = "promise"
+version = "2.3"
+summary = "Promises/A+ implementation for Python"
+groups = ["default"]
+dependencies = [
+    "six",
+]
+files = [
+    {file = "promise-2.3.tar.gz", hash = "sha256:dfd18337c523ba4b6a58801c164c1904a9d4d1b1747c7d5dbf45b693a49d93d0"},
 ]
 
 [[package]]
@@ -745,6 +834,16 @@ groups = ["default", "dev"]
 files = [
     {file = "sqlparse-0.5.1-py3-none-any.whl", hash = "sha256:773dcbf9a5ab44a090f3441e2180efe2560220203dc2f8c0b0fa141e18b505e4"},
     {file = "sqlparse-0.5.1.tar.gz", hash = "sha256:bb6b4df465655ef332548e24f08e205afc81b9ab86cb1c45657a7ff173a3a00e"},
+]
+
+[[package]]
+name = "text-unidecode"
+version = "1.3"
+summary = "The most basic Text::Unidecode port"
+groups = ["default"]
+files = [
+    {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
+    {file = "text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8"},
 ]
 
 [[package]]

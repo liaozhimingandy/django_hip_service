@@ -22,9 +22,9 @@ from django.utils.html import format_html
 from loguru import logger
 
 # 应用版本号
-VERSION = (3, 6, 0, "alpha", 1)
+VERSION = (3, 7, 0, "alpha", 1)
 __version__ = get_version(VERSION)
-APP_NAME = "HIP"
+APP_NAME = "集成平台数据"
 # id前缀
 PREFIX_ID = "esbid_"
 
@@ -59,6 +59,8 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "django_json_widget",
+    'graphene_django',
 ]
 
 LOCAL_APPS = [
@@ -334,3 +336,10 @@ HOSPITAL_CODE = os.getenv('HOSPITAL_CODE', '12360000491015900T')
 IS_SAVE_TO_DB = os.getenv('IS_SAVE_TO_DB', 1)
 # 单体应用数据库层面创建外键约束
 IS_DB_CONSTRAINT = os.getenv('IS_DB_CONSTRAINT', 1)
+
+##########################################################################################
+# GraphQL 配置
+GRAPHENE = {
+    'SCHEMA': 'cdr.schema.schema',  # 指向你的 schema 文件
+}
+##########################################################################################
