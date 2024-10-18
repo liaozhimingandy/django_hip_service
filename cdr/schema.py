@@ -35,50 +35,42 @@ class Query(graphene.ObjectType):
         return Terminology.objects.count()
 
 
+def create_input_type(model, exclude: tuple = ("tid", 'gmt_created')):
+    # 动态生成输入类型的字段
+    attrs = {}
+    for field in model._meta.fields:
+        # 跳过自动生成的 ID 字段，或者根据需要可以包含
+        if isinstance(field, models.AutoField) or field.name in exclude:
+            continue
+
+        if isinstance(field, models.UUIDField):
+            field_type = GrapheneUUID
+        else:
+            field_type = convert_django_field(field)
+
+        attrs[field.name] = field_type
+
+    # 动态创建 GraphQL InputObjectType
+    input_type = type(f'{model.__name__}Input', (InputObjectType,), attrs)
+    return input_type
+
+
+TerminologyInput = create_input_type(Terminology)
+
+
 # 新增
 class CreateTerminology(graphene.Mutation):
-    """
-    示例:
-    mutation create {
-      createTerminology(
-        itemName: "女性",
-        datasetCode: "SEX",
-        datasetName: "123",
-        status: false,
-        version: "1.0",
-        versionNo: 1,
-        itemStatus: true,
-        itemCode: "7",
-        authorId: "123",
-        fromSrc: "123",
-        author: "test",
-      ) {
-        terminology {
-          tid
-        }
-      }
-    }
-    """
     class Arguments:
-        dataset_code = graphene.String()
-        dataset_name = graphene.String()
-        status = graphene.Boolean()
-        version_no = graphene.Int(default_value=1)
-        version = graphene.String(default_value='1.0')
-        item_code = graphene.String()
-        item_name = graphene.String()
-        item_status = graphene.Boolean()
-        author_id = graphene.String()
-        author = graphene.String()
-        from_src = graphene.String()
+        input = TerminologyInput(required=True)
 
     terminology = graphene.Field(TerminologyType)
 
-    def mutate(self, info, **kwargs):
+    def mutate(self, info, input):
+        # 创建新的 Book 实例
         # 使用输入数据创建新实例
-        terminology_data = {key: value for key, value in kwargs.items() if value is not None}
-        instance = Terminology.objects.create(**terminology_data)
-        return CreateTerminology(terminology=instance)
+        terminology_data = {key: value for key, value in input.items() if value is not None}
+        terminology = Terminology.objects.create(**terminology_data)
+        return CreateTerminology(terminology=terminology)
 
 
 # 修改
@@ -124,7 +116,7 @@ class Mutation(graphene.ObjectType):
 
 
 # 定义 schema
-schema = graphene.Schema(query=Query, mutation=Mutation)
+# schema = graphene.Schema(query=Query, mutation=Mutation)
 
 if __name__ == "__main__":
     pass

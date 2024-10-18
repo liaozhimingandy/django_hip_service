@@ -27,6 +27,7 @@ from evaluation.views import DownloadZipView
 from hipmessageservice.views import index, download as download_count, generate_report
 
 from .api import api
+from .schema import schema
 
 urlpatterns = [
     path('', index),

@@ -137,11 +137,10 @@ class Query(graphene.ObjectType):
 
         # 临时文件路径
         dir_name = str(uuid.uuid4())
-        file_dir = f'temp/service/{dir_name}'
 
         # 处理数据（这里可以根据需要处理 input_data）
-        for key, value in input_data['data'].items():
-            update_demo_param(key, dir_name, *value)
+        for item in input_data['data']:
+            update_demo_param(item.get('service_code'), dir_name, *item.get(item.get('service_code')))
 
         # 生成一个 URL，假设有一个名为 'some_view' 的视图
         relative_url = reverse('download_zip',

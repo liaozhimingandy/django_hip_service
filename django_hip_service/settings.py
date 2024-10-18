@@ -65,7 +65,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "hipmessageservice",
-    "cdr"
+    "cdr",
+    "evaluation"
     # Your stuff: custom apps go here
 ]
 
