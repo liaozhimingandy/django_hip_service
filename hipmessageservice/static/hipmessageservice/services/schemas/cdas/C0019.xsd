@@ -138,7 +138,7 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="root" type="xs:string" use="optional"/>
+														<xs:attribute name="root" type="xs:string" use="required"/>
 														<xs:attribute name="extension" type="xs:string" use="required"/>
 													</xs:extension>
 												</xs:simpleContent>
@@ -165,7 +165,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="code">
+																	<xs:attribute name="code" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:short">
 																				<xs:enumeration value="0"/>
@@ -185,7 +185,7 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="codeSystem" type="xs:string"/>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
 																	<xs:attribute name="codeSystemName" type="xs:string"/>
 																</xs:extension>
 															</xs:simpleContent>

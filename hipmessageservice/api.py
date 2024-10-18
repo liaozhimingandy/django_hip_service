@@ -411,15 +411,16 @@ def verification_hip(data: dict) -> tuple:
         case 'DocumentRegister':
             etree.register_namespace('xmlns', 'urn:hl7-org:v3')
             xml_root = etree.fromstring(content)
-
             cda_code = xml_root.xpath("//*[@codeSystem='2.16.156.10011.2.5.1.23']")[0].get('code')
 
             cda_content_base64 = xml_root.find('xmlns:controlActProcess/xmlns:subject/xmlns:clinicalDocument/xmlns'
                                                ':storageCode/xmlns:originalText',
                                                namespaces={'xmlns': 'urn:hl7-org:v3'}).get('value')
             cda_data = base64.b64decode(cda_content_base64).decode('utf-8')
+
             # cda schema校验
             ok, message = verification_hip_detail(schema_name=cda_code, content=cda_data, is_service=False)
+
             if not ok:
                 return ok, message
 

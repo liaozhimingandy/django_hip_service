@@ -182,7 +182,8 @@
 																				<xs:attribute name="extension" use="required">
 																					<xs:simpleType>
 																						<xs:restriction base="xs:string">
-																							<xs:length value="36"/>
+																							<xs:minLength value="32"/>
+																							<xs:maxLength value="36"/>
 																						</xs:restriction>
 																					</xs:simpleType>
 																				</xs:attribute>

@@ -14,11 +14,14 @@ class BaseInfo(models.Model):
     """
     通用基础模型
     """
-    creator = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, default=1, verbose_name="创建人", db_comment="创建人",
+    creator = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, default=1,
+                                verbose_name="创建人", db_comment="创建人",
                                 related_name="%(app_label)s_%(class)s_related_creator",
-                                related_query_name="%(app_label)s_%(class)ss")
+                                related_query_name="%(app_label)s_%(class)ss",
+                                db_constraint = settings.IS_DB_CONSTRAINT
+                                )
     gmt_created = models.DateTimeField("创建时间", auto_now_add=True, db_comment="创建时间")
-    is_deleted = models.BooleanField("删除标记", db_comment="删除标记", default=settings.IS_DB_CONSTRAINT)
+    is_deleted = models.BooleanField("删除标记", db_comment="删除标记", default=False)
     updater = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, default=1, verbose_name="修改者", db_comment="修改者",
                                 related_name="%(app_label)s_%(class)s_related_updater",
                                 related_query_name="%(app_label)s_%(class)ss", db_constraint=settings.IS_DB_CONSTRAINT)

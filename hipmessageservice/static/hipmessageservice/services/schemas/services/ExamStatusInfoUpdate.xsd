@@ -465,6 +465,7 @@
 																													<xs:enumeration value="急诊"/>
 																													<xs:enumeration value="住院"/>
 																													<xs:enumeration value="其他"/>
+																													<xs:enumeration value="体检"/>
 																												</xs:restriction>
 																											</xs:simpleType>
 																										</xs:attribute>
@@ -481,6 +482,7 @@
 																								<xs:enumeration value="2"/>
 																								<xs:enumeration value="3"/>
 																								<xs:enumeration value="9"/>
+																								<xs:enumeration value="4"/>
 																							</xs:restriction>
 																						</xs:simpleType>
 																					</xs:attribute>

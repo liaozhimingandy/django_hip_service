@@ -110,7 +110,7 @@ DATABASES = {
         "NAME": os.getenv("APP_DB_NAME", "postgres"),
         "USER": os.getenv("APP_DB_USER", "postgres.oubccwnopeljdjvbhxxx"),
         "PASSWORD": os.getenv("APP_DB_PASSWORD", "u-PdRf-ZsRJq5Be"),
-        "HOST":  os.getenv("APP_DB_HOST", "aws-0-ap-southeast-1.pooler.supabase.com"),
+        "HOST": os.getenv("APP_DB_HOST", "aws-0-ap-southeast-1.pooler.supabase.com"),
         "PORT": os.getenv("APP_DB_PORT", 5432)
     },
     # "default": {
@@ -127,6 +127,10 @@ DATABASES = {
     #     "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
     #     "PORT": os.getenv("APP_DB_PORT", "5432"),
     # },
+    "test": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
+    },
     "test": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr-test.db")
