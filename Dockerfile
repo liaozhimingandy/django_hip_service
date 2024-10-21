@@ -24,17 +24,17 @@ FROM python:${TAG}
 COPY --from=builder-image /usr/local/bin /usr/local/bin
 COPY --from=builder-image /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
-RUN mkdir /opt/app
-COPY . /opt/app
+RUN mkdir /app
+COPY . /app
 
-WORKDIR /opt/app
+WORKDIR /app
 
 EXPOSE 8000
 
-RUN ["chmod", "+x", "/opt/app/config/entrypoint.sh"]
+RUN ["chmod", "+x", "/app/config/entrypoint.sh"]
 
 # run entrypoint.sh
-ENTRYPOINT ["/opt/app/config/entrypoint.sh"]
+ENTRYPOINT ["/app/config/entrypoint.sh"]
 # 构建命令
 # docker build -t liaozhiming/django_hip:latest .
 # 文件格式问题,请保持unix编码;set ff=unix

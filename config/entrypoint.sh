@@ -26,5 +26,5 @@ else:
 EOF
 
 # use Gunicorn to start app
-exec gunicorn django_hip_service.wsgi:application -c /opt/app/config/gunicorn.py
+exec gunicorn django_hip_service.wsgi:application -c /app/config/gunicorn.py
 # 文件编码必须是unix; set ff=unix

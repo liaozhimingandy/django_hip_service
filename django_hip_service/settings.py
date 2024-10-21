@@ -22,7 +22,7 @@ from django.utils.html import format_html
 from loguru import logger
 
 # 应用版本号
-VERSION = (3, 7, 0, "alpha", 1)
+VERSION = (3, 9, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "集成平台数据"
 # id前缀
@@ -107,30 +107,14 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("APP_DB_NAME", "postgres"),
-        "USER": os.getenv("APP_DB_USER", "postgres.oubccwnopeljdjvbhxxx"),
-        "PASSWORD": os.getenv("APP_DB_PASSWORD", "u-PdRf-ZsRJq5Be"),
-        "HOST": os.getenv("APP_DB_HOST", "aws-0-ap-southeast-1.pooler.supabase.com"),
-        "PORT": os.getenv("APP_DB_PORT", 5432)
-    },
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",
-    #     "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
-    # },
-    # "default": {
-    #     "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
-    #     "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
-    #     if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
-    #     else os.getenv("APP_DB_NAME", "cdr"),
-    #     "USER": os.getenv("APP_DB_USER", "zhiming"),
-    #     "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-    #     "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
-    #     "PORT": os.getenv("APP_DB_PORT", "5432"),
-    # },
-    "test": {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
+        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
+        else os.getenv("APP_DB_NAME", "cdr"),
+        "USER": os.getenv("APP_DB_USER", "zhiming"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
+        "PORT": os.getenv("APP_DB_PORT", "5432"),
     },
     "test": {
         "ENGINE": "django.db.backends.sqlite3",
