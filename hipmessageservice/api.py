@@ -31,7 +31,8 @@ from ninja import Router, Schema, Field
 from ninja.responses import codes_2xx, codes_4xx
 from requests.exceptions import ConnectTimeout
 
-from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit, Diagnosis
+from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit, Diagnosis, \
+    PathologyReport, CriticalValue
 from hipmessageservice.utils.encrypt import EncryptUtils
 
 
@@ -238,7 +239,6 @@ class ContentTypeEnum(str, Enum):
     DiagIssuedDelete = "DiagIssuedDelete"
     CriticalValueAdd = "CriticalValueAdd"
     CriticalValueDelete = "CriticalValueDelete"
-    CriticalValueConfirm = "CriticalValueConfirm"
     CriticalValueDeal = "CriticalValueDeal"
     getExamReports = "getExamReports"
     getCheckReports = "getCheckReports"
@@ -651,6 +651,84 @@ def verification(data: dict) -> tuple:
             diagnosiss = data[content_type]
             for diagnosis in diagnosiss:
                 Diagnosis.objects.filter(diagnosis_id=diagnosis.get('diagnosis_id', None)).delete()
+            return True, 'ok'
+
+        case 'PathologyReportAdd':
+            """病理结果新增,更新"""
+            report = data[content_type]
+            # 获取需要保存的数据模型字段列表
+            fields = set([field.name for field in PathologyReport._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
+            filtered_data = {key: value for key, value in report.items() if key in fields}
+            filtered_data.update(**{"patient_id": report['patient']['patient_id']})
+            report_info = PathologyReport(**copy.deepcopy(filtered_data))
+            # 校验
+            try:
+                report_info.full_clean(exclude=('patient', 'report_id'))
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    PathologyReport.objects.update_or_create(report_id=report_info.report_id, defaults=filtered_data)
+            except ValidationError as e:
+                return False, [str(item) for item in e]
+
+            return True, 'ok'
+
+        case 'PathologyReportDelete':
+            """ 病理结果撤回 """
+            report = data[content_type]
+            PathologyReport.objects.filter(report_id=report.get('report_id', None)).delete()
+
+            return True, 'ok'
+
+        case 'CriticalValueAdd':
+            """ 危急值新增"""
+            critical = data[content_type]
+            # 获取需要保存的数据模型字段列表
+            fields = set([field.name for field in CriticalValue._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
+            filtered_data = {key: value for key, value in critical.items() if key in fields}
+            filtered_data.update(**{"patient_id": critical['patient']['patient_id']})
+
+            report_info = CriticalValue(**copy.deepcopy(filtered_data))
+            # 校验
+            try:
+                report_info.full_clean(exclude=('patient', ))
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    CriticalValue.objects.update_or_create(critical_id=report_info.critical_id, defaults=filtered_data)
+
+            except ValidationError as e:
+                return False, [str(item) for item in e]
+
+            return True, 'ok'
+
+        case 'CriticalValueDelete':
+            """ 危急值撤回 """
+
+            critical = data[content_type]
+            CriticalValue.objects.filter(critical_id=critical.get('critical_id', None)).delete()
+
+            return True, 'ok'
+
+        case 'CriticalValueDeal':
+            """ 危急值处理 """
+            critical = data[content_type]
+            # 获取需要保存的数据模型字段列表
+            fields = set([field.name for field in CriticalValue._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
+            filtered_data = {key: value for key, value in critical.items() if key in fields}
+
+            try:
+                obj = CriticalValue.objects.get(critical_id=filtered_data['critical_id'])
+                obj.gmt_recv = filtered_data['gmt_recv']
+                obj.recv_dept_id = filtered_data['recv_dept_id']
+                obj.recv_dept_name = filtered_data['recv_dept_name']
+                obj.recv_opera_id = filtered_data['recv_opera_id']
+                obj.recv_opera_name = filtered_data['recv_opera_name']
+                obj.process_result = filtered_data['process_result']
+                obj.status = 3
+
+                obj.save()
+            except CriticalValue.DoesNotExist as e:
+                return False, f"{filtered_data['critical_id']}数据不存在"
+
             return True, 'ok'
 
         case _:

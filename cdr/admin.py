@@ -6,7 +6,8 @@ from cdr.models import CheckReport, BloodTrans, Patient, Check, CheckAppointStat
     CheckStatus, Exam, ExamStatus, InPatient, Operation, OperationSchedule, \
     OperationStatus, OrderFillerStatus, Order, Organization, OutpatientAppointStatus, \
     OutPatient, Pathology, Provider, SourceAndSchedule, Terminology, Transfer, ExamReport, \
-    ExamResultDetail, ExamResultDetailAST, ExamResultMain, Discharge, Diagnosis, Visit, EncounterCard
+    ExamResultDetail, ExamResultDetailAST, ExamResultMain, Discharge, Diagnosis, Visit, EncounterCard, CriticalValue, \
+    PathologyReport
 
 PER_PAGE = 10
 
@@ -153,7 +154,7 @@ class DischargeInfoAdmin(admin.ModelAdmin):
 class OperationInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
     list_display = ('apply_no', 'surgical_code', 'surgical_name', 'adm_no', 'patient_id')
-    list_display_links = ('adm_no', 'patient_id')
+    list_display_links = ('apply_no',)
 
     search_fields = ('adm_no', 'patient_id', 'surgical_name')
     ordering = ('-gmt_created',)
@@ -226,6 +227,11 @@ class OutPatientInfoAdmin(admin.ModelAdmin):
 class PathologyAppInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
 
+    list_display = ('apply_no', 'adm_no', 'patient_id', 'item_name', 'adm_cls_code', 'gmt_created')
+    list_display_links = ('apply_no',)
+
+    search_fields = ('patient_id', 'item_name')
+
 
 @admin.register(Provider)
 class ProviderInfoAdmin(admin.ModelAdmin):
@@ -277,5 +283,23 @@ class VisitAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
     list_display = ('adm_no', 'patient_id', 'gmt_visit_start', 'gmt_visit_end', 'adm_cls_code', 'index')
     list_display_links = ('adm_no',)
+
+    search_fields = ('adm_no', 'patient_id')
+
+
+@admin.register(CriticalValue)
+class CriticalValueAdmin(admin.ModelAdmin):
+    list_per_page = PER_PAGE
+    list_display = ('critical_id', 'adm_no', 'patient_id', 'item_code', 'item_name', 'value')
+    list_display_links = ('critical_id',)
+
+    search_fields = ('adm_no', 'patient_id')
+
+
+@admin.register(PathologyReport)
+class PathologyReportAdmin(admin.ModelAdmin):
+    list_per_page = PER_PAGE
+    list_display = ('report_id', 'adm_no', 'patient_id', 'item_code', 'item_name', 'url_report_pdf')
+    list_display_links = ('report_id',)
 
     search_fields = ('adm_no', 'patient_id')

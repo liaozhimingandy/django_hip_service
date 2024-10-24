@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -241,6 +242,9 @@ class Check(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.item_name}-{self.apply_no}-{self.patient_id}'
+
     class Meta:
         verbose_name = "检查申请信息"
         verbose_name_plural = verbose_name
@@ -451,6 +455,9 @@ class CheckStatus(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.apply_no}-{self.patient_id}-{self.status_code}'
+
     class Meta:
         verbose_name = "检查状态信息"
         verbose_name_plural = verbose_name
@@ -492,6 +499,9 @@ class Discharge(models.Model):
     diags_b = models.JSONField(blank=True, null=True, db_comment='中医诊断', verbose_name='中医诊断')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.patient_id}-{self.times}'
 
     class Meta:
         verbose_name = "出院登记信息"
@@ -554,6 +564,9 @@ class Exam(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
     extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息, 就诊流水号', default=dict, db_default='{}')
+
+    def __str__(self):
+        return f'{self.item_name}-{self.apply_no}-{self.patient_id}'
 
     class Meta:
         verbose_name = "检验申请信息"
@@ -686,6 +699,9 @@ class ExamReport(models.Model):
     org_name = models.CharField(max_length=64, db_comment="医疗卫生机构", verbose_name='医疗卫生机构')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.bar_code}-{self.patient_id}-{self.adm_no}-{self.specimen_name}'
+
     class Meta:
         verbose_name = '检验报告信息'
         verbose_name_plural = verbose_name
@@ -713,6 +729,9 @@ class ExamResultMain(models.Model):
                                      blank=True, help_text='江西省口腔医院市互认上传使用')
     exam_report_id = models.CharField(max_length=64, db_comment="检验报告", verbose_name='检验报告')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.exam_report_id}-{self.item_name}-{self.apply_id}'
 
     class Meta:
         verbose_name = '检验结果主表'
@@ -765,6 +784,9 @@ class ExamResultDetail(models.Model):
     exam_result_main_id = models.CharField(max_length=64, db_comment="检验结果主表", verbose_name='检验结果主表')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.exam_result_main_id}-{self.item_name}'
+
     class Meta:
         verbose_name = '检验结果明细表'
         verbose_name_plural = '检验结果明细集合'
@@ -798,6 +820,9 @@ class ExamResultDetailAST(models.Model):
     mic = models.CharField(max_length=16, db_comment="最小抑菌浓度", verbose_name='最小抑菌浓度', null=True, blank=True)
     exam_result_detail_id = models.CharField(max_length=128, db_comment="检验结果明细表", verbose_name='检验结果明细表')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.exam_result_detail_id}-{self.ast_name}'
 
     class Meta:
         verbose_name = '检验结果药敏结果'
@@ -858,6 +883,9 @@ class ExamStatus(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.adm_no}-{self.patient_id}-{self.status_code}'
+
     class Meta:
         verbose_name = "检验状态信息"
         verbose_name_plural = verbose_name
@@ -904,6 +932,9 @@ class InPatient(models.Model):
     diags_b = models.JSONField(blank=True, null=True, db_comment='中医诊断', verbose_name='中医诊断')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.dept_name}-{self.room_name}-{self.patient_id}-{self.times}'
 
     class Meta:
         verbose_name = "住院就诊信息"
@@ -976,6 +1007,9 @@ class Operation(models.Model):
     patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.surgical_name}-{self.apply_no}-{self.patient_id}'
 
     class Meta:
         verbose_name = "手术申请信息"
@@ -1222,6 +1256,9 @@ class Order(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.content}-{self.order_id}-{self.adm_no}-{self.patient_id}'
+
     class Meta:
         verbose_name = "医嘱信息"
         verbose_name_plural = verbose_name
@@ -1268,6 +1305,9 @@ class Organization(models.Model):
     gmt_created = models.DateTimeField(db_comment='申请时间', verbose_name="申请时间")
     extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息')
 
+    def __str__(self):
+        return f'{self.dept_name}-{self.dept_id}'
+
     class Meta:
         verbose_name = "医疗机构信息"
         verbose_name_plural = verbose_name
@@ -1300,6 +1340,9 @@ class OutpatientAppointStatus(models.Model):
     gmt_effect_low = models.DateTimeField(db_comment='资源时段结束时间', verbose_name="资源时段结束时间")
     extra = models.JSONField(db_comment='补充信息', verbose_name="补充信息")
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.patient_name}-{self.patient_id}-{self.schedule_id}'
 
     class Meta:
         verbose_name = "门诊预约状态"
@@ -1340,6 +1383,9 @@ class OutPatient(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
     extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息')
+
+    def __str__(self):
+        return f'{self.dept_name}-{self.adm_no}-{self.patient_id}'
 
     class Meta:
         verbose_name = "门诊挂号信息"
@@ -1417,6 +1463,9 @@ class Pathology(models.Model):
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.item_name}-{self.apply_no}-{self.adm_no}-{self.patient_id}'
 
     class Meta:
         verbose_name = "病理申请信息"
@@ -1533,6 +1582,9 @@ class Provider(models.Model):
                                            verbose_name='申请者科室联系人名称')
     from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
     gmt_created = models.DateTimeField(db_comment='申请时间', verbose_name='申请时间')
+
+    def __str__(self):
+        return f'{self.emp_id} - {self.emp_id}'
 
     class Meta:
         verbose_name = "医疗卫生人员信息"
@@ -1666,6 +1718,9 @@ class Transfer(models.Model):
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
+    def __str__(self):
+        return f'{self.patient_id}-{self.adm_no}'
+
     class Meta:
         verbose_name = "住院转科信息"
         verbose_name_plural = verbose_name
@@ -1765,7 +1820,7 @@ class Visit(models.Model):
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
     def __str__(self):
-        return f'{self.adm_no}-{self.patient_id}'
+        return f'{self.dept_name}-{self.adm_no}-{self.patient_id}'
 
     class Meta:
         verbose_name = "门诊就诊信息"
@@ -1786,3 +1841,254 @@ class Visit(models.Model):
     #     except AssertionError as e:
     #         raise ValidationError(message=str(e))
 
+
+class PathologyReport(models.Model):
+    """ 病理报告信息 """
+
+    # 报告ID
+    report_id = models.CharField(max_length=36, verbose_name='报告id', unique=True)
+
+    # 报告单名称
+    title = models.CharField(max_length=64, verbose_name='报告单名称')
+
+    # 就诊流水号
+    adm_no = models.CharField(max_length=36, verbose_name='就诊流水号')
+
+    # 就诊类别代码
+    adm_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices, help_text='就诊类别代码表(来源标准:WS 364.17-2011)')
+
+    # 报告状态
+    class REPORT_STATUS_CHOICES(models.TextChoices):
+        """ 排班资源类型 """
+        N = ('N', '未写报告')
+        I = ('I', '已有图像')
+        R = ('R', '已录入')
+        V = ('V', '已审核')
+        S = ('S', '已发布')
+
+    report_status = models.CharField(max_length=1, choices=REPORT_STATUS_CHOICES, verbose_name='报告状态')
+
+    # 报告类别
+    class CATEGORY_CHOICES(models.TextChoices):
+        """ 排班资源类型 """
+        RFP = ('RFP', '快速冰冻病理报告')
+        NOR = ('NOR', '常规病理报告')
+        ADD = ('ADD', '补充报告')
+        REV = ('REV', '修正报告')
+        CYR = ('CYR', '细胞学报告')
+
+    category = models.CharField(max_length=3, choices=CATEGORY_CHOICES, verbose_name='报告类别')
+
+    # 病理号
+    index = models.CharField(max_length=36, verbose_name='病理号', help_text='受检者病理检查登记顺序号')
+
+    # 患者基本信息
+    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, verbose_name='患者基本信息',
+                                db_constraint=False, null=True)
+
+    # 申请单ID（如无，则填医嘱号）
+    apply_id = models.CharField(max_length=36, verbose_name='申请单id')
+
+    # 医嘱号
+    order_id = models.CharField(max_length=36, verbose_name='医嘱号', null=True, blank=True)
+
+    # 申请单医生工号
+    doc_id = models.CharField(max_length=36, verbose_name='申请单医生工号')
+
+    # 申请单医生姓名
+    doc_name = models.CharField(max_length=64, verbose_name='申请单医生姓名')
+
+    # 项目代码
+    item_code = models.CharField(max_length=36, verbose_name='项目代码')
+
+    # 项目名称
+    item_name = models.CharField(max_length=128, verbose_name='项目名称')
+
+    # 结果内容（检查所见）
+    content = models.TextField(verbose_name='结果内容', null=True, blank=True)
+
+    # 诊断结果
+    diagnose = models.TextField(verbose_name='诊断结果')
+
+    # 肉眼所见（用于病理取材）
+    finding_desc = models.TextField(verbose_name='肉眼所见')
+
+    # 报告pdf链接
+    url_report_pdf = models.URLField(verbose_name='报告pdf链接', null=True, blank=True)
+
+    # 报告科室ID
+    dept_id = models.CharField(max_length=36, verbose_name='报告科室ID')
+
+    # 报告科室名称
+    dept_name = models.CharField(max_length=64, verbose_name='报告科室名称')
+
+    # 报告人ID
+    author_id = models.CharField(max_length=36, verbose_name='报告人id')
+
+    # 报告人
+    author = models.CharField(max_length=64, verbose_name='报告人')
+
+    # 审核人ID
+    reviewer_id = models.CharField(max_length=36, verbose_name='审核人id', null=True, blank=True)
+
+    # 审核人
+    reviewer = models.CharField(max_length=64, verbose_name='审核人', null=True, blank=True)
+
+    # 审核日期时间
+    gmt_review = models.DateTimeField(verbose_name='审核日期时间')
+
+    # 备注内容
+    comment = models.TextField(verbose_name='备注内容', null=True, blank=True)
+
+    # 设备唯一ID（用于固定资产统计）
+    device_id = models.CharField(max_length=36, verbose_name='设备唯一id', null=True, blank=True)
+
+    # 设备名称
+    device_name = models.CharField(max_length=64, verbose_name='设备名称', null=True, blank=True)
+
+    # 来源系统
+    from_src = models.CharField(max_length=36, verbose_name='来源系统', null=True, blank=True)
+
+    # 机构代码
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
+                                verbose_name='医疗卫生机构代码')
+
+    # 表记录时间
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.item_name}-{self.adm_no}-{self.patient_id}'
+
+    class Meta:
+        verbose_name = '病理报告'
+        verbose_name_plural = '病理报告'
+        db_table_comment = '病理报告信息'
+
+        indexes = [
+            models.Index(fields=('adm_no',)),
+            models.Index(fields=('patient',)),
+        ]
+
+
+class CriticalValue(models.Model):
+    """
+    危急值信息
+    """
+    # 危急值ID
+    critical_id = models.CharField(max_length=255, primary_key=True, verbose_name='危急值ID')
+
+    # 就诊类别代码
+    adm_cls_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices)
+
+    # 就诊流水号
+    adm_no = models.CharField(max_length=36, verbose_name='就诊流水号')
+
+    # 申请单单号
+    apply_no = models.CharField(max_length=36, verbose_name='申请单单号')
+
+    # 危急值报告日期时间
+    gmt_report = models.DateTimeField(verbose_name='危急值报告日期时间')
+
+    # 危急值项目代码
+    item_code = models.CharField(max_length=36, verbose_name='危急值项目代码')
+
+    # 危急值项目名称
+    item_name = models.CharField(max_length=64, verbose_name='危急值项目名称')
+
+    # 危急值项目英文名称
+    item_en_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值项目英文名称')
+
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name='患者基本信息', db_constraint=False)
+
+    # 危急值报告科室ID
+    report_dept_id = models.CharField(max_length=36, verbose_name='危急值报告科室ID')
+
+    # 危急值报告科室名称
+    report_dept_name = models.CharField(max_length=64, verbose_name='危急值报告科室名称')
+
+    # 报告ID
+    report_id = models.CharField(max_length=36, verbose_name='报告ID')
+
+    # 危急值报告人ID
+    report_opera_id = models.CharField(max_length=36, verbose_name='危急值报告人ID')
+
+    # 危急值报告医师姓名
+    report_opera_name = models.CharField(max_length=64, verbose_name='危急值报告医师姓名')
+
+    # 危急值报告电脑
+    report_opera_pc = models.CharField(max_length=64, verbose_name='危急值报告电脑')
+
+    # 标本号
+    specimen_no = models.CharField(max_length=36, verbose_name='标本号')
+
+    # 危急值状态
+    class STATUS_CHOICES(models.IntegerChoices):
+        """ 排班资源类型 """
+        A = (1, '待通知')
+        B = (2, '已通知')
+        C = (3, '已处理')
+
+    status = models.IntegerField(verbose_name='危急值状态', choices=STATUS_CHOICES)
+
+    # 单位名称
+    unit = models.CharField(max_length=64, verbose_name='单位名称')
+
+    # 参考值上限
+    upper_limit_value = models.CharField(max_length=36, verbose_name='参考值上限', null=True, blank=True)
+
+    # 参考值下限
+    lower_limit_value = models.CharField(max_length=36, verbose_name='参考值下限', null=True, blank=True)
+
+    # 结果值
+    value = models.CharField(max_length=64, verbose_name='结果值')
+
+    # 额外注释或信息
+    comments = models.TextField(null=True, blank=True, verbose_name='额外注释或信息')
+
+    # 危急值处理结果
+    process_result = models.TextField(null=True, blank=True, verbose_name='危急值处理结果')
+
+    # 危急值接收日期时间
+    gmt_recv = models.DateTimeField(null=True, blank=True, verbose_name='危急值接收日期时间')
+
+    # 危急值接收科室ID
+    recv_dept_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收科室ID')
+
+    # 危急值接收科室名称
+    recv_dept_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值接收科室名称')
+
+    # 危急值接收人ID
+    recv_opera_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收人ID')
+
+    # 危急值接收人姓名
+    recv_opera_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值接收人姓名')
+
+    # 参考范围描述
+    ref_desc = models.TextField(null=True, blank=True, verbose_name='参考范围描述')
+
+    # 危急值提示内容
+    tips = models.TextField(null=True, blank=True, verbose_name='危急值提示内容')
+
+    # 数据来源
+    from_src = models.CharField(max_length=36, verbose_name='数据来源')
+
+    # 机构代码
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
+                                verbose_name='医疗卫生机构代码')
+
+    # 表记录时间
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.item_name}-{self.adm_no}-{self.patient_id}'
+
+    class Meta:
+        verbose_name = '危急值'
+        verbose_name_plural = '危急值列表'
+        db_table_comment = '危急值信息'
+
+        indexes = [
+            models.Index(fields=('adm_no',)),
+            models.Index(fields=('patient',)),
+        ]
