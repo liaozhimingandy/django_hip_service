@@ -229,7 +229,7 @@
                 {
                     "comment": "输血申请单单号",
                     "eg": "",
-                    "path": "xmlns:controlActProcess/xmlns:queryByParameter/xmlns:queryByParameterPayload/xmlns:actId/xmlns:value[1]/xmlns:item[root='2.16.156.10011.1.24']/@extension",
+                    "path": "xmlns:controlActProcess/xmlns:queryByParameter/xmlns:queryByParameterPayload/xmlns:actId/xmlns:value/xmlns:item[@root='2.16.156.10011.1.24']/@extension",
                     "sql": "",
                     "value": ""
                 }
@@ -243,7 +243,7 @@
                 {
                     "comment": "手术申请单号",
                     "eg": "",
-                    "path": "xmlns:controlActProcess/xmlns:queryByParameter/xmlns:queryByParameterPayload/xmlns:actId/xmlns:value/xmlns:item",
+                    "path": "xmlns:controlActProcess/xmlns:queryByParameter/xmlns:queryByParameterPayload/xmlns:actId/xmlns:value/xmlns:item/@extension",
                     "sql": "",
                     "value": ""
                 }

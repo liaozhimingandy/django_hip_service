@@ -103,14 +103,18 @@ class Query(graphene.ObjectType):
 
     def resolve_download_cdas_by_adm_no(self, info, adm_no):
         """通过就诊流水号导出CDA"""
-        sql = (f"select [no], PatientName patient_name, DocTypeCode doc_type_code, DocContent content "
-               f"from(SELECT row_number() over(partition by DocTypeCode order by CreateTime asc) no, [PatientName], DocTypeCode, [DocContent] "
-               f"from [CDADocument] where Visit_id = ?) as T where T.[no] < 21")
+
+        sql = ("select [no], PatientName patient_name, DocTypeCode doc_type_code, DocContent content "
+               "from(SELECT row_number() over(partition by DocTypeCode order by CreateTime asc) no, [PatientName], DocTypeCode, [DocContent] "
+               "from [CDADocument] where Visit_id = %s ) as T where T.[no] < 21")
 
         cda = CDATool(ip=os.getenv("ip", '172.16.33.179'), user=os.getenv('user', 'caradigm'),
                       password=os.getenv('password', 'Knt2020@lh'), dbname=os.getenv('dbname', 'CDADB'))
+
         cursor = cda.get_cursor()
         cursor.execute(sql, (adm_no,))
+
+        code = 400
 
         # 临时文件路径
         dir_path = uuid.uuid4()
@@ -126,15 +130,16 @@ class Query(graphene.ObjectType):
                 f.writelines(row["content"])
 
             # 生成一个 URL，假设有一个名为 'some_view' 的视图
-            relative_url = reverse('download_zip_cdas',
+            relative_url = reverse('download_zip',
                                    kwargs={'temp_dir_path': dir_path, "content_type": "cda"})
             # 构建完整的绝对 URL
             absolute_url = info.context.build_absolute_uri(relative_url)
-        return ResponseMessageOutput(code=200, message=absolute_url if cursor.rowcount > 0 else "暂无数据")
+            code = 200
+
+        return ResponseMessageOutput(code=code, message=absolute_url if cursor.rowcount > 0 else "暂无数据")
 
     def resolve_download_examples_services(self, info, input_data):
         """下载互联互通测试服务入参"""
-
         # 临时文件路径
         dir_name = str(uuid.uuid4())
 

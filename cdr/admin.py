@@ -140,6 +140,10 @@ class InPatientInfoAdmin(admin.ModelAdmin):
 
     search_fields = ('adm_no', 'patient_id')
 
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
+
 
 @admin.register(Discharge)
 class DischargeInfoAdmin(admin.ModelAdmin):
@@ -148,6 +152,10 @@ class DischargeInfoAdmin(admin.ModelAdmin):
     list_display_links = ('adm_no', 'patient_id')
 
     search_fields = ('adm_no', 'patient_id')
+
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
 
 
 @admin.register(Operation)
@@ -158,6 +166,10 @@ class OperationInfoAdmin(admin.ModelAdmin):
 
     search_fields = ('adm_no', 'patient_id', 'surgical_name')
     ordering = ('-gmt_created',)
+
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
 
 
 @admin.register(OperationSchedule)

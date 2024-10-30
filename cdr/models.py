@@ -39,10 +39,10 @@ class MaritalStatusCodeChoices(models.TextChoices):
 
 class PropertyChoices(models.TextChoices):
     """ 优先（紧急）度代码 """
-    A = ('N', 'normal')
-    B = ('U', 'urgent')
-    C = ('C', 'critical')
-    D = ('E', 'endangered')
+    NORMAL = ('N', '正常')
+    URGENT = ('U', '紧急')
+    CRITICAL = ('C', '危险')
+    ENDANGERED = ('E', '濒危')
 
 
 class FromOrgCodeChoices(models.TextChoices):
@@ -1302,8 +1302,8 @@ class Organization(models.Model):
     author_dept_contact = models.CharField(max_length=64, db_comment='申请者医务人员科室联系人',
                                            verbose_name="申请者医务人员科室联系人")
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name="来源系统")
+    extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息', null=True, blank=True)
     gmt_created = models.DateTimeField(db_comment='申请时间', verbose_name="申请时间")
-    extra = models.JSONField(db_comment='补充信息', verbose_name='补充信息')
 
     def __str__(self):
         return f'{self.dept_name}-{self.dept_id}'
@@ -1581,6 +1581,7 @@ class Provider(models.Model):
     author_dept_contact = models.CharField(max_length=64, blank=True, null=True, db_comment='申请者科室联系人名称',
                                            verbose_name='申请者科室联系人名称')
     from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
+    extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息', null=True, blank=True)
     gmt_created = models.DateTimeField(db_comment='申请时间', verbose_name='申请时间')
 
     def __str__(self):

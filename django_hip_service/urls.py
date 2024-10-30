@@ -38,7 +38,7 @@ urlpatterns = [
     # path('messsage/download/', download),
     path('v3/', api.urls),
     path('download-zip/<str:content_type>/<uuid:temp_dir_path>/', DownloadZipView.as_view(), name='download_zip'),
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),  # graphiql=True 打开 GraphiQL 浏览器
+    path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),  # graphiql=True 打开 GraphiQL 浏览器
 
 ]
 
