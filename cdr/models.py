@@ -1833,122 +1833,115 @@ class Visit(models.Model):
             models.Index(fields=('patient_id',)),
         ]
 
-    # def clean(self):
-    #     super().clean()
-    #     # 自定义验证逻辑
-    #     try:
-    #         if self.gmt_visit_start and self.gmt_visit_end:
-    #             assert self.gmt_visit_start < self.gmt_visit_end, f'就诊结束时间({self.gmt_visit_start})理论上不能小于就诊开始时间({self.gmt_visit_start}),请重新核对数据!'
-    #     except AssertionError as e:
-    #         raise ValidationError(message=str(e))
-
 
 class PathologyReport(models.Model):
     """ 病理报告信息 """
 
     # 报告ID
-    report_id = models.CharField(max_length=36, verbose_name='报告id', unique=True)
+    report_id = models.CharField(max_length=36, verbose_name='报告id', unique=True, db_comment='报告id')
 
     # 报告单名称
-    title = models.CharField(max_length=64, verbose_name='报告单名称')
+    title = models.CharField(max_length=64, verbose_name='报告单名称', db_comment='报告单名称')
 
     # 就诊流水号
-    adm_no = models.CharField(max_length=36, verbose_name='就诊流水号')
+    adm_no = models.CharField(max_length=36, verbose_name='就诊流水号', db_comment='就诊流水号')
 
     # 就诊类别代码
-    adm_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices, help_text='就诊类别代码表(来源标准:WS 364.17-2011)')
+    adm_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices,
+                                   help_text='就诊类别代码表(来源标准:WS 364.17-2011)', db_comment='就诊类别代码')
 
     # 报告状态
     class REPORT_STATUS_CHOICES(models.TextChoices):
-        """ 排班资源类型 """
+        """ 报告状态类型 """
         N = ('N', '未写报告')
         I = ('I', '已有图像')
         R = ('R', '已录入')
         V = ('V', '已审核')
         S = ('S', '已发布')
 
-    report_status = models.CharField(max_length=1, choices=REPORT_STATUS_CHOICES, verbose_name='报告状态')
+    report_status = models.CharField(max_length=1, choices=REPORT_STATUS_CHOICES, verbose_name='报告状态',
+                                     db_comment='报告状态')
 
     # 报告类别
     class CATEGORY_CHOICES(models.TextChoices):
-        """ 排班资源类型 """
+        """ 报告类型 """
         RFP = ('RFP', '快速冰冻病理报告')
         NOR = ('NOR', '常规病理报告')
         ADD = ('ADD', '补充报告')
         REV = ('REV', '修正报告')
         CYR = ('CYR', '细胞学报告')
 
-    category = models.CharField(max_length=3, choices=CATEGORY_CHOICES, verbose_name='报告类别')
+    category = models.CharField(max_length=3, choices=CATEGORY_CHOICES, verbose_name='报告类别', db_comment='报告类别')
 
     # 病理号
-    index = models.CharField(max_length=36, verbose_name='病理号', help_text='受检者病理检查登记顺序号')
+    index = models.CharField(max_length=36, verbose_name='病理号', help_text='受检者病理检查登记顺序号', db_comment='受检者病理检查登记顺序号')
 
     # 患者基本信息
-    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, verbose_name='患者基本信息',
-                                db_constraint=False, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, verbose_name='患者ID',
+                                db_constraint=False, db_comment='患者ID')
 
     # 申请单ID（如无，则填医嘱号）
-    apply_id = models.CharField(max_length=36, verbose_name='申请单id')
+    apply_id = models.CharField(max_length=36, verbose_name='申请单id', db_comment='申请单id')
 
     # 医嘱号
-    order_id = models.CharField(max_length=36, verbose_name='医嘱号', null=True, blank=True)
+    order_id = models.CharField(max_length=36, verbose_name='医嘱号', null=True, blank=True, db_comment='医嘱号')
 
     # 申请单医生工号
-    doc_id = models.CharField(max_length=36, verbose_name='申请单医生工号')
+    doc_id = models.CharField(max_length=36, verbose_name='申请单医生工号', db_comment='申请单医生工号')
 
     # 申请单医生姓名
-    doc_name = models.CharField(max_length=64, verbose_name='申请单医生姓名')
+    doc_name = models.CharField(max_length=64, verbose_name='申请单医生姓名', db_comment='申请单医生姓名')
 
     # 项目代码
-    item_code = models.CharField(max_length=36, verbose_name='项目代码')
+    item_code = models.CharField(max_length=36, verbose_name='项目代码', db_comment='项目代码')
 
     # 项目名称
-    item_name = models.CharField(max_length=128, verbose_name='项目名称')
+    item_name = models.CharField(max_length=128, verbose_name='项目名称', db_comment='项目名称')
 
     # 结果内容（检查所见）
-    content = models.TextField(verbose_name='结果内容', null=True, blank=True)
+    content = models.TextField(verbose_name='结果内容', null=True, blank=True, db_comment='结果内容')
 
     # 诊断结果
-    diagnose = models.TextField(verbose_name='诊断结果')
+    diagnose = models.TextField(verbose_name='诊断结果', db_comment='诊断结果')
 
     # 肉眼所见（用于病理取材）
-    finding_desc = models.TextField(verbose_name='肉眼所见')
+    finding_desc = models.TextField(verbose_name='肉眼所见', db_comment='肉眼所见')
 
     # 报告pdf链接
-    url_report_pdf = models.URLField(verbose_name='报告pdf链接', null=True, blank=True)
+    url_report_pdf = models.URLField(verbose_name='报告pdf链接', null=True, blank=True, db_comment='报告pdf链接')
 
     # 报告科室ID
-    dept_id = models.CharField(max_length=36, verbose_name='报告科室ID')
+    dept_id = models.CharField(max_length=36, verbose_name='报告科室ID', db_comment='报告科室ID')
 
     # 报告科室名称
-    dept_name = models.CharField(max_length=64, verbose_name='报告科室名称')
+    dept_name = models.CharField(max_length=64, verbose_name='报告科室名称', db_comment='报告科室名称')
 
     # 报告人ID
-    author_id = models.CharField(max_length=36, verbose_name='报告人id')
+    author_id = models.CharField(max_length=36, verbose_name='报告人id', db_comment='报告人id')
 
     # 报告人
-    author = models.CharField(max_length=64, verbose_name='报告人')
+    author = models.CharField(max_length=64, verbose_name='报告人姓名', db_comment='报告人姓名')
 
     # 审核人ID
-    reviewer_id = models.CharField(max_length=36, verbose_name='审核人id', null=True, blank=True)
+    reviewer_id = models.CharField(max_length=36, verbose_name='审核人id', null=True, blank=True, db_comment='审核人id')
 
     # 审核人
-    reviewer = models.CharField(max_length=64, verbose_name='审核人', null=True, blank=True)
+    reviewer = models.CharField(max_length=64, verbose_name='审核人姓名', null=True, blank=True, db_comment='审核人姓名')
 
     # 审核日期时间
-    gmt_review = models.DateTimeField(verbose_name='审核日期时间')
+    gmt_review = models.DateTimeField(verbose_name='审核日期时间', db_comment='审核日期时间')
 
     # 备注内容
-    comment = models.TextField(verbose_name='备注内容', null=True, blank=True)
+    comment = models.TextField(verbose_name='备注内容', null=True, blank=True, db_comment='备注内容')
 
     # 设备唯一ID（用于固定资产统计）
-    device_id = models.CharField(max_length=36, verbose_name='设备唯一id', null=True, blank=True)
+    device_id = models.CharField(max_length=36, verbose_name='设备唯一id', null=True, blank=True, db_comment='设备唯一id')
 
     # 设备名称
-    device_name = models.CharField(max_length=64, verbose_name='设备名称', null=True, blank=True)
+    device_name = models.CharField(max_length=64, verbose_name='设备名称', null=True, blank=True, db_comment='设备名称')
 
     # 来源系统
-    from_src = models.CharField(max_length=36, verbose_name='来源系统', null=True, blank=True)
+    from_src = models.CharField(max_length=36, verbose_name='来源系统', null=True, blank=True, db_comment='来源系统')
 
     # 机构代码
     org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
@@ -1976,103 +1969,111 @@ class CriticalValue(models.Model):
     危急值信息
     """
     # 危急值ID
-    critical_id = models.CharField(max_length=255, primary_key=True, verbose_name='危急值ID')
+    critical_id = models.CharField(max_length=255, unique=True, verbose_name='危急值ID', db_comment='危急值ID')
 
     # 就诊类别代码
-    adm_cls_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices)
+    adm_cls_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices,  db_comment='就诊类别代码')
 
     # 就诊流水号
-    adm_no = models.CharField(max_length=36, verbose_name='就诊流水号')
+    adm_no = models.CharField(max_length=36, verbose_name='就诊流水号', db_comment='就诊流水号')
 
     # 申请单单号
-    apply_no = models.CharField(max_length=36, verbose_name='申请单单号')
+    apply_no = models.CharField(max_length=36, verbose_name='申请单单号', db_comment='申请单单号')
 
     # 危急值报告日期时间
-    gmt_report = models.DateTimeField(verbose_name='危急值报告日期时间')
+    gmt_report = models.DateTimeField(verbose_name='危急值报告日期时间', db_comment='危急值报告日期时间')
 
     # 危急值项目代码
-    item_code = models.CharField(max_length=36, verbose_name='危急值项目代码')
+    item_code = models.CharField(max_length=36, verbose_name='危急值项目代码', db_comment='危急值项目代码')
 
     # 危急值项目名称
-    item_name = models.CharField(max_length=64, verbose_name='危急值项目名称')
+    item_name = models.CharField(max_length=64, verbose_name='危急值项目名称', db_comment='危急值项目名称')
 
     # 危急值项目英文名称
-    item_en_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值项目英文名称')
+    item_en_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值项目英文名称',
+                                    db_comment='危急值项目英文名称')
 
     # 患者信息（外键关联）
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name='患者基本信息', db_constraint=False)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name='患者ID', db_constraint=False,
+                                db_comment='患者ID')
 
     # 危急值报告科室ID
-    report_dept_id = models.CharField(max_length=36, verbose_name='危急值报告科室ID')
+    report_dept_id = models.CharField(max_length=36, verbose_name='危急值报告科室ID', db_comment='危急值报告科室ID')
 
     # 危急值报告科室名称
-    report_dept_name = models.CharField(max_length=64, verbose_name='危急值报告科室名称')
+    report_dept_name = models.CharField(max_length=64, verbose_name='危急值报告科室名称', db_comment='危急值报告科室名称')
 
     # 报告ID
-    report_id = models.CharField(max_length=36, verbose_name='报告ID')
+    report_id = models.CharField(max_length=36, verbose_name='报告ID', db_comment='报告ID')
 
     # 危急值报告人ID
-    report_opera_id = models.CharField(max_length=36, verbose_name='危急值报告人ID')
+    report_opera_id = models.CharField(max_length=36, verbose_name='危急值报告人ID', db_comment='危急值报告人ID')
 
     # 危急值报告医师姓名
-    report_opera_name = models.CharField(max_length=64, verbose_name='危急值报告医师姓名')
+    report_opera_name = models.CharField(max_length=64, verbose_name='危急值报告医师姓名', db_comment='危急值报告医师姓名')
 
     # 危急值报告电脑
-    report_opera_pc = models.CharField(max_length=64, verbose_name='危急值报告电脑')
+    report_opera_pc = models.CharField(max_length=64, verbose_name='危急值报告电脑', db_comment='危急值报告电脑')
 
     # 标本号
-    specimen_no = models.CharField(max_length=36, verbose_name='标本号')
+    specimen_no = models.CharField(max_length=36, verbose_name='标本号', db_comment='标本号')
 
     # 危急值状态
     class STATUS_CHOICES(models.IntegerChoices):
-        """ 排班资源类型 """
+        """ 危急值状态类型 """
         A = (1, '待通知')
         B = (2, '已通知')
         C = (3, '已处理')
 
-    status = models.IntegerField(verbose_name='危急值状态', choices=STATUS_CHOICES)
+    status = models.IntegerField(verbose_name='危急值状态', choices=STATUS_CHOICES, db_comment='危急值状态')
 
     # 单位名称
-    unit = models.CharField(max_length=64, verbose_name='单位名称')
+    unit = models.CharField(max_length=64, verbose_name='单位名称', db_comment='单位名称')
 
     # 参考值上限
-    upper_limit_value = models.CharField(max_length=36, verbose_name='参考值上限', null=True, blank=True)
+    upper_limit_value = models.CharField(max_length=36, verbose_name='参考值上限', null=True, blank=True,
+                                         db_comment='参考值上限')
 
     # 参考值下限
-    lower_limit_value = models.CharField(max_length=36, verbose_name='参考值下限', null=True, blank=True)
+    lower_limit_value = models.CharField(max_length=36, verbose_name='参考值下限', null=True, blank=True,
+                                         db_comment='参考值下限')
 
     # 结果值
-    value = models.CharField(max_length=64, verbose_name='结果值')
+    value = models.CharField(max_length=64, verbose_name='结果值', db_comment='结果值')
 
     # 额外注释或信息
-    comments = models.TextField(null=True, blank=True, verbose_name='额外注释或信息')
+    comments = models.TextField(null=True, blank=True, verbose_name='额外注释或信息', db_comment='额外注释或信息')
 
     # 危急值处理结果
-    process_result = models.TextField(null=True, blank=True, verbose_name='危急值处理结果')
+    process_result = models.TextField(null=True, blank=True, verbose_name='危急值处理结果', db_comment='危急值处理结果')
 
     # 危急值接收日期时间
-    gmt_recv = models.DateTimeField(null=True, blank=True, verbose_name='危急值接收日期时间')
+    gmt_recv = models.DateTimeField(null=True, blank=True, verbose_name='危急值接收日期时间', db_comment='危急值接收日期时间')
 
     # 危急值接收科室ID
-    recv_dept_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收科室ID')
+    recv_dept_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收科室ID',
+                                    db_comment='危急值接收科室ID')
 
     # 危急值接收科室名称
-    recv_dept_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值接收科室名称')
+    recv_dept_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值接收科室名称',
+                                      db_comment='危急值接收科室名称')
 
     # 危急值接收人ID
-    recv_opera_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收人ID')
+    recv_opera_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收人ID',
+                                     db_comment='危急值接收人ID')
 
     # 危急值接收人姓名
-    recv_opera_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值接收人姓名')
+    recv_opera_name = models.CharField(max_length=64, null=True, blank=True, verbose_name='危急值接收人姓名',
+                                       db_comment='危急值接收人姓名')
 
     # 参考范围描述
-    ref_desc = models.TextField(null=True, blank=True, verbose_name='参考范围描述')
+    ref_desc = models.TextField(null=True, blank=True, verbose_name='参考范围描述', db_comment='参考范围描述')
 
     # 危急值提示内容
-    tips = models.TextField(null=True, blank=True, verbose_name='危急值提示内容')
+    tips = models.TextField(null=True, blank=True, verbose_name='危急值提示内容', db_comment='危急值提示内容')
 
     # 数据来源
-    from_src = models.CharField(max_length=36, verbose_name='数据来源')
+    from_src = models.CharField(max_length=36, verbose_name='数据来源', db_comment='数据来源')
 
     # 机构代码
     org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",

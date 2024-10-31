@@ -16,6 +16,7 @@ import time
 from django import get_version
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 from django.contrib import admin
 from django.utils.html import format_html
@@ -30,6 +31,10 @@ PREFIX_ID = "esbid_"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 判断是否存在 .env 文件（仅在本地加载）
+if os.path.exists(os.path.join(BASE_DIR, '.env')):
+    load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -115,13 +120,11 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db")
-        if os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.sqlite3'
-        else os.getenv("APP_DB_NAME", "cdr"),
-        "USER": os.getenv("APP_DB_USER", "zhiming"),
-        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
-        "PORT": os.getenv("APP_DB_PORT", "5432"),
+        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db"),
+        "USER": os.getenv("APP_DB_USER", ""),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", ""),
+        "HOST": os.getenv("APP_DB_HOST", ""),
+        "PORT": os.getenv("APP_DB_PORT", ""),
     },
     "test": {
         "ENGINE": "django.db.backends.sqlite3",
