@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import logging
 import subprocess
 import time
+import tomllib
 
 from django import get_version
 import os
@@ -23,8 +24,13 @@ from django.utils.html import format_html
 from loguru import logger
 
 # 应用版本号
-VERSION = (3, 9, 0, "alpha", 1)
-__version__ = get_version(VERSION)
+def get_version_from_pyproject():
+    with open("pyproject.toml", "rb") as f:
+        data = tomllib.load(f)
+    # 假设版本号位于 [tool.poetry] 或 [project] 中
+    return data.get("project", {}).get("version")
+
+__version__ = get_version_from_pyproject()
 APP_NAME = "集成平台数据"
 # id前缀
 PREFIX_ID = "esbid_"
@@ -33,7 +39,7 @@ PREFIX_ID = "esbid_"
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 判断是否存在 .env 文件（仅在本地加载）
-if os.path.exists(os.path.join(BASE_DIR, '.env')):
+if os.path.exists(os.path.join(BASE_DIR, '.env2')):
     load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production

@@ -484,7 +484,7 @@ def verification(data: dict) -> tuple:
             # 校验检验报告模型
             try:
                 # 校验
-                exam_report.full_clean()
+                exam_report.full_clean(exclude=('patient', ))
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
                     # ExamReport.objects.update_or_create(report_id=report.get("report_id", None),
@@ -578,7 +578,7 @@ def verification(data: dict) -> tuple:
             check_report.patient_id = data[content_type]['patient']['patient_id']
             try:
                 # 校验
-                check_report.full_clean()
+                check_report.full_clean(exclude=('patient', ))
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
                     # CheckReport.objects.update_or_create(report_id=check_report.report_id, defaults=report)
@@ -591,13 +591,13 @@ def verification(data: dict) -> tuple:
         # 门急诊就诊信息更新
         case 'VisitInfoUpdate':
             visit = copy.deepcopy(data[content_type])
-            fields = set([field.name for field in Visit._meta.local_fields]) - {'id', 'gmt_created'}
+            fields = set([field.name for field in Visit._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
             filtered_data = {key: value for key, value in visit.items() if key in fields}
-            filtered_data.update(**{"from_src": data['send_id']})
+            filtered_data.update(**{"from_src": data['send_id'], "patient_id": visit["patient_id"]})
             visit_info = Visit(**filtered_data)
             try:
                 # 校验
-                visit_info.full_clean(exclude=['adm_no'])
+                visit_info.full_clean(exclude=['adm_no', 'patient'])
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
                     Visit.objects.update_or_create(adm_no=visit_info.adm_no, defaults=filtered_data)
@@ -632,13 +632,14 @@ def verification(data: dict) -> tuple:
             """ 诊断信息新增或更新逻辑 """
             diagnosiss = data[content_type]
             # 获取需要保存的数据模型字段列表
-            fields = set([field.name for field in Diagnosis._meta.local_fields]) - {'id', 'gmt_created'}
+            fields = set([field.name for field in Diagnosis._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
             for diagnosis in diagnosiss:
                 filtered_data = {key: value for key, value in diagnosis.items() if key in fields}
                 diagnosis_info = Diagnosis(**copy.deepcopy(filtered_data))
+                filtered_data.update(**{"patient_id": diagnosis["patient_id"]})
                 # 校验
                 try:
-                    diagnosis_info.full_clean(exclude=('diagnosis_id', ))
+                    diagnosis_info.full_clean(exclude=('diagnosis_id', 'patient'))
                     # 保存到数据库
                     if settings.IS_SAVE_TO_DB:
                         Diagnosis.objects.update_or_create(diagnosis_id=diagnosis_info.diagnosis_id, defaults=filtered_data)

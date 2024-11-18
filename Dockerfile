@@ -1,5 +1,5 @@
 # 定义镜像的标签
-ARG TAG=3.11.2-slim-buster
+ARG TAG=3.13-slim
 
 FROM python:${TAG} as builder-image
 

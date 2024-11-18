@@ -92,6 +92,84 @@ class CheckCategoryChoices(models.TextChoices):
     E = ('EIS', '内镜检查')
 
 
+class Patient(models.Model):
+    """
+    患者信息
+    """
+
+    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID',
+                                  unique=True)
+    gmt_reg = models.DateTimeField(db_comment="患者登记时间", verbose_name='患者登记时间')
+    id_no = models.CharField(max_length=36, db_comment="证件号码", verbose_name='证件号码')
+    id_code = models.CharField(max_length=2, choices=IdCodeChoices, db_comment="证件类型代码",
+                               verbose_name='证件类型代码', help_text='来源:身份证件类别代码表(CV02.01.101)')
+    patient_name = models.CharField(max_length=36, db_comment="患者姓名", verbose_name='患者姓名')
+    tel_no = models.CharField(max_length=36, db_comment="联系电话", verbose_name='联系电话')
+    sex_code = models.PositiveSmallIntegerField(choices=SexCodeChoices, db_comment="性别代码", verbose_name='性别代码')
+    gmt_birth = models.DateField(db_comment="出生日期", verbose_name='出生日期')
+    addr_sal = models.CharField(max_length=128, db_comment="完整地址描述", verbose_name='完整地址描述')
+    addr_sta = models.CharField(max_length=36, db_comment="自治区、直辖市", verbose_name='自治区、直辖市', null=True,
+                                blank=True)
+    addr_cty = models.CharField(max_length=36, db_comment="地址-市（地区）", verbose_name='地址-市（地区）', null=True,
+                                blank=True)
+    addr_cnt = models.CharField(max_length=36, db_comment="地址-县（区）", verbose_name='地址-县（区）', null=True,
+                                blank=True)
+    addr_stb = models.CharField(max_length=36, db_comment="地址-乡（镇、街道办事处）",
+                                verbose_name='地址-乡（镇、街道办事处）',
+                                null=True, blank=True)
+    addr_str = models.CharField(max_length=36, db_comment="地址-村（街、路、弄等）", verbose_name='地址-村（街、路、弄等）',
+                                null=True, blank=True)
+    addr_bnr = models.CharField(max_length=36, db_comment="地址-门牌号码", verbose_name='地址-门牌号码', null=True,
+                                blank=True)
+    addr_zip = models.CharField(max_length=36, db_comment="邮政编码", verbose_name='邮政编码', null=True, blank=True)
+    marital_status_code = models.CharField(max_length=2, choices=MaritalStatusCodeChoices, db_comment="婚姻状况代码",
+                                           verbose_name='婚姻状况代码')
+    ethnic_group_code = models.CharField(max_length=36, db_comment="民族代码", verbose_name='民族代码')
+    occupation_code = models.CharField(max_length=36, db_comment="职业类别代码", verbose_name='职业类别代码')
+    work_org = models.CharField(max_length=36, db_comment="工作单位", verbose_name='工作单位', null=True, blank=True)
+    work_org_tel = models.CharField(max_length=36, db_comment="工作单位联系电话", verbose_name='工作单位联系电话',
+                                    null=True, blank=True)
+    hcard_no = models.CharField(max_length=36, db_comment="健康卡号", verbose_name='健康卡号', null=True, blank=True)
+    hcard_org_code = models.CharField(max_length=18, db_comment="健康卡发放机构代码", verbose_name='健康卡发放机构代码',
+                                      choices=FromOrgCodeChoices, null=True, blank=True)
+    gcard_no = models.CharField(max_length=36, db_comment="城乡居民健康档案编号", verbose_name='城乡居民健康档案编号',
+                                null=True, blank=True)
+    gcard_org_code = models.CharField(max_length=36, db_comment="建档医疗机构组织机构代码", choices=FromOrgCodeChoices,
+                                      verbose_name='建档医疗机构组织机构代码', null=True, blank=True)
+    contact_code = models.CharField(max_length=36, db_comment="联系人关系代码", verbose_name='联系人关系代码')
+    contact_tel = models.CharField(max_length=36, db_comment="联系人电话", verbose_name='联系人电话')
+    contact_cname = models.CharField(max_length=36, db_comment="联系人姓名", verbose_name='联系人姓名')
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="组织机构代码",
+                                verbose_name='组织机构代码')
+    ins_code = models.CharField(max_length=2, choices=InsCodeChoices, db_comment="医疗保险类别代码",
+                                verbose_name='医疗保险类别代码')
+    author_id = models.CharField(max_length=36, db_comment="登记人ID", verbose_name='登记人ID')
+    author = models.CharField(max_length=64, db_comment="登记人", verbose_name='登记人')
+    from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
+    # empi_id = models.CharField(max_length=36, db_comment="EMPI号", verbose_name='EMPI号', null=True, blank=True)
+    # outpatient_id = models.CharField(max_length=36, db_comment="门急诊号标识ID", verbose_name='门急诊号标识ID',
+    #                                  help_text="门急诊号标识,对于门诊住院患者不同表情况下使用", null=True, blank=True)
+    # inpatient_id = models.CharField(max_length=36, db_comment="住院号", verbose_name='住院号',
+    #                                 help_text='住院号标识,对于门诊住院患者不同表情况下使用', null=True, blank=True)
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+    extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息',
+                             help_text="empi_id, outpatient_id, inpatient_id; 如有需要请自行在对应数据库建立索引")
+
+    def __str__(self):
+        return f"{self.patient_name}-{self.patient_id}"
+
+    class Meta:
+        verbose_name = "个人信息"
+        verbose_name_plural = verbose_name
+        db_table_comment = '个人信息'
+
+        indexes = (
+            models.Index(fields=['patient_id'], ),
+            models.Index(fields=['id_no'], ),
+            models.Index(fields=['tel_no'], ),
+        )
+
+
 # Create your models here.
 class BloodTrans(models.Model):
     """
@@ -167,7 +245,9 @@ class BloodTrans(models.Model):
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
@@ -234,7 +314,9 @@ class Check(models.Model):
     note = models.CharField(max_length=255, blank=True, null=True, db_comment='申请注意事项',
                             verbose_name='申请注意事项')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     diags = models.JSONField(blank=True, null=True, db_comment='诊断信息', verbose_name='诊断信息',
@@ -271,7 +353,9 @@ class CheckAppointStatus(models.Model):
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     gmt_booking = models.DateTimeField(blank=True, null=True, db_comment='预约检查时间', verbose_name='预约检查时间')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
     index = models.PositiveSmallIntegerField(db_comment='预约排序号', verbose_name='预约排序号')
     dept_id = models.CharField(max_length=36, blank=True, null=True, db_comment='病人科室ID', verbose_name='病人科室ID')
@@ -314,7 +398,9 @@ class CheckReport(models.Model):
     title = models.CharField(max_length=36, db_comment="报告单名称", verbose_name='报告单名称')
     exam_no = models.CharField(max_length=36, db_comment="检查号", verbose_name='检查号')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                 verbose_name='就诊类别代码')
     apply_id = models.CharField(max_length=36, db_comment="申请单id", verbose_name='申请单id')
@@ -449,7 +535,9 @@ class CheckStatus(models.Model):
     status_code = models.CharField(max_length=4, choices=StatusCodeChoices, db_comment='检查状态代码',
                                    verbose_name="检查状态")
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -482,7 +570,9 @@ class Discharge(models.Model):
     gmt_adm = models.DateTimeField(blank=True, null=True, db_comment='入院日期时间', verbose_name='入院日期时间')
     gmt_discharge = models.DateTimeField(blank=True, null=True, db_comment='出院日期时间', verbose_name='出院日期时间')
     reason = models.CharField(max_length=128, blank=True, null=True, db_comment='就诊原因', verbose_name='就诊原因')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     discharge_doc_id = models.CharField(max_length=36, blank=True, null=True, db_comment='出院登记的职工号',
                                         verbose_name='出院登记职工号')
     discharge_doc_name = models.CharField(max_length=64, blank=True, null=True, db_comment='出院登记职工姓名',
@@ -490,7 +580,7 @@ class Discharge(models.Model):
     dept_id = models.CharField(max_length=36, db_comment='出院科室id', verbose_name='出院科室id')
     dept_name = models.CharField(max_length=64, db_comment='出院科室名称', verbose_name='出院科室名称')
     ward_id = models.CharField(max_length=36, db_comment='出院病区id', verbose_name='出院病区id')
-    ward_name = models.CharField(max_length=64, db_comment='出院病区名称',verbose_name='出院病区名称')
+    ward_name = models.CharField(max_length=64, db_comment='出院病区名称', verbose_name='出院病区名称')
     room_id = models.CharField(max_length=36, db_comment='病房id', verbose_name='病房id')
     room_name = models.CharField(max_length=64, db_comment='病房名称', verbose_name='病房名称')
     bed_id = models.CharField(max_length=36, db_comment='床号ID', verbose_name='床号ID')
@@ -558,7 +648,9 @@ class Exam(models.Model):
                             verbose_name='申请注意事项')
     diags = models.JSONField(blank=True, null=True, db_comment='诊断信息', verbose_name='诊断信息',
                              help_text='检验申请原因')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -670,7 +762,9 @@ class ExamReport(models.Model):
     dept_id = models.CharField(max_length=36, db_comment="报告科室ID", verbose_name='报告科室ID')
     dept_name = models.CharField(max_length=18, db_comment="报告科室", verbose_name='报告科室')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                 verbose_name='就诊类别代码')
     content = models.CharField(max_length=255, db_comment="检验所见", verbose_name='检验所见', null=True, blank=True)
@@ -877,7 +971,9 @@ class ExamStatus(models.Model):
     dept_id = models.CharField(max_length=36, db_comment='操作科室ID', verbose_name='操作科室ID')
     dept_name = models.CharField(max_length=64, db_comment='操作科室名称', verbose_name='操作科室名称')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -913,7 +1009,9 @@ class InPatient(models.Model):
     ins_code = models.CharField(max_length=2, choices=InsCodeChoices, db_comment='医疗保险类别代码',
                                 verbose_name='医疗保险类别代码')
     in_times = models.PositiveSmallIntegerField(db_comment='住院次数', verbose_name='住院次数')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     doc_id = models.CharField(max_length=36, blank=True, null=True, db_comment='责任医生的职工号',
                               verbose_name='责任医生的职工号')
     doc_name = models.CharField(max_length=64, blank=True, null=True, db_comment='责任医师姓名',
@@ -971,7 +1069,7 @@ class Operation(models.Model):
     anesthesia_name = models.CharField(max_length=64, blank=True, null=True, db_comment='麻醉方式名称',
                                        verbose_name='麻醉方式名称')
     property_code = models.CharField(max_length=2, choices=PropertyChoices, db_comment='手术性质编码（择期，围期)',
-                                                     verbose_name='手术性质编码')
+                                     verbose_name='手术性质编码')
     doc_id = models.CharField(max_length=36, blank=True, null=True, db_comment='申请医师工号',
                               verbose_name='申请医师工号')
     doc_name = models.CharField(max_length=64, blank=True, null=True, db_comment='申请医师姓名',
@@ -1004,7 +1102,9 @@ class Operation(models.Model):
     diags = models.JSONField(blank=True, null=True, db_comment='诊断信息', verbose_name='诊断信息',
                              help_text='诊断(手术申请原因)')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
@@ -1031,7 +1131,9 @@ class OperationSchedule(models.Model):
     duration = models.PositiveSmallIntegerField(db_comment='预计手术时长', verbose_name='预计手术时长')
     duration_unit = models.CharField(max_length=8, blank=True, null=True, db_comment='预计手术时长单位',
                                      verbose_name='预计手术时长单位')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
     device_id = models.CharField(max_length=36, blank=True, null=True, db_comment='预约设备编码',
                                  verbose_name='预约设备编码')
@@ -1089,7 +1191,9 @@ class OperationStatus(models.Model):
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
@@ -1137,7 +1241,9 @@ class OrderFillerStatus(models.Model):
                                                            db_comment='医嘱执行状态名称',
                                                            verbose_name='医嘱执行状态名称')
     times = models.PositiveIntegerField(db_comment='就诊次数', verbose_name='就诊次数')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
                               help_text="部分HIS厂商通过patient_id+time确定就诊流水号")
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -1250,7 +1356,9 @@ class Order(models.Model):
     note_status = models.CharField(max_length=255, blank=True, null=True, db_comment='医嘱备注信息状态',
                                    verbose_name='医嘱备注信息状态')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -1326,7 +1434,9 @@ class OutpatientAppointStatus(models.Model):
 
     booking_id = models.CharField(max_length=36, db_comment='预约ID', unique=True, verbose_name="预约ID")
     gmt_schedule = models.DateTimeField(db_comment='预约日期时间', verbose_name="预约日期时间")
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     id_no = models.CharField(max_length=36, db_comment='身份证号', verbose_name="身份证号")
     patient_name = models.CharField(max_length=64, db_comment='姓名', verbose_name="姓名")
     gmt_booking = models.DateTimeField(db_comment='系统预约日期时间', verbose_name="系统预约日期时间")
@@ -1373,7 +1483,9 @@ class OutPatient(models.Model):
                               verbose_name='就诊原因描述')
     ins_cls_code = models.CharField(max_length=2, choices=InsCodeChoices, db_comment='医疗保险类别代码',
                                     verbose_name='医疗保险类别代码')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    # 患者信息（外键关联）
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
     doc_id = models.CharField(max_length=36, db_comment='医生的职工号', verbose_name='医生的职工号')
     doc_name = models.CharField(max_length=32, db_comment='责任医师姓名', verbose_name='责任医师姓名')
     dept_id = models.CharField(max_length=36, db_comment='服务场所科室标识', verbose_name='服务场所科室标识')
@@ -1458,7 +1570,8 @@ class Pathology(models.Model):
     diags = models.JSONField(blank=True, null=True, db_comment='诊断信息', verbose_name='诊断信息',
                              help_text='诊断(检查申请原因)')
     adm_no = models.CharField(max_length=36, db_comment='就诊流水号', verbose_name='就诊流水号')
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
+                                db_constraint=False, db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
@@ -1476,84 +1589,6 @@ class Pathology(models.Model):
             models.Index(fields=('adm_no',)),
             models.Index(fields=('patient_id',)),
         ]
-
-
-class Patient(models.Model):
-    """
-    患者信息
-    """
-
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID',
-                                  unique=True)
-    gmt_reg = models.DateTimeField(db_comment="患者登记时间", verbose_name='患者登记时间')
-    id_no = models.CharField(max_length=36, db_comment="证件号码", verbose_name='证件号码')
-    id_code = models.CharField(max_length=2, choices=IdCodeChoices, db_comment="证件类型代码",
-                               verbose_name='证件类型代码', help_text='来源:身份证件类别代码表(CV02.01.101)')
-    patient_name = models.CharField(max_length=36, db_comment="患者姓名", verbose_name='患者姓名')
-    tel_no = models.CharField(max_length=36, db_comment="联系电话", verbose_name='联系电话')
-    sex_code = models.PositiveSmallIntegerField(choices=SexCodeChoices, db_comment="性别代码", verbose_name='性别代码')
-    gmt_birth = models.DateField(db_comment="出生日期", verbose_name='出生日期')
-    addr_sal = models.CharField(max_length=128, db_comment="完整地址描述", verbose_name='完整地址描述')
-    addr_sta = models.CharField(max_length=36, db_comment="自治区、直辖市", verbose_name='自治区、直辖市', null=True,
-                                blank=True)
-    addr_cty = models.CharField(max_length=36, db_comment="地址-市（地区）", verbose_name='地址-市（地区）', null=True,
-                                blank=True)
-    addr_cnt = models.CharField(max_length=36, db_comment="地址-县（区）", verbose_name='地址-县（区）', null=True,
-                                blank=True)
-    addr_stb = models.CharField(max_length=36, db_comment="地址-乡（镇、街道办事处）",
-                                verbose_name='地址-乡（镇、街道办事处）',
-                                null=True, blank=True)
-    addr_str = models.CharField(max_length=36, db_comment="地址-村（街、路、弄等）", verbose_name='地址-村（街、路、弄等）',
-                                null=True, blank=True)
-    addr_bnr = models.CharField(max_length=36, db_comment="地址-门牌号码", verbose_name='地址-门牌号码', null=True,
-                                blank=True)
-    addr_zip = models.CharField(max_length=36, db_comment="邮政编码", verbose_name='邮政编码', null=True, blank=True)
-    marital_status_code = models.CharField(max_length=2, choices=MaritalStatusCodeChoices, db_comment="婚姻状况代码",
-                                           verbose_name='婚姻状况代码')
-    ethnic_group_code = models.CharField(max_length=36, db_comment="民族代码", verbose_name='民族代码')
-    occupation_code = models.CharField(max_length=36, db_comment="职业类别代码", verbose_name='职业类别代码')
-    work_org = models.CharField(max_length=36, db_comment="工作单位", verbose_name='工作单位', null=True, blank=True)
-    work_org_tel = models.CharField(max_length=36, db_comment="工作单位联系电话", verbose_name='工作单位联系电话',
-                                    null=True, blank=True)
-    hcard_no = models.CharField(max_length=36, db_comment="健康卡号", verbose_name='健康卡号', null=True, blank=True)
-    hcard_org_code = models.CharField(max_length=18, db_comment="健康卡发放机构代码", verbose_name='健康卡发放机构代码',
-                                      choices=FromOrgCodeChoices, null=True, blank=True)
-    gcard_no = models.CharField(max_length=36, db_comment="城乡居民健康档案编号", verbose_name='城乡居民健康档案编号',
-                                null=True, blank=True)
-    gcard_org_code = models.CharField(max_length=36, db_comment="建档医疗机构组织机构代码", choices=FromOrgCodeChoices,
-                                      verbose_name='建档医疗机构组织机构代码', null=True, blank=True)
-    contact_code = models.CharField(max_length=36, db_comment="联系人关系代码", verbose_name='联系人关系代码')
-    contact_tel = models.CharField(max_length=36, db_comment="联系人电话", verbose_name='联系人电话')
-    contact_cname = models.CharField(max_length=36, db_comment="联系人姓名", verbose_name='联系人姓名')
-    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="组织机构代码",
-                                verbose_name='组织机构代码')
-    ins_code = models.CharField(max_length=2, choices=InsCodeChoices, db_comment="医疗保险类别代码",
-                                verbose_name='医疗保险类别代码')
-    author_id = models.CharField(max_length=36, db_comment="登记人ID", verbose_name='登记人ID')
-    author = models.CharField(max_length=64, db_comment="登记人", verbose_name='登记人')
-    from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
-    # empi_id = models.CharField(max_length=36, db_comment="EMPI号", verbose_name='EMPI号', null=True, blank=True)
-    # outpatient_id = models.CharField(max_length=36, db_comment="门急诊号标识ID", verbose_name='门急诊号标识ID',
-    #                                  help_text="门急诊号标识,对于门诊住院患者不同表情况下使用", null=True, blank=True)
-    # inpatient_id = models.CharField(max_length=36, db_comment="住院号", verbose_name='住院号',
-    #                                 help_text='住院号标识,对于门诊住院患者不同表情况下使用', null=True, blank=True)
-    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
-    extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息',
-                             help_text="empi_id, outpatient_id, inpatient_id; 如有需要请自行在对应数据库建立索引")
-
-    def __str__(self):
-        return f"{self.patient_name}-{self.patient_id}"
-
-    class Meta:
-        verbose_name = "个人信息"
-        verbose_name_plural = verbose_name
-        db_table_comment = '个人信息'
-
-        indexes = (
-            models.Index(fields=['patient_id'], ),
-            models.Index(fields=['id_no'], ),
-            models.Index(fields=['tel_no'], ),
-        )
 
 
 class Provider(models.Model):
@@ -1697,7 +1732,8 @@ class Transfer(models.Model):
     """
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
+                                db_constraint=False, db_comment='患者唯一标识ID')
     gmt_in = models.DateTimeField(db_comment='转入日期时间', verbose_name='转入日期时间')
     in_dept_id = models.CharField(max_length=36, db_comment='转入科室id', verbose_name='转入科室id')
     in_dept_name = models.CharField(max_length=64, db_comment='转入科室名称', verbose_name='转入科室名称')
@@ -1738,7 +1774,8 @@ class Diagnosis(models.Model):
 
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
+                                db_constraint=False, db_comment='患者唯一标识ID')
     adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
                                                     verbose_name='就诊类别代码')
     diagnosis_id = models.CharField(max_length=36, db_comment="诊断ID", verbose_name='诊断ID', unique=True)
@@ -1800,13 +1837,14 @@ class Visit(models.Model):
 
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
-    patient_id = models.CharField(max_length=36, db_comment="患者唯一标识ID", verbose_name='患者唯一标识ID')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
+                                db_constraint=False, db_comment='患者唯一标识ID', to_field='patient_id')
     times = models.PositiveIntegerField(db_comment='就诊次数', verbose_name='就诊次数')
     is_first = models.BooleanField(db_comment="初诊标识", verbose_name='初诊标识', default=True)
-    dept_id = models.CharField(max_length=10, db_comment="就诊科室ID", verbose_name='就诊科室ID')
-    dept_name = models.CharField(max_length=36, db_comment="就诊科室名称", verbose_name='就诊科室名称')
-    doctor_id = models.CharField(max_length=10, db_comment="接诊医生ID", verbose_name='接诊医生ID')
-    doctor_name = models.CharField(max_length=36, db_comment="接诊医生姓名", verbose_name='接诊医生姓名')
+    dept_id = models.CharField(max_length=36, db_comment="就诊科室ID", verbose_name='就诊科室ID')
+    dept_name = models.CharField(max_length=64, db_comment="就诊科室名称", verbose_name='就诊科室名称')
+    doctor_id = models.CharField(max_length=36, db_comment="接诊医生ID", verbose_name='接诊医生ID')
+    doctor_name = models.CharField(max_length=64, db_comment="接诊医生姓名", verbose_name='接诊医生姓名')
     schedule_id = models.CharField(max_length=36, db_comment="排班ID", verbose_name='排班ID', null=True, blank=True)
     index = models.PositiveSmallIntegerField(db_comment='排队号', verbose_name='排队号', default=1)
     visit_status = models.PositiveSmallIntegerField('就诊状态', choices=VisitStatusChoices)
@@ -1874,11 +1912,12 @@ class PathologyReport(models.Model):
     category = models.CharField(max_length=3, choices=CATEGORY_CHOICES, verbose_name='报告类别', db_comment='报告类别')
 
     # 病理号
-    index = models.CharField(max_length=36, verbose_name='病理号', help_text='受检者病理检查登记顺序号', db_comment='受检者病理检查登记顺序号')
+    index = models.CharField(max_length=36, verbose_name='病理号', help_text='受检者病理检查登记顺序号',
+                             db_comment='受检者病理检查登记顺序号')
 
     # 患者基本信息
-    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, verbose_name='患者ID',
-                                db_constraint=False, db_comment='患者ID')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
+                                db_constraint=False, db_comment='患者唯一标识ID')
 
     # 申请单ID（如无，则填医嘱号）
     apply_id = models.CharField(max_length=36, verbose_name='申请单id', db_comment='申请单id')
@@ -1926,7 +1965,8 @@ class PathologyReport(models.Model):
     reviewer_id = models.CharField(max_length=36, verbose_name='审核人id', null=True, blank=True, db_comment='审核人id')
 
     # 审核人
-    reviewer = models.CharField(max_length=64, verbose_name='审核人姓名', null=True, blank=True, db_comment='审核人姓名')
+    reviewer = models.CharField(max_length=64, verbose_name='审核人姓名', null=True, blank=True,
+                                db_comment='审核人姓名')
 
     # 审核日期时间
     gmt_review = models.DateTimeField(verbose_name='审核日期时间', db_comment='审核日期时间')
@@ -1935,7 +1975,8 @@ class PathologyReport(models.Model):
     comment = models.TextField(verbose_name='备注内容', null=True, blank=True, db_comment='备注内容')
 
     # 设备唯一ID（用于固定资产统计）
-    device_id = models.CharField(max_length=36, verbose_name='设备唯一id', null=True, blank=True, db_comment='设备唯一id')
+    device_id = models.CharField(max_length=36, verbose_name='设备唯一id', null=True, blank=True,
+                                 db_comment='设备唯一id')
 
     # 设备名称
     device_name = models.CharField(max_length=64, verbose_name='设备名称', null=True, blank=True, db_comment='设备名称')
@@ -1972,7 +2013,7 @@ class CriticalValue(models.Model):
     critical_id = models.CharField(max_length=255, unique=True, verbose_name='危急值ID', db_comment='危急值ID')
 
     # 就诊类别代码
-    adm_cls_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices,  db_comment='就诊类别代码')
+    adm_cls_code = models.IntegerField(verbose_name='就诊类别代码', choices=AdmCodeChoices, db_comment='就诊类别代码')
 
     # 就诊流水号
     adm_no = models.CharField(max_length=36, verbose_name='就诊流水号', db_comment='就诊流水号')
@@ -1994,14 +2035,15 @@ class CriticalValue(models.Model):
                                     db_comment='危急值项目英文名称')
 
     # 患者信息（外键关联）
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name='患者ID', db_constraint=False,
-                                db_comment='患者ID')
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
+                                db_comment='患者唯一标识ID')
 
     # 危急值报告科室ID
     report_dept_id = models.CharField(max_length=36, verbose_name='危急值报告科室ID', db_comment='危急值报告科室ID')
 
     # 危急值报告科室名称
-    report_dept_name = models.CharField(max_length=64, verbose_name='危急值报告科室名称', db_comment='危急值报告科室名称')
+    report_dept_name = models.CharField(max_length=64, verbose_name='危急值报告科室名称',
+                                        db_comment='危急值报告科室名称')
 
     # 报告ID
     report_id = models.CharField(max_length=36, verbose_name='报告ID', db_comment='报告ID')
@@ -2010,7 +2052,8 @@ class CriticalValue(models.Model):
     report_opera_id = models.CharField(max_length=36, verbose_name='危急值报告人ID', db_comment='危急值报告人ID')
 
     # 危急值报告医师姓名
-    report_opera_name = models.CharField(max_length=64, verbose_name='危急值报告医师姓名', db_comment='危急值报告医师姓名')
+    report_opera_name = models.CharField(max_length=64, verbose_name='危急值报告医师姓名',
+                                         db_comment='危急值报告医师姓名')
 
     # 危急值报告电脑
     report_opera_pc = models.CharField(max_length=64, verbose_name='危急值报告电脑', db_comment='危急值报告电脑')
@@ -2048,7 +2091,8 @@ class CriticalValue(models.Model):
     process_result = models.TextField(null=True, blank=True, verbose_name='危急值处理结果', db_comment='危急值处理结果')
 
     # 危急值接收日期时间
-    gmt_recv = models.DateTimeField(null=True, blank=True, verbose_name='危急值接收日期时间', db_comment='危急值接收日期时间')
+    gmt_recv = models.DateTimeField(null=True, blank=True, verbose_name='危急值接收日期时间',
+                                    db_comment='危急值接收日期时间')
 
     # 危急值接收科室ID
     recv_dept_id = models.CharField(max_length=36, null=True, blank=True, verbose_name='危急值接收科室ID',

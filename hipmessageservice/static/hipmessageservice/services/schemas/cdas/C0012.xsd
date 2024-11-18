@@ -14,7 +14,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -23,8 +23,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
-								<xs:attribute name="extension" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
+								<xs:attribute name="extension" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -33,7 +33,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -45,7 +45,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 								<xs:attribute name="extension" use="required">
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
@@ -69,8 +69,8 @@
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>
-								<xs:attribute name="codeSystem" type="xs:string"/>
-								<xs:attribute name="codeSystemName" type="xs:string"/>
+								<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -104,10 +104,10 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
-								<xs:attribute name="codeSystem" type="xs:string"/>
-								<xs:attribute name="codeSystemName" type="xs:string"/>
-								<xs:attribute name="displayName" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+								<xs:attribute name="displayName" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -116,7 +116,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -139,7 +139,7 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="root" type="xs:string" use="optional"/>
+														<xs:attribute name="root" type="xs:string" use="required"/>
 														<xs:attribute name="extension" type="xs:string" use="required"/>
 													</xs:extension>
 												</xs:simpleContent>
@@ -155,7 +155,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="root" type="xs:string"/>
+																	<xs:attribute name="root" type="xs:string" use="required"/>
 																	<xs:attribute name="extension" type="xs:string" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>
@@ -166,7 +166,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="code">
+																	<xs:attribute name="code" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:short">
 																				<xs:enumeration value="0"/>
@@ -186,8 +186,8 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="codeSystem" type="xs:string"/>
-																	<xs:attribute name="codeSystemName" type="xs:string"/>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -221,8 +221,8 @@
 														</xs:complexType>
 													</xs:element>
 												</xs:sequence>
-												<xs:attribute name="classCode" type="xs:string"/>
-												<xs:attribute name="determinerCode" type="xs:string"/>
+												<xs:attribute name="classCode" type="xs:string" use="required"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="providerOrganization">
@@ -238,8 +238,8 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="root" type="xs:string"/>
-																	<xs:attribute name="extension" type="xs:string"/>
+																	<xs:attribute name="root" type="xs:string" use="required"/>
+																	<xs:attribute name="extension" type="xs:string" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -250,17 +250,17 @@
 														</xs:annotation>
 													</xs:element>
 												</xs:sequence>
-												<xs:attribute name="classCode" type="xs:string"/>
-												<xs:attribute name="determinerCode" type="xs:string"/>
+												<xs:attribute name="classCode" type="xs:string" use="required"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
-						<xs:attribute name="contextControlCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
+						<xs:attribute name="contextControlCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="author">
@@ -294,7 +294,7 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="root" type="xs:string"/>
+														<xs:attribute name="root" type="xs:string" use="required"/>
 														<xs:attribute name="extension" use="required">
 															<xs:simpleType>
 																<xs:restriction base="xs:string">
@@ -317,12 +317,12 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
-						<xs:attribute name="contextControlCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
+						<xs:attribute name="contextControlCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="custodian">
@@ -341,7 +341,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="root" type="xs:string"/>
+																	<xs:attribute name="root" type="xs:string" use="required"/>
 																	<xs:attribute name="extension" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
@@ -355,16 +355,16 @@
 													</xs:element>
 													<xs:element name="name" type="xs:string"/>
 												</xs:sequence>
-												<xs:attribute name="classCode" type="xs:string"/>
-												<xs:attribute name="determinerCode" type="xs:string"/>
+												<xs:attribute name="classCode" type="xs:string" use="required"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="authenticator" maxOccurs="unbounded">
@@ -399,7 +399,7 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="root" type="xs:string" use="optional"/>
+														<xs:attribute name="root" type="xs:string" use="required"/>
 														<xs:attribute name="extension" use="required">
 															<xs:simpleType>
 																<xs:restriction base="xs:string">
@@ -454,7 +454,7 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="componentOf">
@@ -506,7 +506,7 @@
 																										<xs:complexType>
 																											<xs:simpleContent>
 																												<xs:extension base="xs:string">
-																													<xs:attribute name="root" type="xs:string"/>
+																													<xs:attribute name="root" type="xs:string" use="required"/>
 																													<xs:attribute name="extension" use="required">
 																														<xs:simpleType>
 																															<xs:restriction base="xs:string">
@@ -538,7 +538,7 @@
 																																<xs:complexType>
 																																	<xs:simpleContent>
 																																		<xs:extension base="xs:string">
-																																			<xs:attribute name="root" type="xs:string"/>
+																																			<xs:attribute name="root" type="xs:string" use="required"/>
 																																			<xs:attribute name="extension" type="xs:string" use="required"/>
 																																		</xs:extension>
 																																	</xs:simpleContent>
@@ -564,7 +564,7 @@
 																																						<xs:complexType>
 																																							<xs:simpleContent>
 																																								<xs:extension base="xs:string">
-																																									<xs:attribute name="root" type="xs:string"/>
+																																									<xs:attribute name="root" type="xs:string" use="required"/>
 																																									<xs:attribute name="extension" type="xs:string" use="required"/>
 																																								</xs:extension>
 																																							</xs:simpleContent>
@@ -584,7 +584,7 @@
 																																												<xs:complexType>
 																																													<xs:simpleContent>
 																																														<xs:extension base="xs:string">
-																																															<xs:attribute name="root" type="xs:string"/>
+																																															<xs:attribute name="root" type="xs:string" use="required"/>
 																																															<xs:attribute name="extension" type="xs:string" use="required"/>
 																																														</xs:extension>
 																																													</xs:simpleContent>
@@ -604,7 +604,7 @@
 																																																		<xs:complexType>
 																																																			<xs:simpleContent>
 																																																				<xs:extension base="xs:string">
-																																																					<xs:attribute name="root" type="xs:string"/>
+																																																					<xs:attribute name="root" type="xs:string" use="required"/>
 																																																					<xs:attribute name="extension" use="required">
 																																																						<xs:simpleType>
 																																																							<xs:restriction base="xs:string">
@@ -618,48 +618,48 @@
 																																																	</xs:element>
 																																																	<xs:element name="name" type="xs:string"/>
 																																																</xs:sequence>
-																																																<xs:attribute name="classCode" type="xs:string"/>
-																																																<xs:attribute name="determinerCode" type="xs:string"/>
+																																																<xs:attribute name="classCode" type="xs:string" use="required"/>
+																																																<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																																															</xs:complexType>
 																																														</xs:element>
 																																													</xs:sequence>
-																																													<xs:attribute name="classCode" type="xs:string"/>
+																																													<xs:attribute name="classCode" type="xs:string" use="required"/>
 																																												</xs:complexType>
 																																											</xs:element>
 																																										</xs:sequence>
-																																										<xs:attribute name="classCode" type="xs:string"/>
-																																										<xs:attribute name="determinerCode" type="xs:string"/>
+																																										<xs:attribute name="classCode" type="xs:string" use="required"/>
+																																										<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																																									</xs:complexType>
 																																								</xs:element>
 																																							</xs:sequence>
-																																							<xs:attribute name="classCode" type="xs:string"/>
+																																							<xs:attribute name="classCode" type="xs:string" use="required"/>
 																																						</xs:complexType>
 																																					</xs:element>
 																																				</xs:sequence>
-																																				<xs:attribute name="classCode" type="xs:string"/>
-																																				<xs:attribute name="determinerCode" type="xs:string"/>
+																																				<xs:attribute name="classCode" type="xs:string" use="required"/>
+																																				<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																																			</xs:complexType>
 																																		</xs:element>
 																																	</xs:sequence>
-																																	<xs:attribute name="classCode" type="xs:string"/>
+																																	<xs:attribute name="classCode" type="xs:string" use="required"/>
 																																</xs:complexType>
 																															</xs:element>
 																														</xs:sequence>
-																														<xs:attribute name="classCode" type="xs:string"/>
-																														<xs:attribute name="determinerCode" type="xs:string"/>
+																														<xs:attribute name="classCode" type="xs:string" use="required"/>
+																														<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																													</xs:complexType>
 																												</xs:element>
 																											</xs:sequence>
-																											<xs:attribute name="classCode" type="xs:string"/>
+																											<xs:attribute name="classCode" type="xs:string" use="required"/>
 																										</xs:complexType>
 																									</xs:element>
 																								</xs:sequence>
-																								<xs:attribute name="classCode" type="xs:string"/>
-																								<xs:attribute name="determinerCode" type="xs:string"/>
+																								<xs:attribute name="classCode" type="xs:string" use="required"/>
+																								<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																							</xs:complexType>
 																						</xs:element>
 																					</xs:sequence>
-																					<xs:attribute name="classCode" type="xs:string"/>
+																					<xs:attribute name="classCode" type="xs:string" use="required"/>
 																				</xs:complexType>
 																			</xs:element>
 																		</xs:sequence>
@@ -779,17 +779,17 @@
 																												</xs:element>
 																												<xs:element name="value" type="xs:string"/>
 																											</xs:sequence>
-																											<xs:attribute name="classCode" type="xs:string"/>
-																											<xs:attribute name="moodCode" type="xs:string"/>
+																											<xs:attribute name="classCode" type="xs:string" use="required"/>
+																											<xs:attribute name="moodCode" type="xs:string" use="required"/>
 																										</xs:complexType>
 																									</xs:element>
 																								</xs:sequence>
-																								<xs:attribute name="typeCode" type="xs:string"/>
+																								<xs:attribute name="typeCode" type="xs:string" use="required"/>
 																							</xs:complexType>
 																						</xs:element>
 																					</xs:sequence>
-																					<xs:attribute name="classCode" type="xs:string" use="optional"/>
-																					<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																					<xs:attribute name="classCode" type="xs:string" use="required"/>
+																					<xs:attribute name="moodCode" type="xs:string" use="required"/>
 																				</xs:complexType>
 																			</xs:element>
 																			<xs:element name="organizer" minOccurs="0">
@@ -822,18 +822,18 @@
 																												</xs:element>
 																												<xs:element name="value"/>
 																											</xs:sequence>
-																											<xs:attribute name="classCode" type="xs:string" use="optional"/>
-																											<xs:attribute name="moodCode" type="xs:string" use="optional"/>
+																											<xs:attribute name="classCode" type="xs:string" use="required"/>
+																											<xs:attribute name="moodCode" type="xs:string" use="required"/>
 																										</xs:complexType>
 																									</xs:element>
 																								</xs:sequence>
-																								<xs:attribute name="typeCode" type="xs:string" use="optional"/>
-																								<xs:attribute name="contextConductionInd" type="xs:string" use="optional"/>
+																								<xs:attribute name="typeCode" type="xs:string" use="required"/>
+																								<xs:attribute name="contextConductionInd" type="xs:string" use="required"/>
 																							</xs:complexType>
 																						</xs:element>
 																					</xs:sequence>
-																					<xs:attribute name="classCode" type="xs:string"/>
-																					<xs:attribute name="moodCode" type="xs:string"/>
+																					<xs:attribute name="classCode" type="xs:string" use="required"/>
+																					<xs:attribute name="moodCode" type="xs:string" use="required"/>
 																				</xs:complexType>
 																			</xs:element>
 																			<xs:element name="procedure" minOccurs="0">
@@ -841,8 +841,8 @@
 																					<xs:sequence>
 																						<xs:element name="code"/>
 																					</xs:sequence>
-																					<xs:attribute name="classCode" type="xs:string"/>
-																					<xs:attribute name="moodCode" type="xs:string"/>
+																					<xs:attribute name="classCode" type="xs:string" use="required"/>
+																					<xs:attribute name="moodCode" type="xs:string" use="required"/>
 																				</xs:complexType>
 																			</xs:element>
 																		</xs:sequence>
