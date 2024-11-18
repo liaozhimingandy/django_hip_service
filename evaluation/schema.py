@@ -19,7 +19,7 @@ from django.urls import reverse
 
 import graphene
 from graphene.types.generic import GenericScalar
-from evaluation.utils import CDATool, cda_map
+from evaluation.utils import CDATool, cda_map, query_to_dict
 
 # 定义XML命名空间
 namespace = {'xmlns': 'urn:hl7-org:v3'}
@@ -106,7 +106,7 @@ class Query(graphene.ObjectType):
 
         sql = ("select [no], PatientName patient_name, DocTypeCode doc_type_code, DocContent content "
                "from(SELECT row_number() over(partition by DocTypeCode order by CreateTime asc) no, [PatientName], DocTypeCode, [DocContent] "
-               "from [CDADocument] where Visit_id = %s ) as T where T.[no] < 21")
+               "from [CDADocument] where Visit_id = ? ) as T where T.[no] < 21")
 
         cda = CDATool(ip=os.getenv("ip", '172.16.33.179'), user=os.getenv('user', 'caradigm'),
                       password=os.getenv('password', 'Knt2020@lh'), dbname=os.getenv('dbname', 'CDADB'))
@@ -120,7 +120,7 @@ class Query(graphene.ObjectType):
         dir_path = uuid.uuid4()
         file_dir = f'temp/cda/{dir_path}'
 
-        for row in cursor:
+        for row in query_to_dict(cursor):
 
             if not os.path.exists(file_dir):
                 os.makedirs(os.path.join(file_dir, row['patient_name']))
@@ -136,7 +136,7 @@ class Query(graphene.ObjectType):
             absolute_url = info.context.build_absolute_uri(relative_url)
             code = 200
 
-        return ResponseMessageOutput(code=code, message=absolute_url if cursor.rowcount > 0 else "暂无数据")
+        return ResponseMessageOutput(code=code, message=absolute_url if code < 400 else "暂无数据")
 
     def resolve_download_examples_services(self, info, input_data):
         """下载互联互通测试服务入参"""

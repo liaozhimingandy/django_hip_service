@@ -11,8 +11,7 @@
 =================================================
 """
 import pandas as pd
-import pymssql
-from pymssql._pymssql import OperationalError
+import pyodbc
 
 cda_map = {
     'C0001': '病历概要',
@@ -83,12 +82,17 @@ class CDATool(object):
 
     def get_cursor(self):
         try:
-            self.conn = pymssql.connect(host=self.ip, port=self.port, user=self.user, password=self.password,
-                                        database=self.dbname, timeout=10)  # 获取连接
-        except(OperationalError,) as e:
+            self.conn = pyodbc.connect(
+                'DRIVER={ODBC Driver 17 for SQL Server};'
+                f'SERVER={self.ip};'
+                f'DATABASE={self.dbname};'
+                f'UID={self.user};'
+                f'PWD={self.password}'
+            )  # 获取连接
+        except(Exception,) as e:
             return None
         else:
-            return self.conn.cursor(as_dict=True)
+            return self.conn.cursor()
 
     def __del__(self):
         if self.conn:
@@ -98,13 +102,18 @@ class CDATool(object):
     def collect_data_to_csv(cls, data: dict, file_name='') -> None:
         list_cda_collect_data = []
         for item in cda_map.items():
-           list_cda_collect_data.append((item[0], item[1], data.get(item[0], 0)))
+            list_cda_collect_data.append((item[0], item[1], data.get(item[0], 0)))
 
         name = ['文档类型代码', '文档类型名称', '文档数量']
         df = pd.DataFrame(columns=name, data=list_cda_collect_data)
 
         df.to_excel(f'统计数据-{file_name}.xlsx')
 
+
+def query_to_dict(cursor):
+    """将查询结果转换为字典"""
+    columns = [column[0] for column in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 if __name__ == "__main__":
     pass

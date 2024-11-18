@@ -23,20 +23,22 @@ from django.contrib import admin
 from django.utils.html import format_html
 from loguru import logger
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # 应用版本号
 def get_version_from_pyproject():
-    with open("pyproject.toml", "rb") as f:
+    with open(os.path.join(BASE_DIR, "pyproject.toml"), "rb") as f:
         data = tomllib.load(f)
     # 假设版本号位于 [tool.poetry] 或 [project] 中
     return data.get("project", {}).get("version")
 
+
 __version__ = get_version_from_pyproject()
 APP_NAME = "集成平台数据"
+
 # id前缀
 PREFIX_ID = "esbid_"
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 判断是否存在 .env 文件（仅在本地加载）
 if os.path.exists(os.path.join(BASE_DIR, '.env2')):
@@ -126,7 +128,7 @@ WSGI_APPLICATION = 'django_hip_service.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": BASE_DIR / os.getenv("APP_DB_NAME", "cdr.db"),
+        "NAME": os.getenv("APP_DB_NAME", BASE_DIR / "cdr.db"),
         "USER": os.getenv("APP_DB_USER", ""),
         "PASSWORD": os.getenv("APP_DB_PASSWORD", ""),
         "HOST": os.getenv("APP_DB_HOST", ""),

@@ -3,7 +3,7 @@ services:
     image: ${APP_IMAGE}
     restart: unless-stopped
 #    for beta
-#    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
 #    for producation
 #    command: gunicorn django_hip_service.wsgi:application -b 0.0.0.0:8000 --preload
     ports:
