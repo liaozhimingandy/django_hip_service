@@ -1,6 +1,6 @@
 [project]
 name = "django_hip_service"
-version = "3.9.0"
+version = "2.2.0"
 description = "医院信息平台后台管理系统"
 authors = [
     {name = "liaozhiming", email = "liaozhimingandy@qq.com"},
