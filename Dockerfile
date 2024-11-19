@@ -1,5 +1,5 @@
 # 定义镜像的标签
-ARG TAG=3.13-slim-bullseye
+ARG TAG=3.13-slim
 
 # 阶段 1: 构建镜像
 FROM python:${TAG} AS builder
