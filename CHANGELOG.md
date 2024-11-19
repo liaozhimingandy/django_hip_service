@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/liaozhimingandy/django_hip_service/compare/v3.0.0...v3.0.1) (2024-11-19)
+
+
+### Bug Fixes
+
+* 修复docker镜像构建失败问题-5 ([d2947ae](https://github.com/liaozhimingandy/django_hip_service/commit/d2947aec50efba2335281d6d6f1e01c513ab03c4))
+
 ## [3.0.0](https://github.com/liaozhimingandy/django_hip_service/compare/v2.0.0...v3.0.0) (2024-11-19)
 
 
