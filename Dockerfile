@@ -6,6 +6,7 @@ FROM python:${TAG} AS builder
 
 # pip镜像源
 # ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+ENV PIPURL "https://pypi.org/simple/"
 
 # 更换为阿里云的镜像源以加速 apt 下载
 #RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
@@ -28,9 +29,6 @@ RUN pip install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
 
 # 阶段 2: 运行时镜像
 FROM python:${TAG}
-
-# pip镜像源
-# ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 
 # 更换为阿里云的镜像源以加速 apt 下载
 #　RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
