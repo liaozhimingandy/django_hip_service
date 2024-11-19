@@ -5,11 +5,11 @@ ARG TAG=3.13-slim
 FROM python:${TAG} AS builder
 
 # pip镜像源
-ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+# ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 
 # 更换为阿里云的镜像源以加速 apt 下载
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
+#RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+#    sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
 
 # 更换为阿里云的 APT 源并安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -30,11 +30,11 @@ RUN pip install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
 FROM python:${TAG}
 
 # pip镜像源
-ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+# ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 
 # 更换为阿里云的镜像源以加速 apt 下载
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
+#　RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+#    sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
 
 # 更换为阿里云的 APT 源并安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
