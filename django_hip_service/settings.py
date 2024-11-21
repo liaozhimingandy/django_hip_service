@@ -26,23 +26,20 @@ from loguru import logger
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 应用版本号
+# 从pyproject.toml加载应用版本号等信息
 def get_version_from_pyproject():
     with open(os.path.join(BASE_DIR, "pyproject.toml"), "rb") as f:
         data = tomllib.load(f)
     # 假设版本号位于 [tool.poetry] 或 [project] 中
-    return data.get("project", {}).get("version")
+    return data.get("project", {}).get("version"), data.get("project", {}).get("description")
 
-
-__version__ = get_version_from_pyproject()
-APP_NAME = "集成平台数据"
+__version__, APP_NAME = get_version_from_pyproject()
 
 # id前缀
 PREFIX_ID = "esbid_"
 
-# 判断是否存在 .env 文件（仅在本地加载）
-if os.path.exists(os.path.join(BASE_DIR, '.env2')):
-    load_dotenv(os.path.join(BASE_DIR, '.env'))
+# 从本地加载.env文件到环境变量中
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -332,8 +329,8 @@ SITE_ID = int(os.getenv('AP_SITE_ID', 2024))
 #         'localhost'
 #     ]
 
-admin.AdminSite.site_title = format(f"{APP_NAME}后台管理")
-admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')
+admin.AdminSite.site_title = format(f"{APP_NAME}")
+admin.AdminSite.site_header = format_html(f'{APP_NAME} | <span style="color:white"> {__version__}</span>')
 # 患者注册,恺恩泰empi接口
 EMPI_API_URL = os.getenv('EMPI_API_URL', 'http://172.16.33.181:8253/webservice/IndexRegisterService.asmx')
 # 上传给市互认平台使用
