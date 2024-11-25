@@ -597,10 +597,11 @@ def verification(data: dict) -> tuple:
             visit_info = Visit(**filtered_data)
             try:
                 # 校验
-                visit_info.full_clean(exclude=['adm_no', 'patient'])
+                visit_info.full_clean(exclude=['patient', 'adm_no'])
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
-                    Visit.objects.update_or_create(adm_no=visit_info.adm_no, defaults=filtered_data)
+                    Visit.objects.update_or_create(adm_no=visit_info.adm_no,  visit_status=visit_info.visit_status,
+                                                   defaults=filtered_data)
             except (ValidationError,) as e:
                 return False, [str(item) for item in e]
             else:

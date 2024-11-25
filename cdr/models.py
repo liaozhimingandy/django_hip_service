@@ -1734,6 +1734,7 @@ class Transfer(models.Model):
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
                                 db_constraint=False, db_comment='患者唯一标识ID')
+    inpatient_id = models.CharField(max_length=36, db_comment='住院号标识', verbose_name='住院号标识')
     gmt_in = models.DateTimeField(db_comment='转入日期时间', verbose_name='转入日期时间')
     in_dept_id = models.CharField(max_length=36, db_comment='转入科室id', verbose_name='转入科室id')
     in_dept_name = models.CharField(max_length=64, db_comment='转入科室名称', verbose_name='转入科室名称')
@@ -1834,6 +1835,8 @@ class Visit(models.Model):
         B = (2, '医生开始接诊')
         C = (3, '医生结束接诊')
         D = (4, '转诊')
+        E = (5, '病历书写已完成')
+        F = (6, '患者已签署知情同意书')
 
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
@@ -1857,6 +1860,7 @@ class Visit(models.Model):
                                 verbose_name='医疗卫生机构代码')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+    extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息', null=True, blank=True)
 
     def __str__(self):
         return f'{self.dept_name}-{self.adm_no}-{self.patient_id}'
@@ -1868,7 +1872,12 @@ class Visit(models.Model):
 
         indexes = [
             models.Index(fields=('adm_no',)),
-            models.Index(fields=('patient_id',)),
+            models.Index(fields=('patient_id', )),
+        ]
+
+        # 唯一约束
+        constraints = [
+            models.UniqueConstraint(fields=('adm_no',  'visit_status'), name='unique_adm_no_visit_status'),
         ]
 
 
