@@ -216,9 +216,10 @@ class BloodTrans(models.Model):
                                                verbose_name='患者RH血型代码')
     height = models.CharField(max_length=8, blank=True, null=True, db_comment='患者身高', verbose_name='患者身高')
     weight = models.CharField(max_length=8, blank=True, null=True, db_comment='患者体重', verbose_name='患者体重')
-    diastolic_pressure = models.CharField(max_length=8, blank=True, null=True, db_comment='患者舒张压',
-                                          verbose_name='患者舒张压')
-    temperature = models.CharField(max_length=8, blank=True, null=True, db_comment='患者体温', verbose_name='患者体温')
+    diastolic_pressure = models.PositiveSmallIntegerField(null=True, db_comment='患者收缩压', verbose_name='患者收缩压')
+    systolic_pressure = models.PositiveSmallIntegerField(blank=True, null=True, db_comment='患者舒张压',
+                                                         verbose_name='患者舒张压')
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, null=True, db_comment='患者体温', verbose_name='患者体温')
     pulse = models.CharField(max_length=8, blank=True, null=True, db_comment='患者脉搏', verbose_name='患者脉搏')
     abo_code_apply = models.PositiveSmallIntegerField(choices=ABOChoices, db_comment='申请ABO血型代码',
                                                       verbose_name='申请ABO血型代码')
@@ -247,7 +248,7 @@ class BloodTrans(models.Model):
                                                     verbose_name='就诊类别代码')
     # 患者信息（外键关联）
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
-                                db_comment='患者唯一标识ID')
+                                db_comment='患者唯一标识ID', to_field='patient_id')
     from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
 
@@ -1083,7 +1084,7 @@ class Operation(models.Model):
                                    verbose_name='审核医师工号')
     reviewer = models.CharField(max_length=64, blank=True, null=True, db_comment='审核人姓名',
                                 verbose_name='审核人姓名')
-    surgical_code = models.CharField(max_length=8, blank=True, null=True, db_comment='手术名称编码',
+    surgical_code = models.CharField(max_length=36, blank=True, null=True, db_comment='手术名称编码',
                                      verbose_name='手术名称编码')
     surgical_name = models.CharField(max_length=64, blank=True, null=True, db_comment='手术名称',
                                      verbose_name='手术名称')
@@ -1102,6 +1103,8 @@ class Operation(models.Model):
     diags = models.JSONField(blank=True, null=True, db_comment='诊断信息', verbose_name='诊断信息',
                              help_text='诊断(手术申请原因)')
     adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号')
+    adm_cls_code = models.PositiveSmallIntegerField(choices=AdmCodeChoices, db_comment="就诊类别代码",
+                                                    verbose_name='就诊类别代码')
     # 患者信息（外键关联）
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
                                 db_comment='患者唯一标识ID')
@@ -1872,12 +1875,12 @@ class Visit(models.Model):
 
         indexes = [
             models.Index(fields=('adm_no',)),
-            models.Index(fields=('patient_id', )),
+            models.Index(fields=('patient_id',)),
         ]
 
         # 唯一约束
         constraints = [
-            models.UniqueConstraint(fields=('adm_no',  'visit_status'), name='unique_adm_no_visit_status'),
+            models.UniqueConstraint(fields=('adm_no', 'visit_status'), name='unique_adm_no_visit_status'),
         ]
 
 

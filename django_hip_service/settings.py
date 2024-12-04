@@ -17,7 +17,7 @@ import tomllib
 from django import get_version
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from django.contrib import admin
 from django.utils.html import format_html
@@ -26,6 +26,7 @@ from loguru import logger
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # 从pyproject.toml加载应用版本号等信息
 def get_version_from_pyproject():
     with open(os.path.join(BASE_DIR, "pyproject.toml"), "rb") as f:
@@ -33,13 +34,14 @@ def get_version_from_pyproject():
     # 假设版本号位于 [tool.poetry] 或 [project] 中
     return data.get("project", {}).get("version"), data.get("project", {}).get("description")
 
+
 __version__, APP_NAME = get_version_from_pyproject()
 
 # id前缀
 PREFIX_ID = "esbid_"
 
 # 从本地加载.env文件到环境变量中
-load_dotenv()
+_ = load_dotenv(find_dotenv())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

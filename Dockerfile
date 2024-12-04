@@ -24,7 +24,6 @@ COPY pdm.lock .
 RUN pip install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
     && pdm export -o requirements.txt --without-hashes \
     && pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
-    && pip install psycopg2-binary \
     && rm -f requirements.txt pdm.lock
 
 # 阶段 2: 运行时镜像

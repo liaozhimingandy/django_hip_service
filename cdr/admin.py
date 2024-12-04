@@ -45,10 +45,14 @@ class PatientInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Check)
-class CheckAppInfo(admin.ModelAdmin):
+class CheckAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
     list_display = ('apply_no', 'adm_no', 'patient_id', 'item_name')
     list_display_links = ("apply_no",)
+
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
 
 
 @admin.register(CheckAppointStatus)
@@ -243,6 +247,10 @@ class PathologyAppInfoAdmin(admin.ModelAdmin):
     list_display_links = ('apply_no',)
 
     search_fields = ('patient_id', 'item_name')
+
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
 
 
 @admin.register(Provider)
