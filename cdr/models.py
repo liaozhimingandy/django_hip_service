@@ -1880,7 +1880,7 @@ class Visit(models.Model):
 
         # 唯一约束
         constraints = [
-            models.UniqueConstraint(fields=('adm_no', 'visit_status'), name='unique_adm_no_visit_status'),
+            models.UniqueConstraint(fields=('adm_no', 'doctor_id', 'visit_status', ), name='unique_adm_no_visit_status'),
         ]
 
 

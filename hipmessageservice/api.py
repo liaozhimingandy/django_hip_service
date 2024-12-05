@@ -601,7 +601,7 @@ def verification(data: dict) -> tuple:
                 # 保存到数据库
                 if settings.IS_SAVE_TO_DB:
                     Visit.objects.update_or_create(adm_no=visit_info.adm_no,  visit_status=visit_info.visit_status,
-                                                   defaults=filtered_data)
+                                                   doctor_id=visit_info.doctor_id, defaults=filtered_data)
             except (ValidationError,) as e:
                 return False, [str(item) for item in e]
             else:
