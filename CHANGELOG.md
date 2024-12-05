@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.1.0](https://github.com/liaozhimingandy/django_hip_service/compare/v3.0.1...v3.1.0) (2024-12-05)
+
+
+### Features
+
+* **color:** 增加模型文档生成工具 ([8c9657c](https://github.com/liaozhimingandy/django_hip_service/commit/8c9657cb0f1b6476584fd87a55da99165166927e))
+* **core:** 修复已知bug ([1a7df13](https://github.com/liaozhimingandy/django_hip_service/commit/1a7df13cd8b9ef625c552557eb932ccf64aef274))
+
+
+### Bug Fixes
+
+* **scheme:** 修复输血服务的校验文件问题 ([de54f32](https://github.com/liaozhimingandy/django_hip_service/commit/de54f3297319e1182c0f826e71619479ea56ba22))
+
+
+### Performance Improvements
+
+* **color:** 优化一部分代码 ([26ba059](https://github.com/liaozhimingandy/django_hip_service/commit/26ba05967f824636b2a4863bdb92005563e6e1fb))
+
 ## [3.0.1](https://github.com/liaozhimingandy/django_hip_service/compare/v3.0.0...v3.0.1) (2024-11-19)
 
 
