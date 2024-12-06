@@ -54,5 +54,5 @@ EXPOSE 8000
 ENTRYPOINT ["/app/config/entrypoint.sh"]
 
 # 构建命令
-# docker build -t liaozhiming/django_hip:latest .
+# docker build -t django_hip_service:latest .
 # 文件格式问题,请保持unix编码;set ff=unix

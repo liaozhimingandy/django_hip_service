@@ -49,5 +49,5 @@ test = [
 doc = ["mkdocs"]
 [tool.pdm.dev-dependencies]
 dev = [
-    "django-debug-toolbar>=4.3.0",
+    "django-debug-toolbar>=4.4.6",
 ]

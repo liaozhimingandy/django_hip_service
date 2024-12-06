@@ -17,17 +17,36 @@ PER_PAGE = 10
 class CheckReportAdmin(admin.ModelAdmin):
     """ 检查报告 """
     list_per_page = PER_PAGE
-    list_display = ('report_id', 'adm_code', 'adm_no', 'patient_id', 'item_code', 'item_name')
+    list_display = ('report_id', 'adm_code', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name')
     list_display_links = ('report_id',)
+    raw_id_fields = ('patient',)
 
-    search_fields = ('report_id', 'adm_no', 'patient_id')
+    search_fields = ('report_id', 'adm_no', 'patient__patient_id')
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(BloodTrans)
 class BloodTransAppInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('apply_no', 'adm_no', 'patient_id')
+    list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'apply_desc')
     list_display_links = ('apply_no',)
+    raw_id_fields = ('patient',)
+    search_fields = ('patient__patient_id', 'apply_no')
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Patient)
@@ -47,26 +66,56 @@ class PatientInfoAdmin(admin.ModelAdmin):
 @admin.register(Check)
 class CheckAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('apply_no', 'adm_no', 'patient_id', 'item_name')
+    list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'item_name', "gmt_effect_high")
     list_display_links = ("apply_no",)
+    raw_id_fields = ('patient',)
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
 
+    search_fields = ('apply_no',  'adm_no', 'item_name', 'patient__patient_id')
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
+
 
 @admin.register(CheckAppointStatus)
 class CheckAppointStatusInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'apply_no', 'patient_id')
+    list_display = ('adm_no', 'apply_no', 'patient_id_new', "patient_name",)
+    raw_id_fields = ('patient',)
     list_display_links = ('apply_no',)
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(CheckStatus)
 class CheckStatusInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('apply_no', 'adm_no', 'patient_id', 'status_code')
+    list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'status_code')
     list_display_links = ('apply_no',)
+    raw_id_fields = ('patient',)
+    search_fields = ('apply_no', 'adm_no', 'patient__patient_id')
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(EncounterCard)
@@ -79,31 +128,57 @@ class EncounterCardAdmin(admin.ModelAdmin):
 @admin.register(Exam)
 class ExamAppInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('patient_id', 'apply_no', 'item_name')
+    list_display = ('apply_no', 'patient_id_new', "patient_name", 'item_name')
     list_display_links = ('apply_no',)
-
-    search_fields = ('patient_id', 'apply_no', 'item_name')
+    raw_id_fields = ('patient',)
+    search_fields = ('patient__patient_id', 'apply_no', 'item_name')
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
 
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
+
 
 @admin.register(ExamStatus)
 class ExamStatusInfo(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('apply_no', 'adm_no', 'patient_id', 'status_code')
+    list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'status_code')
+    raw_id_fields = ('patient',)
     list_display_links = ('apply_no',)
+    search_fields = ('apply_no', 'adm_no', 'patient__patient_id')
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(ExamReport)
 class ExamReportAdmin(admin.ModelAdmin):
     """ 检验报告 """
     list_per_page = PER_PAGE
-    list_display = ('report_id', 'bar_code', 'url_report_pdf', 'patient_id', 'adm_no')
+    list_display = ('report_id', 'bar_code', 'url_report_pdf', 'patient_id_new', "patient_name", 'adm_no')
     list_display_links = ('report_id',)
+    raw_id_fields = ('patient',)
+    search_fields = ('bar_code', 'adm_no', 'report_id', 'patient__patient_id')
 
-    search_fields = ('bar_code', 'adm_no', 'report_id')
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(ExamResultMain)
@@ -112,7 +187,6 @@ class ExamResultMainAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
     list_display = ('apply_id', 'item_code', 'item_name', 'exam_report_id')
     list_display_links = ('exam_report_id',)
-
     search_fields = ('exam_report_id',)
 
 
@@ -122,7 +196,6 @@ class ExamResultDetailAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
     list_display = ('exam_result_main_id', 'item_code', 'item_name', 'value')
     list_display_links = ('exam_result_main_id',)
-
     search_fields = ('exam_result_main_id',)
 
 
@@ -132,72 +205,133 @@ class ExamResultDetailASTAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
     list_display = ('exam_result_detail_id', 'ast_code', 'ast_name', "value_qualitative", 'value_ration')
     list_display_links = ('exam_result_detail_id',)
-
     search_fields = ('exam_result_detail_id',)
 
 
 @admin.register(InPatient)
 class InPatientInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id', 'gmt_effect_low', 'dept_name')
-    list_display_links = ('adm_no', 'patient_id')
-
-    search_fields = ('adm_no', 'patient_id')
-
+    list_display = ('adm_no', 'patient_id_new', "patient_name", 'gmt_effect_low', 'dept_name')
+    list_display_links = ('adm_no', 'patient_id_new')
+    search_fields = ('adm_no', 'patient__patient_id')
+    raw_id_fields = ('patient',)
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Discharge)
 class DischargeInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id', 'gmt_discharge', 'dept_name')
-    list_display_links = ('adm_no', 'patient_id')
-
-    search_fields = ('adm_no', 'patient_id')
+    list_display = ('adm_no', 'patient_id_new', "patient_name", 'gmt_discharge', 'dept_name')
+    list_display_links = ('adm_no', 'patient_id_new')
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
 
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
+
 
 @admin.register(Operation)
 class OperationInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('apply_no', 'surgical_code', 'surgical_name', 'adm_no', 'patient_id')
+    list_display = ('apply_no', 'surgical_code', 'surgical_name', 'adm_no', 'patient_id_new', "patient_name")
     list_display_links = ('apply_no',)
-
-    search_fields = ('adm_no', 'patient_id', 'surgical_name')
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id', 'surgical_name')
     ordering = ('-gmt_created',)
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
 
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
+
 
 @admin.register(OperationSchedule)
 class OperationScheduleInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
+    list_display = ('patient_id_new', "patient_name", 'adm_no')
+    search_fields = ('patient__patient_id', "patient_name")
+    raw_id_fields = ('patient', )
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(OperationStatus)
 class OperationStatusInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
+    list_display = ('patient_id_new', "patient_name", "adm_no",)
+    raw_id_fields = ('patient', )
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(OrderFillerStatus)
 class OrderFillerStatusInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
+    list_display = ('patient_id_new', "patient_name",)
+    raw_id_fields = ('patient', )
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Order)
 class OrderInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('order_id', 'adm_no', 'patient_id', 'content', 'gmt_order')
+    list_display = ('order_id', 'adm_no', 'patient_id_new', "patient_name", 'content', 'gmt_order')
     list_display_links = ('order_id',)
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
+    # :todo 补充就诊流水号查询
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
 
-    search_fields = ('adm_no', 'patient_id')
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Organization)
@@ -216,41 +350,76 @@ class OrganizationInfoAdmin(admin.ModelAdmin):
 @admin.register(OutpatientAppointStatus)
 class OutpatientAppointStatusInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('booking_id', 'patient_id', 'patient_name', 'schedule_id', 'gmt_schedule')
+    list_display = ('booking_id', 'patient_id_new', "patient_name", 'schedule_id', 'gmt_schedule')
     list_display_links = ('booking_id',)
-
-    search_fields = ('patient_id', 'patient_name',)
+    raw_id_fields = ('patient',)
+    search_fields = ('patient__patient_id', 'patient_name',)
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(OutPatient)
 class OutPatientInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id', 'doc_name', 'dept_name', 'gmt_reg')
+    list_display = ('adm_no', 'patient_id_new', 'patient_name', 'doc_name', 'dept_name', 'gmt_reg')
     list_display_links = ('adm_no',)
+    raw_id_fields = ('patient',)
 
-    search_fields = ('patient_id',)
+    search_fields = ('patient__patient_id', "adm_no")
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
+
+    list_select_related = ("patient", )
+
+    def changelist_view(self, request, extra_context=None):
+        # 获取 queryset，避免重复计算
+        queryset = self.get_queryset(request)
+        total_count = queryset.count()  # 获取总数，确保只查询一次
+        extra_context = extra_context or {}
+        extra_context['total_count'] = total_count
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 @admin.register(Pathology)
 class PathologyAppInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
 
-    list_display = ('apply_no', 'adm_no', 'patient_id', 'item_name', 'adm_cls_code', 'gmt_created')
+    list_display = ('apply_no', 'adm_no', 'patient_id_new', 'patient_name', 'item_name', 'adm_cls_code', 'gmt_created')
     list_display_links = ('apply_no',)
-
-    search_fields = ('patient_id', 'item_name')
+    raw_id_fields = ('patient',)
+    search_fields = ('patient__patient_id', 'apply_no')
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Provider)
@@ -283,47 +452,88 @@ class TerminologyAdmin(admin.ModelAdmin):
 @admin.register(Transfer)
 class TransferInfoAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id', 'gmt_in', 'gmt_out')
+    list_display = ('adm_no', 'patient_id_new', "patient_name", 'gmt_in', 'gmt_out')
     list_display_links = ('adm_no',)
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
 
-    search_fields = ('adm_no', 'patient_id')
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Diagnosis)
 class DiagnosisAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id', 'diag_code', 'diag_name', 'adm_cls_code')
+    list_display = ('adm_no', 'patient_id_new', "patient_name", 'diag_code', 'diag_name', 'adm_cls_code')
     list_display_links = ('adm_no',)
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
 
-    search_fields = ('adm_no', 'patient_id')
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id', 'visit_status', 'gmt_visit_start', 'gmt_visit_end', 'adm_cls_code', 'index')
+    list_display = ('adm_no', 'patient_id_new', "patient_name", 'visit_status', 'gmt_visit_start', 'gmt_visit_end',
+                    'adm_cls_code', 'index')
     list_display_links = ('adm_no',)
-
-    search_fields = ('adm_no', 'patient_id')
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
 
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
+
 
 @admin.register(CriticalValue)
 class CriticalValueAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('critical_id', 'adm_no', 'patient_id', 'item_code', 'item_name', 'value')
+    list_display = ('critical_id', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name', 'value')
     list_display_links = ('critical_id',)
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
 
-    search_fields = ('adm_no', 'patient_id')
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
 
 
 @admin.register(PathologyReport)
 class PathologyReportAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('report_id', 'adm_no', 'patient_id', 'item_code', 'item_name', 'url_report_pdf')
+    list_display = ('report_id', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name', 'url_report_pdf')
     list_display_links = ('report_id',)
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
 
-    search_fields = ('adm_no', 'patient_id')
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"

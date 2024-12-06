@@ -91,6 +91,7 @@ LOCAL_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -323,13 +324,13 @@ logger.level("INFO")  # 设置全局日志级别
 SITE_ID = int(os.getenv('AP_SITE_ID', 2024))
 
 # 以下为本地页面优化调试时开启
-# if DEBUG:
-#     INSTALLED_APPS.append('debug_toolbar')
-#     MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
-#     INTERNAL_IPS = [
-#         '127.0.0.1',
-#         'localhost'
-#     ]
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    INTERNAL_IPS = [
+        '127.0.0.1',
+        'localhost'
+    ]
 
 admin.AdminSite.site_title = format(f"{APP_NAME}")
 admin.AdminSite.site_header = format_html(f'{APP_NAME} | <span style="color:white"> {__version__}</span>')
