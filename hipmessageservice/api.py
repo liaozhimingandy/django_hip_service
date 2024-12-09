@@ -11,6 +11,7 @@
 import base64
 import copy
 import json
+import re
 import uuid
 import datetime
 from enum import Enum
@@ -301,6 +302,13 @@ def deal_patient_empi_reg(content):
             dict_data_empi[key] = dict_data[dict_empi_mapping[key]]
 
     xml_data = json2xml.Json2xml(dict_data_empi, pretty=True, wrapper="EMPI_PERSON").to_xml()
+
+    # 定义正则表达式模式（注意：这里不需要为大小写差异进行特殊处理）
+    pattern = r'<\?xml\s+version=["\']1\.0["\']\s*(?:encoding=["\']UTF-8["\'])?\?>'
+
+    # 标志re.I表示忽略大小写
+    patient_data = re.sub(pattern, '', xml_data, flags=re.I)
+
     payload = f"""
            <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:car="http://www.caradigm.com/">
            <soap:Header/>
@@ -308,7 +316,7 @@ def deal_patient_empi_reg(content):
               <car:IndexRegisterFunc>
                  <!--Optional:-->
                  <car:xml>
-                 <![CDATA[{xml_data.replace('<?xml version="1.0" ?>', '')}]]>
+                 <![CDATA[{patient_data}]]>
                  </car:xml>
               </car:IndexRegisterFunc>
            </soap:Body>
@@ -320,7 +328,6 @@ def deal_patient_empi_reg(content):
     except ConnectTimeout as e:
         # print(str(e))
         return False, "Connection timed out, please try again later or contact our administrator"
-
     if response.status_code == 200:
         # 匹配empi号
         # empi = (re.search('empi_id&gt;\d+&lt;/empi_id', response.text).group().replace('empi_id&gt;', '')
