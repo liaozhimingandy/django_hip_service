@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/liaozhimingandy/django_hip_service/compare/v4.0.0...v4.0.1) (2024-12-10)
+
+
+### Bug Fixes
+
+* **core:** 修复主索引接口调用bug ([670a384](https://github.com/liaozhimingandy/django_hip_service/commit/670a384039ad5b7ca49b2cbddc4e9e7662314827))
+
 ## [4.0.0](https://github.com/liaozhimingandy/django_hip_service/compare/v3.1.0...v4.0.0) (2024-12-06)
 
 
