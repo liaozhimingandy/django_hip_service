@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -1440,6 +1439,8 @@ class OutpatientAppointStatus(models.Model):
 
     booking_id = models.CharField(max_length=36, db_comment='预约ID', unique=True, verbose_name="预约ID")
     gmt_schedule = models.DateTimeField(db_comment='预约日期时间', verbose_name="预约日期时间")
+    outpatient_id = models.CharField(max_length=36, db_comment="门急诊号标识ID", verbose_name='门急诊号标识ID',
+                                     help_text="门急诊号标识,对于门诊住院患者不同表情况下使用", null=True, blank=True)
     # 患者信息（外键关联）
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID', db_constraint=False,
                                 db_comment='患者唯一标识ID', to_field='patient_id')
@@ -1805,7 +1806,9 @@ class Diagnosis(models.Model):
     diag_category_name = models.CharField(max_length=36, db_comment="诊断分类名称", verbose_name='诊断分类名称')
     diag_code = models.CharField(max_length=36, db_comment="疾病诊断编码", verbose_name='疾病诊断编码')
     diag_name = models.CharField(max_length=36, db_comment="疾病诊断名称", verbose_name='疾病诊断名称')
-    diag_desc = models.CharField(max_length=64, db_comment="诊断描述", verbose_name='诊断描述', null=True, blank=True)
+    diag_desc = models.CharField(max_length=255, db_comment="诊断描述", verbose_name='诊断描述', null=True, blank=True)
+    position = models.CharField(max_length=255, db_comment="诊断位置", verbose_name='诊断位置', null=True, blank=True)
+    comment = models.CharField(max_length=255, db_comment="其它备注", verbose_name='其它备注', null=True, blank=True)
     is_parent = models.BooleanField(default=False, db_comment="是否为父诊断", verbose_name='是否为父诊断')
     parent_id = models.CharField(max_length=36, db_comment="父诊断唯一标识", verbose_name='父诊断唯一标识', null=True,
                                  blank=True)

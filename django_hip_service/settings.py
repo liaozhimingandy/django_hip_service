@@ -60,7 +60,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # 允许 Vue 开发服务器的地址
 ]
 # 允许特定 HTTP 方法和请求头
-CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "OPTIONS"]
+CORS_ALLOW_METHODS = ["GET", "POST"]
 # Application definition
 # APPS
 # ------------------------------------------------------------------------------
@@ -84,14 +84,15 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "hipmessageservice",
     "cdr",
-    "evaluation"
+    "cda",
+    "evaluation",
+    "DockerCMD"
     # Your stuff: custom apps go here
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',

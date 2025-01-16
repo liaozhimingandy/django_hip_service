@@ -140,4 +140,28 @@ class CDA(BaseInfo):
         verbose_name_plural = verbose_name
 
 
+class Mock(BaseInfo):
+    """
+    数据模拟
+    监控恺恩泰的消息追踪接收响应表,然后根据此映射表用于生成互联互通测评接收方的数据
+    """
+    send = models.ForeignKey(Application, on_delete=models.PROTECT, db_comment="发送方", verbose_name="发送方",
+                             db_constraint=settings.IS_DB_CONSTRAINT, related_name="mock_send",
+                             to_field="application_id")
+    service = models.ForeignKey(Service, on_delete=models.PROTECT, db_comment="服务名称", verbose_name="服务名称",
+                                db_constraint=settings.IS_DB_CONSTRAINT, to_field="service_code")
+    receive = models.ForeignKey(Application, on_delete=models.PROTECT, db_comment="发送方", verbose_name="发送方",
+                                db_constraint=settings.IS_DB_CONSTRAINT, related_name="mock_receive",
+                                to_field="application_id")
+
+    class Meta:
+        verbose_name = "Mock"
+        verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(fields=("send", "service", "receive"), name="send_service_receive_unique"),
+        ]
+
+    def __str__(self):
+        return f"{self.send.application_name} - {self.service.service_name} - {self.receive.application_name}"
+
 

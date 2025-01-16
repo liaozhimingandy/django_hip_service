@@ -486,8 +486,8 @@ class DiagnosisAdmin(admin.ModelAdmin):
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
     list_per_page = PER_PAGE
-    list_display = ('adm_no', 'patient_id_new', "patient_name", 'visit_status', 'gmt_visit_start', 'gmt_visit_end',
-                    'adm_cls_code', 'index')
+    list_display = ('adm_no', 'patient_id_new', "patient_name", "doctor_id", "doctor_name",
+                    'visit_status', 'gmt_visit_start', 'gmt_visit_end', 'adm_cls_code', 'index')
     list_display_links = ('adm_no',)
     raw_id_fields = ('patient',)
     search_fields = ('adm_no', 'patient__patient_id')

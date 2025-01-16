@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from rich.status import Status
 
 from django_hip_service import settings
-from hipmessageservice.models import Service, Application, StatusShip, Firm, CDA
+from hipmessageservice.models import Service, Application, StatusShip, Firm, CDA, Mock
 
 
 # Register your models here.
@@ -119,3 +120,25 @@ class CDAAdmin(admin.ModelAdmin):
         for item in queryset:
             item.is_deleted = True
             item.save()
+
+@admin.register(Mock)
+class MockAdmin(admin.ModelAdmin):
+    list_per_page = 10
+    fields = ("send", "service", "receive")
+    list_display = ("send_application_name", "service_name", "receive_application_name")
+    list_display_links = ["service_name"]
+    list_filter  = ["service__service_name",]
+    search_fields = ["service__service_name", "send__application_name", "receive__application_name"]
+    search_help_text = "您可以根据服务名称,系统名称进行搜索"
+
+    @admin.display(description="发送方", empty_value="未知", ordering="send__application_name")
+    def send_application_name(self, obj):
+        return obj.send.application_name
+
+    @admin.display(description="接收方", empty_value="未知", ordering="receive__application_name")
+    def receive_application_name(self, obj):
+        return obj.receive.application_name
+
+    @admin.display(description="服务名称", empty_value="未知", ordering="service__service_name")
+    def service_name(self, obj):
+        return obj.service.service_name

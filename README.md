@@ -20,3 +20,8 @@ python manage.py dumpdata hipmessageservice > hipmessageservice/fixtures/samples
 python manage.py loaddata hipmessageservice/fixtures/samples.json
 
 ```
+
+### 反向导出数据库到模型
+```python
+ python manage.py inspectdb  > cda\models.py
+```
