@@ -806,7 +806,8 @@ class ExamReport(models.Model):
 
         indexes = [
             models.Index(fields=['adm_no', ]),
-            models.Index(fields=['patient_id'])
+            models.Index(fields=['patient_id']),
+            models.Index(fields=['patient_id', "gmt_created"]),
         ]
 
 

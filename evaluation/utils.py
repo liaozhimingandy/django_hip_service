@@ -10,6 +10,12 @@
     @Desc: cda导出工具类
 =================================================
 """
+import os
+import shutil
+import zipfile
+
+from typing import Annotated
+from typing_extensions import Doc
 import pandas as pd
 import pyodbc
 
@@ -70,7 +76,7 @@ cda_map = {
 }
 
 
-class CDATool(object):
+class CDATool:
 
     def __init__(self, ip='localhost', dbname='CDADB', user='caradigm', password='Knt2020@lh', port="1433"):
         self.ip = ip
@@ -110,10 +116,79 @@ class CDATool(object):
         df.to_excel(f'统计数据-{file_name}.xlsx')
 
 
+def create_examples_zip(dir_name: Annotated[str, Doc("目录名称")], is_service: bool = True) -> str:
+    """
+    根据指定的目录名称,将该目录打包生成zip文件,并且返回压缩文件名称
+
+    Args:
+        dir_name: 打包的目录名
+        is_service: 打包的目录是否是交互服务;填false则为CDA
+
+    Returns:
+        压缩文件名称
+
+    """
+    dir_path = f"temp/{'services' if is_service else 'cdas'}/{dir_name}"
+    # 创建一个 Zip 文件
+    zip_filepath = f'temp/archive-{'services' if is_service else 'cdas'}-{dir_name}.zip'
+
+    with zipfile.ZipFile(zip_filepath, 'w') as zipf:
+        for root, dirs, files in os.walk(dir_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # 将文件添加到 ZIP 文件中
+                zipf.write(file_path, os.path.relpath(file_path, dir_path))
+
+    # 删除原始文件夹
+    shutil.rmtree(dir_path)
+
+    return zip_filepath
+
+
 def query_to_dict(cursor):
     """将查询结果转换为字典"""
     columns = [column[0] for column in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+
+def generate_cda(dir_path: str, adm_no: str) -> None:
+    """
+    生成CDA文件
+
+    Args:
+        dir_path: 临时目录路径
+        adm_no: 就诊流水号
+
+    Returns:
+        None
+    """
+    sql = ("select [no], PatientName patient_name, DocTypeCode doc_type_code, DocContent content "
+           "from(SELECT row_number() over(partition by DocTypeCode order by CreateTime asc) no, [PatientName], DocTypeCode, [DocContent] "
+           "from [CDADocument] where Visit_id = ? ) as T where T.[no] < ?")
+
+    cda = CDATool(ip=os.getenv("ip", '172.16.33.179'), user=os.getenv('user', 'sa'),
+                  password=os.getenv('password', 'Knt2020@lh'), dbname=os.getenv('dbname', 'CDADB'))
+
+    cursor = cda.get_cursor()
+    assert cursor is not None, '数据库连接失败'
+    cursor.execute(sql, (adm_no, int(os.getenv('MAX_CDA_NUM', 20))))
+
+    # 临时文件路径
+    file_dir = f'temp/cdas/{dir_path}'
+
+    for row in query_to_dict(cursor):
+
+        if not os.path.exists(file_dir):
+            os.makedirs(os.path.join(file_dir, row['patient_name']))
+
+        tmp_file_name = f'EMR-SD-{row["doc_type_code"][-2:]}-{cda_map.get(row["doc_type_code"], "未知")}-{row["patient_name"]}-T01-{str(row["no"]).rjust(3, "0")}.xml'
+        with open(file=os.path.join(file_dir, row["patient_name"], tmp_file_name), encoding='utf-8', mode='w',
+                  newline='') as f:
+            f.writelines(row["content"])
+
+    # 执行对文件打包
+    create_examples_zip(dir_path, False)
+
 
 if __name__ == "__main__":
     pass

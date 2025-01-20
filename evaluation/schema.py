@@ -9,17 +9,16 @@
     @Desc: 互联互通定量数据导出工具
 ================================================="""
 import os
+import threading
 import time
 import uuid
 
+from django.urls import reverse
 from django.contrib.staticfiles import finders
 from lxml import etree as et
-
-from django.urls import reverse
-
 import graphene
-from graphene.types.generic import GenericScalar
-from evaluation.utils import CDATool, cda_map, query_to_dict
+
+from evaluation.utils import CDATool, cda_map, query_to_dict, create_examples_zip, generate_cda
 
 # 定义XML命名空间
 namespace = {'xmlns': 'urn:hl7-org:v3'}
@@ -31,11 +30,40 @@ class ResponseMessageOutput(graphene.ObjectType):
     message = graphene.String(required=True)
     data = graphene.String()
 
+class Content(graphene.InputObjectType):
+    comment = graphene.String(required=True , description="备注说明")
+    eg = graphene.String(required=False , description="示例")
+    path = graphene.String(required=True , description="参数取值路径")
+    value = graphene.String(required=True , description="取值")
+    sql = graphene.String(required=False , description="底层sql查询语句")
 
-def update_demo_param(service, dir_name: str, *args):
+
+class Service(graphene.InputObjectType):
+    service_code = graphene.String(required=True , description="服务代码")
+    service_name = graphene.String(required=True , description="服务名称")
+    rank = graphene.String(required=True , description="互联互通评测等级")
+    params = graphene.List(of_type=Content, description="参数列表")
+
+
+class DataInputType(graphene.InputObjectType):
+    """
+    入参数据模型
+    """
+    data = graphene.List(of_type=Service, required=True, description="数据")
+
+
+def update_demo_param(service, dir_name: str, args: list) -> None:
     """
     更新示例参数
-    :return:
+
+    Args:
+        service: 服务代码
+        dir_name: 生成的目录
+        args: 参数列表,需要更新的xml节点列表
+
+    Returns:
+        返回None
+
     """
     list_file_path = {
         "PatientInfoQuery": "EMR-PL-04-个人信息查询服务",
@@ -68,7 +96,7 @@ def update_demo_param(service, dir_name: str, *args):
     id_msg = str(uuid.uuid4())
     gmt_created = time.strftime('%Y%m%d%H%M%S')
 
-    id_sender, id_receiver = 'esbid_1', 'esbid_2'
+    id_sender, id_receiver = os.getenv('SEND_ID', 'esbid_send'), os.getenv('RECV_ID', 'esbid_receive')
 
     file_name_t, file_name_f = f"{list_file_path[service]}-T01.xml", f"{list_file_path[service]}-F01.xml"
 
@@ -83,11 +111,13 @@ def update_demo_param(service, dir_name: str, *args):
         root.find('xmlns:receiver/xmlns:device/xmlns:id/xmlns:item', namespace).set('extension', id_receiver)
 
         for item in args:
-            path, node = item.get('path').strip().split('/@')
-            root.find(path, namespaces=namespace).set(node, item.get("value") if file_name_t == file_name else '000000')
+            path, node = item.path.strip().split('/@')
+            # 如何是正向测试用例则正常赋值,反向测试用例则默认赋值000000
+            root.find(path, namespaces=namespace).set(node, item.value
+            if file_name_t == file_name else os.getenv("DEFAULT_TEST_VALUE", '000000'))
 
         # 创建文件夹
-        dir_path = f"temp/service/{dir_name}"
+        dir_path = f"temp/services/{dir_name}"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         result_file = f"{dir_path}/{file_name}"
@@ -97,61 +127,77 @@ def update_demo_param(service, dir_name: str, *args):
 
 
 class Query(graphene.ObjectType):
-    download_cdas_by_adm_no = graphene.Field(ResponseMessageOutput, adm_no=graphene.String(required=True))
-    download_examples_services = graphene.Field(ResponseMessageOutput,
-                                                input_data=GenericScalar(required=True))  # 接收一个json字符串
+    read_cdas_by_adm_no = graphene.Field(type_=graphene.String, adm_no=graphene.String(required=True),
+                                         description='通过就诊流水号获取cda文档')
+    examples_services = graphene.Field(type_=graphene.String, data=DataInputType(required=True),
+                                       description="生成交互服务测试用例")
+    # 或者使用下面这种方式
+    # examples_services = graphene.Field(type_=graphene.String,
+    #                                             input_data=GenericScalar(required=True),
+    #                                    description="生成交互服务测试用例")  # 接收一个json字符串
 
-    def resolve_download_cdas_by_adm_no(self, info, adm_no):
-        """通过就诊流水号导出CDA"""
+    def resolve_read_cdas_by_adm_no(self, info, adm_no: str) -> str | None:
+        """
+        根据就诊流水号导出该条件下符合条件的所有CDA并且生成xml,最后打包成zip文件供下载使用
 
-        sql = ("select [no], PatientName patient_name, DocTypeCode doc_type_code, DocContent content "
-               "from(SELECT row_number() over(partition by DocTypeCode order by CreateTime asc) no, [PatientName], DocTypeCode, [DocContent] "
-               "from [CDADocument] where Visit_id = ? ) as T where T.[no] < 21")
+        Args:
+            adm_no: 就诊流水号
+            info: 用于添加后台任务;Info
 
-        cda = CDATool(ip=os.getenv("ip", '172.16.33.179'), user=os.getenv('user', 'caradigm'),
-                      password=os.getenv('password', 'Knt2020@lh'), dbname=os.getenv('dbname', 'CDADB'))
+        Returns:
+            供下载使用的链接
 
-        cursor = cda.get_cursor()
-        cursor.execute(sql, (adm_no,))
+        """
 
-        code = 400
+        dir_path = str(uuid.uuid4())
 
-        # 临时文件路径
-        dir_path = uuid.uuid4()
-        file_dir = f'temp/cda/{dir_path}'
+        # 启动后台线程,从数据库导出CDA
+        task_thread = threading.Thread(target=generate_cda, args=(dir_path, adm_no))
+        task_thread.daemon = True # 设置为守护线程，Django 退出时会自动终止该线程
+        task_thread.start()
 
-        for row in query_to_dict(cursor):
 
-            if not os.path.exists(file_dir):
-                os.makedirs(os.path.join(file_dir, row['patient_name']))
-            tmp_file_name = f'EMR-SD-{row["doc_type_code"][-2:]}-{cda_map.get(row["doc_type_code"], "未知")}-{row["patient_name"]}-T01-{str(row["no"]).rjust(3, "0")}.xml'
-            with open(file=f'{file_dir}/{row["patient_name"]}/{tmp_file_name}', encoding='utf-8', mode='w',
-                      newline='') as f:
-                f.writelines(row["content"])
+        # 生成一个 URL，假设有一个名为 'some_view' 的视图
+        # relative_url = reverse('download_zip', kwargs={'temp_dir_path': dir_path, "content_type": "cda"})
+        relative_url = f'static/archive-cdas-{dir_path}.zip'
+        # 构建完整的绝对 URL
+        absolute_url = info.context.build_absolute_uri(relative_url)
 
-            # 生成一个 URL，假设有一个名为 'some_view' 的视图
-            relative_url = reverse('download_zip',
-                                   kwargs={'temp_dir_path': dir_path, "content_type": "cda"})
-            # 构建完整的绝对 URL
-            absolute_url = info.context.build_absolute_uri(relative_url)
-            code = 200
 
-        return ResponseMessageOutput(code=code, message=absolute_url if code < 400 else "暂无数据")
 
-    def resolve_download_examples_services(self, info, input_data):
-        """下载互联互通测试服务入参"""
+        return absolute_url
+
+
+
+
+    def resolve_examples_services(self, info, data):
+        """
+        生成交互服务测试用例
+
+        Args:
+            data: 自定义类型DataInputType
+            info: 用于添加后台任务
+
+        Returns:
+            返回空字符或None
+
+        """
         # 临时文件路径
         dir_name = str(uuid.uuid4())
 
         # 处理数据（这里可以根据需要处理 input_data）
-        for item in input_data['data']:
-            update_demo_param(item.get('service_code'), dir_name, *item.get(item.get('service_code')))
+        for item in data['data']:
+            update_demo_param(item.service_code, dir_name, item.params)
 
-        # 生成一个 URL，假设有一个名为 'some_view' 的视图
-        relative_url = reverse('download_zip',
-                               kwargs={'temp_dir_path': dir_name, "content_type": "service"})
+        # 启动后台线程,执行对文件打包
+        task_thread = threading.Thread(target=create_examples_zip, args=(dir_name, True))
+        task_thread.daemon = True  # 设置为守护线程，Django 退出时会自动终止该线程
+        task_thread.start()
+
+        relative_url = f'static/archive-services-{dir_name}.zip'
+
         # 构建完整的绝对 URL
         absolute_url = info.context.build_absolute_uri(relative_url)
 
         # 返回处理后的数据
-        return ResponseMessageOutput(code=200, message=absolute_url)
+        return absolute_url

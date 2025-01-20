@@ -58,6 +58,7 @@ CSRF_TRUSTED_ORIGINS = [f'http://{item}' for item in ALLOWED_HOSTS]
 # 允许来自指定来源的跨域请求
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # 允许 Vue 开发服务器的地址
+    "https://www.alsoapp.com", # 生产环境
 ]
 # 允许特定 HTTP 方法和请求头
 CORS_ALLOW_METHODS = ["GET", "POST"]
@@ -71,7 +72,7 @@ DJANGO_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  # 静态文件查看
     "django.contrib.admindocs",  # 供生成文档使用
     "django.contrib.sites",  # 站点使用
 ]
@@ -86,8 +87,7 @@ LOCAL_APPS = [
     "cdr",
     "cda",
     "evaluation",
-    "DockerCMD"
-    # Your stuff: custom apps go here
+    "DockerCMD",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -175,8 +175,11 @@ STATIC_URL = os.getenv("APP_STATIC_URL", 'static/')
 # Default primary key field type
 # https://docs.djangoproject.com/zh-hans/5.0/howto/static-files/
 # python manage.py collectstatic 收集文件到下面文件文件夹里
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-# STATICFILES_DIRS = [BASE_DIR / "static", ]
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# 这个配置定义了静态文件应用在启用 FileSystemFinder 查找器时将穿越的额外位置, 不能包含 STATIC_ROOT路径
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'temp')
+]
 
 # 多媒体文件
 MEDIA_URL = os.getenv("APP_MEDIA_URL", 'media/')
@@ -186,134 +189,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ######################### 日志配置开始 ######################### #
-# 参考链接: https://www.jb51.net/article/260114.htm
-
-# BASE_LOG_DIR = os.path.join(BASE_DIR, "logs")
-# if not os.path.exists(BASE_LOG_DIR):
-#     os.makedirs(BASE_LOG_DIR)
-#
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': '{asctime:<19}|{levelname:<10}|{process:d}:{thread:d}:{module}:{funcName}:{lineno}|{message}',
-#             'style': '{',
-#             "datefmt": "%Y-%m-%d %H:%M:%S",
-#         },
-#         'simple': {
-#             'format': '{asctime:<19}|{levelname:<10}|{message}',
-#             'style': '{',
-#             "datefmt": "%Y-%m-%d %H:%M:%S",
-#         },
-#         "default": {
-#             "format": '{asctime:<19}|{name}|{levelname:<10}|{pathname}:{lineno}|{module}:{funcName}|{message}',
-#             'style': '{',
-#             "datefmt": "%Y-%m-%d %H:%M:%S"
-#         },
-#     },
-#     'filters': {
-#         'require_debug_true': {
-#             '()': 'django.utils.log.RequireDebugTrue',
-#         },
-#         'require_debug_false': {
-#             '()': 'django.utils.log.RequireDebugFalse',
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': logging.INFO,
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'default'
-#         },
-#         'file': {
-#             'level': logging.INFO,
-#             'class': 'logging.handlers.TimedRotatingFileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/django-{time.strftime('%Y-%m-%d')}.log"),
-#             'filters': ['require_debug_true', ],
-#             "when": 'D',  # 时间单位： M, H, D， W0(周一), W6(周日)
-#             "interval": 1,
-#             "backupCount": 7,  # 备份数量
-#             "formatter": "verbose",  # 日志格式
-#             "encoding": "utf-8"
-#         },
-#         "request": {
-#             'level': logging.DEBUG,
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-request.log"),
-#             'filters': ['require_debug_true', "require_debug_false"],
-#             'formatter': 'default'
-#         },
-#         "server": {
-#             'level': logging.DEBUG,
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-server.log"),
-#             'filters': ['require_debug_true', ],
-#             'formatter': 'default'
-#         },
-#         "db_backends": {
-#             'level': logging.DEBUG,
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-db_backends.log"),
-#             'filters': ['require_debug_true', ],
-#             'formatter': 'default'
-#         },
-#         "autoreload": {
-#             'level': 'INFO',
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, f"logs/{time.strftime('%Y-%m-%d')}-autoreload.log"),
-#             'formatter': 'default'
-#         },
-#         # 电子邮件发给管理员
-#         "mail_admins": {
-#             "level": logging.ERROR,
-#             "class": "django.utils.log.AdminEmailHandler",
-#             "filters": ["require_debug_false"],
-#         }
-#     },
-#     "root": {
-#             "handlers": ["console"],
-#             "level": "WARNING",
-#         },
-#     'loggers': {
-#         # 应用中自定义日志记录器
-#         'mylogger': {
-#             'level': os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-#             'handlers': ['console', 'file'],
-#             'propagate': True,
-#         },
-#         # django这个日志记录器（logger）是用来记录Django框架本身生成的日志消息的
-#         "django": {
-#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-#             "handlers": ["console", "file"],
-#             'propagate': False,  # 阻止Django日志传播到根记录器
-#         },
-#         "django.request": {
-#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-#             "handlers": ["request", "console"],
-#             'propagate': False,
-#         },
-#         "django.server": {
-#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-#             "handlers": ["server"],
-#             'propagate': False,
-#         },
-#         "django.db.backends": {
-#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-#             "handlers": ["db_backends"],
-#             'propagate': False,
-#         },
-#         "django.utils.autoreload": {
-#             "level": os.getenv("DJANGO_LOG_LEVEL", logging.DEBUG),
-#             "handlers": ["autoreload"],
-#             'propagate': False,
-#         }
-#     }
-# }
-# e.g. logger = logging.getLogger("mylogger")
-# ######################### 日志配置结束 ######################### #
 
 ##########################################################################################
 # 配置 loguru（可选）

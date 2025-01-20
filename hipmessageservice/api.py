@@ -617,7 +617,9 @@ def verification(data: dict) -> tuple:
             """ 获取检验报告打印信息 """
             patient_id = data[content_type].get('patient_id', None)
             # 取最近的就诊流水号对应记录
-            report = ExamReport.objects.filter(patient_id=patient_id).order_by('-bar_code').only('gmt_created').first()
+            # 过滤当前时间最近90天的数据
+            offset_days_ago = timezone.now() - datetime.timedelta(days=93)
+            report = ExamReport.objects.filter(patient_id=patient_id, gmt_created__gte=offset_days_ago).order_by('-bar_code').only('gmt_created').first()
             if report is None:
                 return False, 'Not Found'
             report_infos = []

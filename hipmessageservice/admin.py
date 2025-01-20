@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.utils.html import format_html
-from rich.status import Status
 
 from django_hip_service import settings
 from hipmessageservice.models import Service, Application, StatusShip, Firm, CDA, Mock
