@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.0](https://github.com/liaozhimingandy/django_hip_service/compare/v4.0.1...v4.1.0) (2025-02-17)
+
+
+### Features
+
+* **core:** 增加新app, DockerCMD及其它的优化 ([4ce5a2c](https://github.com/liaozhimingandy/django_hip_service/commit/4ce5a2c1a81d358cedd61f253b5754975a728fe1))
+* **core:** 完善api ([7ea79df](https://github.com/liaozhimingandy/django_hip_service/commit/7ea79df614e98e44f1b2c16b2099539eaa950a81))
+* **core:** 完善api ([944df75](https://github.com/liaozhimingandy/django_hip_service/commit/944df75e48c04df70c78b205b8e4d585aab1e87a))
+
 ## [4.0.1](https://github.com/liaozhimingandy/django_hip_service/compare/v4.0.0...v4.0.1) (2024-12-10)
 
 
