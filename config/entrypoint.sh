@@ -16,7 +16,7 @@ if [ -z "$DJANGO_SUPERUSER_USERNAME" ] || [ -z "$DJANGO_SUPERUSER_EMAIL" ] || [ 
 fi
 
 # 检查是否有管理员用户，如果没有则创建
-python manage.py shell <<EOF
+python manage.py shell << EOF
 from django.contrib.auth.models import User
 if not User.objects.filter(is_superuser=True).exists():
     User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')

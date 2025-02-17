@@ -32,7 +32,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('download/', download_count, name='download-count'),
     path("test/", generate_report),
-    # path('messsage/download/', download),
     path('v3/', api.urls),
     path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),  # graphiql=True 打开 GraphiQL 浏览器
 

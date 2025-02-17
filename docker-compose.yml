@@ -1,9 +1,9 @@
 services:
   app:
-    image: ${APP_IMAGE}
+    image: django_hip_service:3.1.0
     restart: unless-stopped
 #    for beta
-    command: python manage.py runserver 0.0.0.0:8000
+#    command: python manage.py runserver 0.0.0.0:8000
 #    for producation
 #    command: gunicorn django_hip_service.wsgi:application -b 0.0.0.0:8000 --preload
     ports:
@@ -16,22 +16,19 @@ services:
       - data_static:/app/static
       # - /d/Projects/django_hip_service/hipmessageservice/static/hipmessageservice/services:/opt/app/hipmessageservice/static/hipmessageservice/services
 
-#  web:
-#      image: ${NGINX_APP_IMAGE}
-#      restart: unless-stopped
-#      links:
-#        - app:app
-#      ports:
-#        - "80:80"
-#        - "443:443"
-#      env_file:
-#        - .env
-#      environment:
-#        - TZ=Asia/Shanghai
-#      volumes:
-#        - ./config/default.conf.template:/etc/nginx/templates/default.conf.template
-#        - data_nginx_log:/var/log/nginx
-#        - data_static:/usr/share/nginx/static
+  web:
+      image: nginx:1.27.3
+      restart: unless-stopped
+      ports:
+        - "80:80"
+        - "443:443"
+      environment:
+        - TZ=Asia/Shanghai
+        - SERVER_NAME=*.alsoapp.com 127.0.0.1 localhost
+      volumes:
+        - ./config/default.conf.template:/etc/nginx/templates/default.conf.template
+        - data_nginx_log:/var/log/nginx
+        - data_static:/usr/share/nginx/static
 
 volumes:
   data_nginx_log:

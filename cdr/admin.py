@@ -9,14 +9,24 @@ from cdr.models import CheckReport, BloodTrans, Patient, Check, CheckAppointStat
     ExamResultDetail, ExamResultDetailAST, ExamResultMain, Discharge, Diagnosis, Visit, EncounterCard, CriticalValue, \
     PathologyReport
 
-PER_PAGE = 10
+
+# 基类，自动将所有字段设置为只读
+class ReadOnlyAdmin(admin.ModelAdmin):
+    list_per_page = 10
+
+    def get_readonly_fields(self, request, obj=None):
+        # 获取所有字段的名称并设置为只读
+        readonly_fields = [field.name for field in self.model._meta.fields]
+        # 排除某些字段
+        # readonly_fields.remove('editable_field')  # 假设 'editable_field' 是你不想让它只读的字段
+        return readonly_fields
 
 
 # Register your models here.
 @admin.register(CheckReport)
-class CheckReportAdmin(admin.ModelAdmin):
+class CheckReportAdmin(ReadOnlyAdmin):
     """ 检查报告 """
-    list_per_page = PER_PAGE
+
     list_display = ('report_id', 'adm_code', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name')
     list_display_links = ('report_id',)
     raw_id_fields = ('patient',)
@@ -33,8 +43,7 @@ class CheckReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(BloodTrans)
-class BloodTransAppInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class BloodTransAppInfoAdmin(ReadOnlyAdmin):
     list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'apply_desc')
     list_display_links = ('apply_no',)
     raw_id_fields = ('patient',)
@@ -50,8 +59,7 @@ class BloodTransAppInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Patient)
-class PatientInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class PatientInfoAdmin(ReadOnlyAdmin):
     list_display = ('patient_id', 'patient_name', 'sex_code', 'id_no', 'tel_no', 'gmt_birth')
     list_display_links = ('patient_id',)
     ordering = ['-gmt_created', ]
@@ -64,8 +72,7 @@ class PatientInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Check)
-class CheckAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class CheckAdmin(ReadOnlyAdmin):
     list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'item_name', "gmt_effect_high")
     list_display_links = ("apply_no",)
     raw_id_fields = ('patient',)
@@ -86,8 +93,7 @@ class CheckAdmin(admin.ModelAdmin):
 
 
 @admin.register(CheckAppointStatus)
-class CheckAppointStatusInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class CheckAppointStatusInfoAdmin(ReadOnlyAdmin):
     list_display = ('adm_no', 'apply_no', 'patient_id_new', "patient_name",)
     raw_id_fields = ('patient',)
     list_display_links = ('apply_no',)
@@ -102,8 +108,7 @@ class CheckAppointStatusInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(CheckStatus)
-class CheckStatusInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class CheckStatusInfoAdmin(ReadOnlyAdmin):
     list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'status_code')
     list_display_links = ('apply_no',)
     raw_id_fields = ('patient',)
@@ -119,15 +124,13 @@ class CheckStatusInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(EncounterCard)
-class EncounterCardAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class EncounterCardAdmin(ReadOnlyAdmin):
     list_display = ('card_no', 'patient_name', 'id_no', 'tel_no')
     list_display_links = ('card_no',)
 
 
 @admin.register(Exam)
-class ExamAppInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class ExamAppInfoAdmin(ReadOnlyAdmin):
     list_display = ('apply_no', 'patient_id_new', "patient_name", 'item_name')
     list_display_links = ('apply_no',)
     raw_id_fields = ('patient',)
@@ -147,8 +150,7 @@ class ExamAppInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExamStatus)
-class ExamStatusInfo(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class ExamStatusInfo(ReadOnlyAdmin):
     list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'status_code')
     raw_id_fields = ('patient',)
     list_display_links = ('apply_no',)
@@ -164,9 +166,8 @@ class ExamStatusInfo(admin.ModelAdmin):
 
 
 @admin.register(ExamReport)
-class ExamReportAdmin(admin.ModelAdmin):
+class ExamReportAdmin(ReadOnlyAdmin):
     """ 检验报告 """
-    list_per_page = PER_PAGE
     list_display = ('report_id', 'bar_code', 'url_report_pdf', 'patient_id_new', "patient_name", 'adm_no')
     list_display_links = ('report_id',)
     raw_id_fields = ('patient',)
@@ -182,35 +183,31 @@ class ExamReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExamResultMain)
-class ExamResultMainAdmin(admin.ModelAdmin):
+class ExamResultMainAdmin(ReadOnlyAdmin):
     """ 检验结果主表 """
-    list_per_page = PER_PAGE
     list_display = ('apply_id', 'item_code', 'item_name', 'exam_report_id')
     list_display_links = ('exam_report_id',)
     search_fields = ('exam_report_id',)
 
 
 @admin.register(ExamResultDetail)
-class ExamResultDetailAdmin(admin.ModelAdmin):
+class ExamResultDetailAdmin(ReadOnlyAdmin):
     """检验结果明细表"""
-    list_per_page = PER_PAGE
     list_display = ('exam_result_main_id', 'item_code', 'item_name', 'value')
     list_display_links = ('exam_result_main_id',)
     search_fields = ('exam_result_main_id',)
 
 
 @admin.register(ExamResultDetailAST)
-class ExamResultDetailASTAdmin(admin.ModelAdmin):
+class ExamResultDetailASTAdmin(ReadOnlyAdmin):
     """检验结果药敏结果"""
-    list_per_page = PER_PAGE
     list_display = ('exam_result_detail_id', 'ast_code', 'ast_name', "value_qualitative", 'value_ration')
     list_display_links = ('exam_result_detail_id',)
     search_fields = ('exam_result_detail_id',)
 
 
 @admin.register(InPatient)
-class InPatientInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class InPatientInfoAdmin(ReadOnlyAdmin):
     list_display = ('adm_no', 'patient_id_new', "patient_name", 'gmt_effect_low', 'dept_name')
     list_display_links = ('adm_no', 'patient_id_new')
     search_fields = ('adm_no', 'patient__patient_id')
@@ -229,8 +226,7 @@ class InPatientInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Discharge)
-class DischargeInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class DischargeInfoAdmin(ReadOnlyAdmin):
     list_display = ('adm_no', 'patient_id_new', "patient_name", 'gmt_discharge', 'dept_name')
     list_display_links = ('adm_no', 'patient_id_new')
     raw_id_fields = ('patient',)
@@ -250,8 +246,7 @@ class DischargeInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Operation)
-class OperationInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OperationInfoAdmin(ReadOnlyAdmin):
     list_display = ('apply_no', 'surgical_code', 'surgical_name', 'adm_no', 'patient_id_new', "patient_name")
     list_display_links = ('apply_no',)
     raw_id_fields = ('patient',)
@@ -272,8 +267,7 @@ class OperationInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(OperationSchedule)
-class OperationScheduleInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OperationScheduleInfoAdmin(ReadOnlyAdmin):
     list_display = ('patient_id_new', "patient_name", 'adm_no')
     search_fields = ('patient__patient_id', "patient_name")
     raw_id_fields = ('patient', )
@@ -288,8 +282,7 @@ class OperationScheduleInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(OperationStatus)
-class OperationStatusInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OperationStatusInfoAdmin(ReadOnlyAdmin):
     list_display = ('patient_id_new', "patient_name", "adm_no",)
     raw_id_fields = ('patient', )
 
@@ -303,8 +296,7 @@ class OperationStatusInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(OrderFillerStatus)
-class OrderFillerStatusInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OrderFillerStatusInfoAdmin(ReadOnlyAdmin):
     list_display = ('patient_id_new', "patient_name",)
     raw_id_fields = ('patient', )
 
@@ -318,8 +310,7 @@ class OrderFillerStatusInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Order)
-class OrderInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OrderInfoAdmin(ReadOnlyAdmin):
     list_display = ('order_id', 'adm_no', 'patient_id_new', "patient_name", 'content', 'gmt_order')
     list_display_links = ('order_id',)
     raw_id_fields = ('patient',)
@@ -335,8 +326,7 @@ class OrderInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Organization)
-class OrganizationInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OrganizationInfoAdmin(ReadOnlyAdmin):
     list_display = ('dept_id', 'dept_name', 'dept_cls_name', 'pre_dept_name')
     list_display_links = ('dept_id', 'dept_name')
 
@@ -348,8 +338,8 @@ class OrganizationInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(OutpatientAppointStatus)
-class OutpatientAppointStatusInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OutpatientAppointStatusInfoAdmin(ReadOnlyAdmin):
+    """门诊预约状态"""
     list_display = ('booking_id', 'patient_id_new', "patient_name", 'schedule_id', 'gmt_schedule')
     list_display_links = ('booking_id',)
     raw_id_fields = ('patient',)
@@ -369,8 +359,8 @@ class OutpatientAppointStatusInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(OutPatient)
-class OutPatientInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class OutPatientInfoAdmin(ReadOnlyAdmin):
+    """门急诊挂号信息"""
     list_display = ('adm_no', 'patient_id_new', 'patient_name', 'doc_name', 'dept_name', 'gmt_reg')
     list_display_links = ('adm_no',)
     raw_id_fields = ('patient',)
@@ -401,9 +391,8 @@ class OutPatientInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Pathology)
-class PathologyAppInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
-
+class PathologyAppInfoAdmin(ReadOnlyAdmin):
+    """病理申请单信息"""
     list_display = ('apply_no', 'adm_no', 'patient_id_new', 'patient_name', 'item_name', 'adm_cls_code', 'gmt_created')
     list_display_links = ('apply_no',)
     raw_id_fields = ('patient',)
@@ -423,8 +412,8 @@ class PathologyAppInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Provider)
-class ProviderInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class ProviderInfoAdmin(ReadOnlyAdmin):
+    """卫生人员机构"""
     list_display = ('emp_id', 'emp_name', 'sex_code', 'telecom')
     list_display_links = ('emp_id',)
 
@@ -432,13 +421,13 @@ class ProviderInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(SourceAndSchedule)
-class SourceAndScheduleInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class SourceAndScheduleInfoAdmin(ReadOnlyAdmin):
+    pass
 
 
 @admin.register(Terminology)
-class TerminologyAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class TerminologyAdmin(ReadOnlyAdmin):
+    """术语信息"""
     list_display = ('dataset_code', 'dataset_name', 'item_code', 'item_name')
     list_display_links = ('item_code',)
 
@@ -450,8 +439,8 @@ class TerminologyAdmin(admin.ModelAdmin):
 
 
 @admin.register(Transfer)
-class TransferInfoAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class TransferInfoAdmin(ReadOnlyAdmin):
+    """转科信息"""
     list_display = ('adm_no', 'patient_id_new', "patient_name", 'gmt_in', 'gmt_out')
     list_display_links = ('adm_no',)
     raw_id_fields = ('patient',)
@@ -467,8 +456,8 @@ class TransferInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Diagnosis)
-class DiagnosisAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class DiagnosisAdmin(ReadOnlyAdmin):
+    """诊断信息"""
     list_display = ('adm_no', 'patient_id_new', "patient_name", 'diag_code', 'diag_name', 'adm_cls_code')
     list_display_links = ('adm_no',)
     raw_id_fields = ('patient',)
@@ -484,8 +473,8 @@ class DiagnosisAdmin(admin.ModelAdmin):
 
 
 @admin.register(Visit)
-class VisitAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class VisitAdmin(ReadOnlyAdmin):
+    """就诊信息"""
     list_display = ('adm_no', 'patient_id_new', "patient_name", "doctor_id", "doctor_name",
                     'visit_status', 'gmt_visit_start', 'gmt_visit_end', 'adm_cls_code', 'index')
     list_display_links = ('adm_no',)
@@ -506,8 +495,8 @@ class VisitAdmin(admin.ModelAdmin):
 
 
 @admin.register(CriticalValue)
-class CriticalValueAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class CriticalValueAdmin(ReadOnlyAdmin):
+    """危急值信息"""
     list_display = ('critical_id', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name', 'value')
     list_display_links = ('critical_id',)
     raw_id_fields = ('patient',)
@@ -523,8 +512,8 @@ class CriticalValueAdmin(admin.ModelAdmin):
 
 
 @admin.register(PathologyReport)
-class PathologyReportAdmin(admin.ModelAdmin):
-    list_per_page = PER_PAGE
+class PathologyReportAdmin(ReadOnlyAdmin):
+    """病理报告"""
     list_display = ('report_id', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name', 'url_report_pdf')
     list_display_links = ('report_id',)
     raw_id_fields = ('patient',)

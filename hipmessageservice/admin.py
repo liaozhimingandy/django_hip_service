@@ -5,8 +5,6 @@ from hipmessageservice.models import Service, Application, StatusShip, Firm, CDA
 
 
 # Register your models here.
-
-
 class StatusShipInline(admin.TabularInline):
     """服务系统状态"""
     model = Service.applications.through
@@ -25,6 +23,7 @@ class ServiceAdmin(admin.ModelAdmin):
     list_filter = ["service_category", "service_rank", "is_v3", "is_lookup", "service_status"]
     ordering = ["service_queue", ]
     list_per_page = 10
+    readonly_fields = ["service_id", ]
 
     inlines = [StatusShipInline, ]
 

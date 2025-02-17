@@ -22,6 +22,7 @@ class Mutation(CDRMutation, graphene.ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation)
+# schema = graphene.Schema(query=Query, mutation=Mutation)
+schema = graphene.Schema(query=Query)
 if __name__ == "__main__":
     pass

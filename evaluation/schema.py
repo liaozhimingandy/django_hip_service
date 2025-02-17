@@ -13,7 +13,6 @@ import threading
 import time
 import uuid
 
-from django.urls import reverse
 from django.contrib.staticfiles import finders
 from lxml import etree as et
 import graphene

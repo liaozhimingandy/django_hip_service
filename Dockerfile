@@ -18,10 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制 pdm.lock 文件
-COPY pdm.lock .
+COPY pyproject.toml .
 
 # 安装 pdm 及项目依赖
 RUN pip install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
+    && pdm lock \
     && pdm export -o requirements.txt --without-hashes \
     && pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
     && rm -f requirements.txt pdm.lock

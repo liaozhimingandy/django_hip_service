@@ -150,7 +150,7 @@ class Mock(BaseInfo):
                              to_field="application_id")
     service = models.ForeignKey(Service, on_delete=models.PROTECT, db_comment="服务名称", verbose_name="服务名称",
                                 db_constraint=settings.IS_DB_CONSTRAINT, to_field="service_code")
-    receive = models.ForeignKey(Application, on_delete=models.PROTECT, db_comment="发送方", verbose_name="发送方",
+    receive = models.ForeignKey(Application, on_delete=models.PROTECT, db_comment="接收方", verbose_name="接收方",
                                 db_constraint=settings.IS_DB_CONSTRAINT, related_name="mock_receive",
                                 to_field="application_id")
 
