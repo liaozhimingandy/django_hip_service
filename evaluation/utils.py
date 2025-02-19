@@ -88,7 +88,7 @@ class CDATool:
 
     def get_cursor(self):
         try:
-            self.conn = pymssql.connect(server=self.ip, user=self.user, password=self.password, database=self.dbname)
+            self.conn = pymssql.connect(server=self.ip, user=self.user, password=self.password, database=self.dbname, tds_version='7.0')
         except(Exception,) as e:
             return None
         else:
