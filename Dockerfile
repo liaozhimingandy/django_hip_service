@@ -24,11 +24,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev gcc unixodbc unixodbc-dev curl gnupg \
     && rm -rf /var/lib/apt/lists/* \
 
-# 添加 Microsoft 包存储库密钥
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+# 下载并导入 Microsoft 的 GPG 密钥
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg
 
-# 添加 Microsoft 包存储库
-RUN curl https://packages.microsoft.com/mssql-server/debian/prod.list > /etc/apt/sources.list.d/mssql-server.list
+# 添加 Microsoft 的包源
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-debian-bookworm-prod bookworm main" > /etc/apt/sources.list.d/microsoft.list
 
 # 安装 ODBC 驱动
 RUN apt-get update && apt-get install -y \
@@ -64,11 +64,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev gcc unixodbc unixodbc-dev curl gnupg \
     && rm -rf /var/lib/apt/lists/* \
 
-# 添加 Microsoft 包存储库密钥
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+# 下载并导入 Microsoft 的 GPG 密钥
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg
 
-# 添加 Microsoft 包存储库
-RUN curl https://packages.microsoft.com/mssql-server/debian/prod.list > /etc/apt/sources.list.d/mssql-server.list
+# 添加 Microsoft 的包源
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-debian-bookworm-prod bookworm main" > /etc/apt/sources.list.d/microsoft.list
 
 # 安装 ODBC 驱动
 RUN apt-get update && apt-get install -y \
