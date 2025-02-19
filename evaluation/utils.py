@@ -17,7 +17,7 @@ import zipfile
 from typing import Annotated
 from typing_extensions import Doc
 import pandas as pd
-import pyodbc
+import pymssql
 
 cda_map = {
     'C0001': '病历概要',
@@ -88,13 +88,7 @@ class CDATool:
 
     def get_cursor(self):
         try:
-            self.conn = pyodbc.connect(
-                'DRIVER={ODBC Driver 17 for SQL Server};'
-                f'SERVER={self.ip};'
-                f'DATABASE={self.dbname};'
-                f'UID={self.user};'
-                f'PWD={self.password}'
-            )  # 获取连接
+            self.conn = pymssql.connect(server=self.ip, user=self.user, password=self.password, database=self.dbname)
         except(Exception,) as e:
             return None
         else:

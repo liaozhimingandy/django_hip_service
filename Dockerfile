@@ -21,19 +21,8 @@ ENV PIPURL "https://pypi.org/simple/"
 
 # 安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev curl gnupg \
+    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential\
     && rm -rf /var/lib/apt/lists/* \
-
-# 下载并导入 Microsoft 的 GPG 密钥
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg
-
-# 添加 Microsoft 的包源
-RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-debian-bookworm-prod bookworm main" > /etc/apt/sources.list.d/microsoft.list
-
-# 安装 ODBC 驱动
-RUN apt-get update && apt-get install -y \
-    msodbcsql17 \
-    && rm -rf /var/lib/apt/lists/*
 
 # 复制 pdm.lock 文件
 COPY pyproject.toml .
@@ -61,19 +50,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev curl gnupg \
+    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential\
     && rm -rf /var/lib/apt/lists/* \
-
-# 下载并导入 Microsoft 的 GPG 密钥
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg
-
-# 添加 Microsoft 的包源
-RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-debian-bookworm-prod bookworm main" > /etc/apt/sources.list.d/microsoft.list
-
-# 安装 ODBC 驱动
-RUN apt-get update && apt-get install -y \
-    msodbcsql17 \
-    && rm -rf /var/lib/apt/lists/*
 
 # 复制构建产物
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
