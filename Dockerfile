@@ -21,8 +21,8 @@ ENV PIPURL "https://pypi.org/simple/"
 
 # 安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential\
-    && rm -rf /var/lib/apt/lists/* \
+    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # 复制 pdm.lock 文件
 COPY pyproject.toml .
@@ -50,8 +50,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential\
-    && rm -rf /var/lib/apt/lists/* \
+    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # 复制构建产物
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
