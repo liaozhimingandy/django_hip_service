@@ -166,9 +166,6 @@ class Query(graphene.ObjectType):
 
         return absolute_url
 
-
-
-
     def resolve_examples_services(self, info, data):
         """
         生成交互服务测试用例

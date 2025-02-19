@@ -4,17 +4,35 @@ ARG TAG=3.13-slim
 # 阶段 1: 构建镜像
 FROM python:${TAG} AS builder
 
+# 设置环境变量
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+# 设置环境变量以避免交互式安装提示
+ENV DEBIAN_FRONTEND=noninteractive
+
 # pip镜像源
-# ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+#ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 ENV PIPURL "https://pypi.org/simple/"
 
 # 更换为阿里云的镜像源以加速 apt 下载
-#RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-#    sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
+#RUN test -e /etc/apt/sources.list || echo "deb http://mirrors.aliyun.com/debian bookworm main" > /etc/apt/sources.list && \
+#    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main" >> /etc/apt/sources.list && \
+#    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main" >> /etc/apt/sources.list
 
-# 更换为阿里云的 APT 源并安装依赖
+# 安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev \
+    libpq-dev gcc unixodbc unixodbc-dev curl \
+    && rm -rf /var/lib/apt/lists/* \
+
+# 添加 Microsoft 包存储库密钥
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+# 添加 Microsoft 包存储库
+RUN curl https://packages.microsoft.com/mssql-server/debian/prod.list > /etc/apt/sources.list.d/mssql-server.list
+
+# 安装 ODBC 驱动
+RUN apt-get update && apt-get install -y \
+    msodbcsql17 \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制 pdm.lock 文件
@@ -30,13 +48,31 @@ RUN pip install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
 # 阶段 2: 运行时镜像
 FROM python:${TAG}
 
-# 更换为阿里云的镜像源以加速 apt 下载
-#　RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-#    sed -i 's|http://deb.debian.org/debian|http://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
+# 设置环境变量
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+# 设置环境变量以避免交互式安装提示
+ENV DEBIAN_FRONTEND=noninteractive
 
-# 更换为阿里云的 APT 源并安装运行时依赖
+# 更换为阿里云的镜像源以加速 apt 下载
+#RUN test -e /etc/apt/sources.list || echo "deb http://mirrors.aliyun.com/debian bookworm main" > /etc/apt/sources.list && \
+#    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main" >> /etc/apt/sources.list && \
+#    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main" >> /etc/apt/sources.list
+
+# 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev unixodbc \
+    libpq-dev gcc unixodbc unixodbc-dev curl \
+    && rm -rf /var/lib/apt/lists/* \
+
+# 添加 Microsoft 包存储库密钥
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+# 添加 Microsoft 包存储库
+RUN curl https://packages.microsoft.com/mssql-server/debian/prod.list > /etc/apt/sources.list.d/mssql-server.list
+
+# 安装 ODBC 驱动
+RUN apt-get update && apt-get install -y \
+    msodbcsql17 \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制构建产物

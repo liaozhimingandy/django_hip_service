@@ -171,7 +171,7 @@ STATIC_URL = os.getenv("APP_STATIC_URL", 'static/')
 # STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # 这个配置定义了静态文件应用在启用 FileSystemFinder 查找器时将穿越的额外位置, 不能包含 STATIC_ROOT路径
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'temp')
+    os.path.join(BASE_DIR, '/temp')
 ]
 
 # 多媒体文件

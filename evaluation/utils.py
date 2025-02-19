@@ -164,7 +164,7 @@ def generate_cda(dir_path: str, adm_no: str) -> None:
     """
     sql = ("select [no], PatientName patient_name, DocTypeCode doc_type_code, DocContent content "
            "from(SELECT row_number() over(partition by DocTypeCode order by CreateTime asc) no, [PatientName], DocTypeCode, [DocContent] "
-           "from [CDADocument] where Visit_id = ? ) as T where T.[no] < ?")
+           "from [CDADocument] where Visit_id =? ) as T where T.[no] < ?")
 
     cda = CDATool(ip=os.getenv("ip", '172.16.33.179'), user=os.getenv('user', 'sa'),
                   password=os.getenv('password', 'Knt2020@lh'), dbname=os.getenv('dbname', 'CDADB'))
