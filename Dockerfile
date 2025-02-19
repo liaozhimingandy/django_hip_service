@@ -21,7 +21,7 @@ ENV PIPURL "https://pypi.org/simple/"
 
 # 安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev curl \
+    libpq-dev gcc unixodbc unixodbc-dev curl gnupg \
     && rm -rf /var/lib/apt/lists/* \
 
 # 添加 Microsoft 包存储库密钥
@@ -61,7 +61,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev curl \
+    libpq-dev gcc unixodbc unixodbc-dev curl gnupg \
     && rm -rf /var/lib/apt/lists/* \
 
 # 添加 Microsoft 包存储库密钥
