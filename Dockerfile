@@ -14,11 +14,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 #ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 ENV PIPURL "https://pypi.org/simple/"
 
-# 更换为阿里云的镜像源以加速 apt 下载
-#RUN test -e /etc/apt/sources.list || echo "deb http://mirrors.aliyun.com/debian bookworm main" > /etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main" >> /etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main" >> /etc/apt/sources.list
-
 # 安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential \
@@ -43,11 +38,6 @@ ENV LC_ALL C.UTF-8
 # 设置环境变量以避免交互式安装提示
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 更换为阿里云的镜像源以加速 apt 下载
-#RUN test -e /etc/apt/sources.list || echo "deb http://mirrors.aliyun.com/debian bookworm main" > /etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main" >> /etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main" >> /etc/apt/sources.list
-
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential \
@@ -67,7 +57,3 @@ EXPOSE 8000
 
 # 设置入口点
 ENTRYPOINT ["/app/config/entrypoint.sh"]
-
-# 构建命令
-# docker build -t django_hip_service:latest .
-# 文件格式问题,请保持unix编码;set ff=unix
