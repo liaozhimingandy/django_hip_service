@@ -18,7 +18,7 @@ class CDAStatusAdmin(admin.TabularInline):
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ["service_code", "service_name", "service_category", "service_rank", "service_status",
-                    "is_lookup"]
+                    "is_lookup", "is_mock"]
     search_fields = ["service_name"]
     list_filter = ["service_category", "service_rank", "is_v3", "is_lookup", "service_status"]
     ordering = ["service_queue", ]
@@ -39,7 +39,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ["application_name", "application_category", ]
+    list_display = ["application_name", "application_category", "is_mock"]
     ordering = ["application_category", ]
     search_fields = ["application_name"]
     list_filter = ["application_category", "firm__firm_name", "is_customer", "is_deleted"]

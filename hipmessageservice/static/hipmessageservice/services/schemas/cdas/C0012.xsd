@@ -867,7 +867,13 @@
 	<xs:complexType name="PQ">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="value" type="xs:float" use="required"/>
+				<xs:attribute name="value" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:float">
+							<xs:pattern value="(0|[1-9]\d{0,3})\.\d{2}"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
 				<xs:attribute name="unit" use="required">
 					<xs:simpleType>
 						<xs:restriction base="xs:string"/>

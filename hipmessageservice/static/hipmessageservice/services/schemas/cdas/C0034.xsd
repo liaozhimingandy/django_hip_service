@@ -14,7 +14,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -23,8 +23,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
-								<xs:attribute name="extension" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
+								<xs:attribute name="extension" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -33,7 +33,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -45,7 +45,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 								<xs:attribute name="extension" use="required">
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
@@ -69,8 +69,8 @@
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>
-								<xs:attribute name="codeSystem" type="xs:string"/>
-								<xs:attribute name="codeSystemName" type="xs:string"/>
+								<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -104,10 +104,10 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
-								<xs:attribute name="codeSystem" type="xs:string"/>
-								<xs:attribute name="codeSystemName" type="xs:string"/>
-								<xs:attribute name="displayName" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+								<xs:attribute name="displayName" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -116,7 +116,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -164,7 +164,7 @@
 													<xs:element name="city" type="xs:string"/>
 													<xs:element name="state" type="xs:string"/>
 												</xs:sequence>
-												<xs:attribute name="use" type="xs:string"/>
+												<xs:attribute name="use" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="patient">
@@ -191,7 +191,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="code">
+																	<xs:attribute name="code" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:byte">
 																				<xs:enumeration value="0"/>
@@ -201,9 +201,9 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="codeSystem" type="xs:string"/>
-																	<xs:attribute name="codeSystemName" type="xs:string"/>
-																	<xs:attribute name="displayName">
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="displayName" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
 																				<xs:enumeration value="未知的性别"/>
@@ -224,7 +224,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="code">
+																	<xs:attribute name="code" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:byte">
 																				<xs:enumeration value="10"/>
@@ -238,7 +238,7 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="displayName">
+																	<xs:attribute name="displayName" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
 																				<xs:enumeration value="未婚"/>
@@ -252,8 +252,8 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="codeSystem" type="xs:string"/>
-																	<xs:attribute name="codeSystemName" type="xs:string"/>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -265,9 +265,9 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="code">
+																	<xs:attribute name="code" use="required">
 																		<xs:simpleType>
-																			<xs:restriction base="xs:byte">
+																			<xs:restriction base="xs:string">
 																				<xs:enumeration value="01"/>
 																				<xs:enumeration value="02"/>
 																				<xs:enumeration value="03"/>
@@ -327,7 +327,7 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="displayName">
+																	<xs:attribute name="displayName" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
 																				<xs:enumeration value="汉族"/>
@@ -389,8 +389,8 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="codeSystem" type="xs:string"/>
-																	<xs:attribute name="codeSystemName" type="xs:string"/>
+																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -402,7 +402,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="unit">
+																	<xs:attribute name="unit" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
 																				<xs:enumeration value="岁"/>
@@ -411,7 +411,14 @@
 																			</xs:restriction>
 																		</xs:simpleType>
 																	</xs:attribute>
-																	<xs:attribute name="value" type="xs:byte"/>
+																	<xs:attribute name="value" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:nonNegativeInteger">
+																				<xs:maxInclusive value="150"/>
+																				<xs:minInclusive value="0"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -426,9 +433,9 @@
 																	<xs:complexType>
 																		<xs:simpleContent>
 																			<xs:extension base="xs:string">
-																				<xs:attribute name="code">
+																				<xs:attribute name="code" use="required">
 																					<xs:simpleType>
-																						<xs:restriction base="xs:byte">
+																						<xs:restriction base="xs:string">
 																							<xs:enumeration value="11"/>
 																							<xs:enumeration value="13"/>
 																							<xs:enumeration value="17"/>
@@ -445,9 +452,9 @@
 																						</xs:restriction>
 																					</xs:simpleType>
 																				</xs:attribute>
-																				<xs:attribute name="codeSystem" type="xs:string"/>
-																				<xs:attribute name="codeSystemName" type="xs:string"/>
-																				<xs:attribute name="displayName">
+																				<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+																				<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																				<xs:attribute name="displayName" use="required">
 																					<xs:simpleType>
 																						<xs:restriction base="xs:string">
 																							<xs:enumeration value="国家公务员"/>
@@ -474,17 +481,17 @@
 														</xs:complexType>
 													</xs:element>
 												</xs:sequence>
-												<xs:attribute name="classCode" type="xs:string"/>
-												<xs:attribute name="determinerCode" type="xs:string"/>
+												<xs:attribute name="classCode" type="xs:string" use="required"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
-						<xs:attribute name="contextControlCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
+						<xs:attribute name="contextControlCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="author">
@@ -505,7 +512,7 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="root" type="xs:string"/>
+														<xs:attribute name="root" type="xs:string" use="required"/>
 														<xs:attribute name="extension" use="required">
 															<xs:simpleType>
 																<xs:restriction base="xs:string">
@@ -528,12 +535,12 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
-						<xs:attribute name="contextControlCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
+						<xs:attribute name="contextControlCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="informant">
@@ -549,8 +556,8 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="root" type="xs:string"/>
-														<xs:attribute name="extension" type="xs:string"/>
+														<xs:attribute name="root" type="xs:string" use="required"/>
+														<xs:attribute name="extension" type="xs:string" use="required"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -562,10 +569,206 @@
 											<xs:complexType>
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
-														<xs:attribute name="code" type="xs:byte"/>
-														<xs:attribute name="displayName" type="xs:string"/>
-														<xs:attribute name="codeSystem" type="xs:string"/>
-														<xs:attribute name="codeSystemName" type="xs:string"/>
+														<xs:attribute name="code" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:enumeration value="0"/>
+																	<xs:enumeration value="01"/>
+																	<xs:enumeration value="02"/>
+																	<xs:enumeration value="1"/>
+																	<xs:enumeration value="10"/>
+																	<xs:enumeration value="11"/>
+																	<xs:enumeration value="12"/>
+																	<xs:enumeration value="2"/>
+																	<xs:enumeration value="20"/>
+																	<xs:enumeration value="21"/>
+																	<xs:enumeration value="22"/>
+																	<xs:enumeration value="23"/>
+																	<xs:enumeration value="24"/>
+																	<xs:enumeration value="25"/>
+																	<xs:enumeration value="26"/>
+																	<xs:enumeration value="27"/>
+																	<xs:enumeration value="28"/>
+																	<xs:enumeration value="29"/>
+																	<xs:enumeration value="3"/>
+																	<xs:enumeration value="30"/>
+																	<xs:enumeration value="31"/>
+																	<xs:enumeration value="32"/>
+																	<xs:enumeration value="33"/>
+																	<xs:enumeration value="34"/>
+																	<xs:enumeration value="35"/>
+																	<xs:enumeration value="36"/>
+																	<xs:enumeration value="37"/>
+																	<xs:enumeration value="38"/>
+																	<xs:enumeration value="39"/>
+																	<xs:enumeration value="4"/>
+																	<xs:enumeration value="40"/>
+																	<xs:enumeration value="41"/>
+																	<xs:enumeration value="42"/>
+																	<xs:enumeration value="43"/>
+																	<xs:enumeration value="44"/>
+																	<xs:enumeration value="45"/>
+																	<xs:enumeration value="46"/>
+																	<xs:enumeration value="47"/>
+																	<xs:enumeration value="48"/>
+																	<xs:enumeration value="49"/>
+																	<xs:enumeration value="5"/>
+																	<xs:enumeration value="50"/>
+																	<xs:enumeration value="51"/>
+																	<xs:enumeration value="52"/>
+																	<xs:enumeration value="53"/>
+																	<xs:enumeration value="54"/>
+																	<xs:enumeration value="55"/>
+																	<xs:enumeration value="56"/>
+																	<xs:enumeration value="57"/>
+																	<xs:enumeration value="58"/>
+																	<xs:enumeration value="59"/>
+																	<xs:enumeration value="6"/>
+																	<xs:enumeration value="60"/>
+																	<xs:enumeration value="61"/>
+																	<xs:enumeration value="62"/>
+																	<xs:enumeration value="63"/>
+																	<xs:enumeration value="64"/>
+																	<xs:enumeration value="65"/>
+																	<xs:enumeration value="66"/>
+																	<xs:enumeration value="67"/>
+																	<xs:enumeration value="68"/>
+																	<xs:enumeration value="69"/>
+																	<xs:enumeration value="7"/>
+																	<xs:enumeration value="70"/>
+																	<xs:enumeration value="71"/>
+																	<xs:enumeration value="72"/>
+																	<xs:enumeration value="73"/>
+																	<xs:enumeration value="74"/>
+																	<xs:enumeration value="75"/>
+																	<xs:enumeration value="76"/>
+																	<xs:enumeration value="77"/>
+																	<xs:enumeration value="78"/>
+																	<xs:enumeration value="79"/>
+																	<xs:enumeration value="8"/>
+																	<xs:enumeration value="80"/>
+																	<xs:enumeration value="81"/>
+																	<xs:enumeration value="82"/>
+																	<xs:enumeration value="83"/>
+																	<xs:enumeration value="84"/>
+																	<xs:enumeration value="85"/>
+																	<xs:enumeration value="86"/>
+																	<xs:enumeration value="87"/>
+																	<xs:enumeration value="88"/>
+																	<xs:enumeration value="89"/>
+																	<xs:enumeration value="90"/>
+																	<xs:enumeration value="91"/>
+																	<xs:enumeration value="92"/>
+																	<xs:enumeration value="93"/>
+																	<xs:enumeration value="94"/>
+																	<xs:enumeration value="95"/>
+																	<xs:enumeration value="96"/>
+																	<xs:enumeration value="97"/>
+																	<xs:enumeration value="99"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="displayName" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:enumeration value="本人或户主"/>
+																	<xs:enumeration value="本人"/>
+																	<xs:enumeration value="户主"/>
+																	<xs:enumeration value="配偶"/>
+																	<xs:enumeration value="配偶"/>
+																	<xs:enumeration value="夫"/>
+																	<xs:enumeration value="妻"/>
+																	<xs:enumeration value="子"/>
+																	<xs:enumeration value="子"/>
+																	<xs:enumeration value="独生子"/>
+																	<xs:enumeration value="长子"/>
+																	<xs:enumeration value="次子"/>
+																	<xs:enumeration value="三子"/>
+																	<xs:enumeration value="四子"/>
+																	<xs:enumeration value="五子"/>
+																	<xs:enumeration value="养子或继子"/>
+																	<xs:enumeration value="女婿"/>
+																	<xs:enumeration value="其他儿子"/>
+																	<xs:enumeration value="女"/>
+																	<xs:enumeration value="女"/>
+																	<xs:enumeration value="独生女"/>
+																	<xs:enumeration value="长女"/>
+																	<xs:enumeration value="次女"/>
+																	<xs:enumeration value="三女"/>
+																	<xs:enumeration value="四女"/>
+																	<xs:enumeration value="五女"/>
+																	<xs:enumeration value="养女或继女"/>
+																	<xs:enumeration value="儿媳"/>
+																	<xs:enumeration value="其他女儿"/>
+																	<xs:enumeration value="孙子、孙女、或外孙子、外孙女"/>
+																	<xs:enumeration value="孙子、孙女或外孙子、外孙女"/>
+																	<xs:enumeration value="孙子"/>
+																	<xs:enumeration value="孙女"/>
+																	<xs:enumeration value="外孙子"/>
+																	<xs:enumeration value="外孙女"/>
+																	<xs:enumeration value="孙媳妇或外孙媳妇"/>
+																	<xs:enumeration value="孙女婿或外孙女婿"/>
+																	<xs:enumeration value="曾孙子或外曾孙子"/>
+																	<xs:enumeration value="曾孙女或外曾孙女"/>
+																	<xs:enumeration value="其他孙子、孙女或外孙子、外孙女"/>
+																	<xs:enumeration value="父母"/>
+																	<xs:enumeration value="父母"/>
+																	<xs:enumeration value="父亲"/>
+																	<xs:enumeration value="母亲"/>
+																	<xs:enumeration value="公公"/>
+																	<xs:enumeration value="婆婆"/>
+																	<xs:enumeration value="岳父"/>
+																	<xs:enumeration value="岳母"/>
+																	<xs:enumeration value="继父或养父"/>
+																	<xs:enumeration value="继母或养母"/>
+																	<xs:enumeration value="其他父母关系"/>
+																	<xs:enumeration value="祖父母或外祖父母"/>
+																	<xs:enumeration value="祖父母或外祖父母"/>
+																	<xs:enumeration value="祖父"/>
+																	<xs:enumeration value="祖母"/>
+																	<xs:enumeration value="外祖父"/>
+																	<xs:enumeration value="外祖母"/>
+																	<xs:enumeration value="配偶的祖父母或外祖父母"/>
+																	<xs:enumeration value="曾祖父"/>
+																	<xs:enumeration value="曾祖母"/>
+																	<xs:enumeration value="配偶的曾祖父母或外曾祖父母"/>
+																	<xs:enumeration value="其他祖父母或外祖父母关系"/>
+																	<xs:enumeration value="兄、弟、姐、妹"/>
+																	<xs:enumeration value="兄弟姐妹"/>
+																	<xs:enumeration value="兄"/>
+																	<xs:enumeration value="嫂"/>
+																	<xs:enumeration value="弟"/>
+																	<xs:enumeration value="弟媳"/>
+																	<xs:enumeration value="姐姐"/>
+																	<xs:enumeration value="姐夫"/>
+																	<xs:enumeration value="妹妹"/>
+																	<xs:enumeration value="妹夫"/>
+																	<xs:enumeration value="其他兄弟姐妹"/>
+																	<xs:enumeration value="其他"/>
+																	<xs:enumeration value="其他"/>
+																	<xs:enumeration value="伯父"/>
+																	<xs:enumeration value="伯母"/>
+																	<xs:enumeration value="叔父"/>
+																	<xs:enumeration value="婶母"/>
+																	<xs:enumeration value="舅父"/>
+																	<xs:enumeration value="舅母"/>
+																	<xs:enumeration value="姨父"/>
+																	<xs:enumeration value="姨母"/>
+																	<xs:enumeration value="姑父"/>
+																	<xs:enumeration value="姑母"/>
+																	<xs:enumeration value="堂兄弟、堂姐妹"/>
+																	<xs:enumeration value="表兄弟、表姐妹"/>
+																	<xs:enumeration value="侄子"/>
+																	<xs:enumeration value="侄女"/>
+																	<xs:enumeration value="外甥"/>
+																	<xs:enumeration value="外甥女"/>
+																	<xs:enumeration value="其他亲属"/>
+																	<xs:enumeration value="非亲属"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+														<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -599,7 +802,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="root" type="xs:string"/>
+																	<xs:attribute name="root" type="xs:string" use="required"/>
 																	<xs:attribute name="extension" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
@@ -613,16 +816,16 @@
 													</xs:element>
 													<xs:element name="name" type="xs:string"/>
 												</xs:sequence>
-												<xs:attribute name="classCode" type="xs:string"/>
-												<xs:attribute name="determinerCode" type="xs:string"/>
+												<xs:attribute name="classCode" type="xs:string" use="required"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="legalAuthenticator">
@@ -660,8 +863,8 @@
 												<xs:sequence>
 													<xs:element name="name" type="xs:string"/>
 												</xs:sequence>
-												<xs:attribute name="classCode" type="xs:string"/>
-												<xs:attribute name="determinerCode" type="xs:string"/>
+												<xs:attribute name="classCode" type="xs:string" use="optional"/>
+												<xs:attribute name="determinerCode" type="xs:string" use="optional"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
@@ -670,7 +873,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="authenticator" minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="authenticator" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation> 主(副主)任医师签名  主治医师签名  住院医师签名  责任护士签名  进修医师签名  实习医师签名  编码员签名 </xs:documentation>
 					</xs:annotation>
@@ -728,7 +931,7 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="componentOf">
@@ -891,12 +1094,12 @@
 																																																	</xs:element>
 																																																	<xs:element name="name" type="xs:string"/>
 																																																</xs:sequence>
-																																																<xs:attribute name="classCode" type="xs:string"/>
-																																																<xs:attribute name="determinerCode" type="xs:string"/>
+																																																<xs:attribute name="classCode" type="xs:string" use="required"/>
+																																																<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																																															</xs:complexType>
 																																														</xs:element>
 																																													</xs:sequence>
-																																													<xs:attribute name="classCode" type="xs:string"/>
+																																													<xs:attribute name="classCode" type="xs:string" use="required"/>
 																																												</xs:complexType>
 																																											</xs:element>
 																																										</xs:sequence>
@@ -905,34 +1108,34 @@
 																																									</xs:complexType>
 																																								</xs:element>
 																																							</xs:sequence>
-																																							<xs:attribute name="classCode" type="xs:string"/>
+																																							<xs:attribute name="classCode" type="xs:string" use="required"/>
 																																						</xs:complexType>
 																																					</xs:element>
 																																				</xs:sequence>
-																																				<xs:attribute name="classCode" type="xs:string"/>
-																																				<xs:attribute name="determinerCode" type="xs:string"/>
+																																				<xs:attribute name="classCode" type="xs:string" use="required"/>
+																																				<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																																			</xs:complexType>
 																																		</xs:element>
 																																	</xs:sequence>
-																																	<xs:attribute name="classCode" type="xs:string"/>
+																																	<xs:attribute name="classCode" type="xs:string" use="required"/>
 																																</xs:complexType>
 																															</xs:element>
 																														</xs:sequence>
-																														<xs:attribute name="classCode" type="xs:string"/>
-																														<xs:attribute name="determinerCode" type="xs:string"/>
+																														<xs:attribute name="classCode" type="xs:string" use="required"/>
+																														<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																													</xs:complexType>
 																												</xs:element>
 																											</xs:sequence>
-																											<xs:attribute name="classCode" type="xs:string"/>
+																											<xs:attribute name="classCode" type="xs:string" use="required"/>
 																										</xs:complexType>
 																									</xs:element>
 																								</xs:sequence>
-																								<xs:attribute name="classCode" type="xs:string"/>
-																								<xs:attribute name="determinerCode" type="xs:string"/>
+																								<xs:attribute name="classCode" type="xs:string" use="required"/>
+																								<xs:attribute name="determinerCode" type="xs:string" use="required"/>
 																							</xs:complexType>
 																						</xs:element>
 																					</xs:sequence>
-																					<xs:attribute name="classCode" type="xs:string"/>
+																					<xs:attribute name="classCode" type="xs:string" use="required"/>
 																				</xs:complexType>
 																			</xs:element>
 																		</xs:sequence>
@@ -949,12 +1152,12 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
-									<xs:attribute name="moodCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="optional"/>
+									<xs:attribute name="moodCode" type="xs:string" use="optional"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="optional"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="component">

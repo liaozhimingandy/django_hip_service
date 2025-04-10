@@ -7,7 +7,7 @@ from cdr.models import CheckReport, BloodTrans, Patient, Check, CheckAppointStat
     OperationStatus, OrderFillerStatus, Order, Organization, OutpatientAppointStatus, \
     OutPatient, Pathology, Provider, SourceAndSchedule, Terminology, Transfer, ExamReport, \
     ExamResultDetail, ExamResultDetailAST, ExamResultMain, Discharge, Diagnosis, Visit, EncounterCard, CriticalValue, \
-    PathologyReport
+    PathologyReport, CallPatient
 
 
 # 基类，自动将所有字段设置为只读
@@ -518,6 +518,22 @@ class PathologyReportAdmin(ReadOnlyAdmin):
     list_display_links = ('report_id',)
     raw_id_fields = ('patient',)
     search_fields = ('adm_no', 'patient__patient_id')
+
+    @admin.display(description="患者ID")
+    def patient_id_new(self, obj):
+        return f"{obj.patient.patient_id}"
+
+    @admin.display(description="患者姓名")
+    def patient_name(self, obj):
+        return f"{obj.patient.patient_name}"
+
+
+@admin.register(CallPatient)
+class CallPatientAdmin(ReadOnlyAdmin):
+    list_display = ('patient_id_new', "patient_name", 'adm_no', 'gmt_call', 'index', 'doc_id', 'doc_name', 'dept_id', 'dept_name')
+    raw_id_fields = ('patient',)
+    search_fields = ('adm_no', 'patient__patient_id')
+    list_display_links = ('adm_no',)
 
     @admin.display(description="患者ID")
     def patient_id_new(self, obj):

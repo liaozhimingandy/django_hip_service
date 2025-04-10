@@ -159,10 +159,10 @@ class AppAdmin(admin.ModelAdmin):
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ("id", "App", "service_name_en", "desc", "image", "container_name", "comment")
+    list_display = ("id", "App", 'ports', "service_name_en", "desc", "image", "container_name", "comment")
     list_display_links = ("service_name_en",)
     list_filter = ("App",)
-    search_fields = ("service_name_en", "comment", "image", "container_name")
+    search_fields = ("service_name_en", "comment", "image", "container_name", "ports")
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},

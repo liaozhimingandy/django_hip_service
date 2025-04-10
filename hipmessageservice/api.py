@@ -33,7 +33,7 @@ from ninja.responses import codes_2xx, codes_4xx
 from requests.exceptions import ConnectTimeout
 
 from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit, Diagnosis, \
-    PathologyReport, CriticalValue
+    PathologyReport, CriticalValue, CallPatient
 from hipmessageservice.utils.encrypt import EncryptUtils
 
 
@@ -245,6 +245,7 @@ class ContentTypeEnum(str, Enum):
     getCheckReports = "getCheckReports"
     VisitInfoUpdate = "VisitInfoUpdate"
     getExamReportPrintInfos = "getExamReportPrintInfos"
+    callPatient = 'CallPatient'
 
 
 # 消息统一格式
@@ -740,6 +741,29 @@ def verification(data: dict) -> tuple:
                 return False, f"{filtered_data['critical_id']}数据不存在"
 
             return True, 'ok'
+
+        # 叫号服务
+        case 'CallPatient':
+            """ 叫号服务 """
+            call_patient = data[content_type]
+            # 获取需要保存的数据模型字段列表
+            fields = set([field.name for field in CallPatient._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
+            filtered_data = {key: value for key, value in call_patient.items() if key in fields}
+            filtered_data.update(**{"patient_id": call_patient['patient_id']})
+
+            call_info = CallPatient(**copy.deepcopy(filtered_data))
+            # 校验
+            try:
+                call_info.full_clean(exclude=('patient',))
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    CallPatient.objects.update_or_create(adm_no=call_info.adm_no, gmt_call=call_info.gmt_call, defaults=filtered_data)
+
+            except ValidationError as e:
+                return False, [str(item) for item in e]
+
+            return True, 'ok'
+
 
         case _:
             return True, "本消息暂未纳入校验范围!"

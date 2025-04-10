@@ -1,5 +1,5 @@
 <!-- 被2013 sp1 () 使用XMLSpy v编辑的 (http://www.altova.com) by -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:hl7-org:v3" targetNamespace="urn:hl7-org:v3" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:hl7-org:v3" xmlns:altova="http://www.altova.com/xml-schema-extensions" targetNamespace="urn:hl7-org:v3" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="ClinicalDocument">
 		<xs:complexType>
 			<xs:sequence>
@@ -1011,7 +1011,22 @@
 	<xs:complexType name="REAL">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="value" type="xs:float" use="required"/>
+				<xs:attribute name="value" use="required">
+					<xs:annotation>
+						<xs:appinfo>
+							<altova:exampleValues>
+								<altova:example value="5.5600"/>
+							</altova:exampleValues>
+						</xs:appinfo>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:decimal">
+							<xs:totalDigits value="10"/>
+							<xs:fractionDigits value="4"/>
+							<xs:pattern value="-?\d{1,5}\.\d{4}|-?\d{1,4}\.\d{4}"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>

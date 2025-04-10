@@ -2157,3 +2157,42 @@ class CriticalValue(models.Model):
             models.Index(fields=('adm_no',)),
             models.Index(fields=('patient',)),
         ]
+
+
+class CallPatient(models.Model):
+    """
+    叫号信息
+    """
+    # 患者基本信息
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, verbose_name='患者唯一标识ID',
+                                db_constraint=False, db_comment='患者唯一标识ID', to_field='patient_id')
+    adm_no = models.CharField(max_length=36, db_comment="就诊流水号", verbose_name='就诊流水号',
+                              help_text="部分厂商为patient_id+times组合成就诊流水号")
+    dept_id = models.CharField(max_length=36, db_comment="就诊科室ID", verbose_name='就诊科室ID')
+    dept_name = models.CharField(max_length=64, db_comment="就诊科室名称", verbose_name='就诊科室名称')
+    # 医生工号
+    doc_id = models.CharField(max_length=36, verbose_name='医生工号', db_comment='医生工号')
+
+    # 医生姓名
+    doc_name = models.CharField(max_length=64, verbose_name='医生姓名', db_comment='医生姓名')
+    index = models.PositiveSmallIntegerField(db_comment='排队号', verbose_name='排队号')
+    gmt_call = models.DateTimeField(db_comment='叫号时间', verbose_name='叫号时间')
+    gmt_sign_in = models.DateTimeField(db_comment='签到时间', verbose_name='签到时间')
+    gmt_visit = models.DateTimeField(db_comment='接诊时间', verbose_name='接诊时间')
+    position = models.CharField(max_length=64, db_comment='位置', verbose_name='位置')
+    from_ip = models.GenericIPAddressField(db_comment='呼叫电脑所在ip地址', verbose_name='呼叫电脑所在ip地址')
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
+    def __str__(self):
+        return f'{self.dept_name}-{self.patient_id}-{self.index}'
+
+    class Meta:
+        verbose_name = '叫号信息'
+        verbose_name_plural = '叫号信息'
+        db_table_comment = '叫号信息'
+
+        indexes = [
+            models.Index(fields=('adm_no',)),
+            models.Index(fields=('patient',)),
+            models.Index(fields=('adm_no', 'gmt_call')),
+        ]

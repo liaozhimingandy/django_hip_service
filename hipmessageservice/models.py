@@ -63,6 +63,7 @@ class Application(BaseInfo):
     firm = models.ForeignKey(Firm, on_delete=models.PROTECT, null=True, blank=True, verbose_name="厂商名称",
                              db_comment="厂商名称", db_constraint=settings.IS_DB_CONSTRAINT)
     is_customer = models.BooleanField(default=True, verbose_name="是否为国家标准外", db_comment="是否为国家标准外", db_default=False)
+    is_mock = models.BooleanField(db_default=False, verbose_name="是否为模拟数据", db_comment="是否为模拟数据", default=False)
 
     def __str__(self):
         return f"{self.application_name} - {self.application_id}"
@@ -89,6 +90,7 @@ class Service(BaseInfo):
     is_lookup = models.BooleanField(db_default=False, verbose_name="是否为查询类接口", db_comment="是否为查询类接口",
                                     blank=True, null=True, default=False)
     applications = models.ManyToManyField(Application, verbose_name="系统", related_name="系统", through="StatusShip")
+    is_mock = models.BooleanField(db_default=False, verbose_name="是否为模拟数据", db_comment="是否为模拟数据", default=False)
 
     def __str__(self):
         return f"{self.service_name} - {self.service_code}"

@@ -780,8 +780,66 @@
 																							<xs:complexType>
 																								<xs:simpleContent>
 																									<xs:extension base="xs:string">
-																										<xs:attribute name="code" type="xs:byte"/>
-																										<xs:attribute name="displayName" type="xs:string" use="required"/>
+																										<xs:attribute name="code" use="required">
+																											<xs:simpleType>
+																												<xs:restriction base="xs:string">
+																													<xs:enumeration value="1"/>
+																													<xs:enumeration value="2"/>
+																													<xs:enumeration value="3"/>
+																													<xs:enumeration value="4"/>
+																													<xs:enumeration value="401"/>
+																													<xs:enumeration value="402"/>
+																													<xs:enumeration value="403"/>
+																													<xs:enumeration value="404"/>
+																													<xs:enumeration value="5"/>
+																													<xs:enumeration value="6"/>
+																													<xs:enumeration value="601"/>
+																													<xs:enumeration value="602"/>
+																													<xs:enumeration value="603"/>
+																													<xs:enumeration value="604"/>
+																													<xs:enumeration value="605"/>
+																													<xs:enumeration value="606"/>
+																													<xs:enumeration value="607"/>
+																													<xs:enumeration value="608"/>
+																													<xs:enumeration value="609"/>
+																													<xs:enumeration value="610"/>
+																													<xs:enumeration value="611"/>
+																													<xs:enumeration value="612"/>
+																													<xs:enumeration value="699"/>
+																													<xs:enumeration value="9"/>
+																												</xs:restriction>
+																											</xs:simpleType>
+																										</xs:attribute>
+																										<xs:attribute name="displayName" use="required">
+																											<xs:simpleType>
+																												<xs:restriction base="xs:string">
+																													<xs:enumeration value="口服"/>
+																													<xs:enumeration value="直肠用药"/>
+																													<xs:enumeration value="舌下用药"/>
+																													<xs:enumeration value="注射用药"/>
+																													<xs:enumeration value="皮下注射"/>
+																													<xs:enumeration value="皮内注射"/>
+																													<xs:enumeration value="肌肉注射"/>
+																													<xs:enumeration value="静脉注射或静脉滴注"/>
+																													<xs:enumeration value="吸入用药"/>
+																													<xs:enumeration value="局部用药"/>
+																													<xs:enumeration value="椎管内用药"/>
+																													<xs:enumeration value="关节腔内用药"/>
+																													<xs:enumeration value="胸膜腔用药"/>
+																													<xs:enumeration value="腹腔用药"/>
+																													<xs:enumeration value="阴道用药"/>
+																													<xs:enumeration value="气管内用药"/>
+																													<xs:enumeration value="滴眼"/>
+																													<xs:enumeration value="滴鼻"/>
+																													<xs:enumeration value="喷喉"/>
+																													<xs:enumeration value="含化"/>
+																													<xs:enumeration value="敷伤口"/>
+																													<xs:enumeration value="擦皮肤"/>
+																													<xs:enumeration value="其他局部用药途径"/>
+																													<xs:enumeration value="其他用药途径"/>
+																												</xs:restriction>
+																											</xs:simpleType>
+																										</xs:attribute>
 																										<xs:attribute name="codeSystem" type="xs:string" use="required"/>
 																										<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 																									</xs:extension>
@@ -795,8 +853,8 @@
 																							<xs:complexType>
 																								<xs:simpleContent>
 																									<xs:extension base="xs:string">
-																										<xs:attribute name="value" type="xs:positiveInteger" use="required"/>
-																										<xs:attribute name="unit" type="xs:string"/>
+																										<xs:attribute name="value" type="xs:float" use="required"/>
+																										<xs:attribute name="unit" type="xs:string" use="required"/>
 																									</xs:extension>
 																								</xs:simpleContent>
 																							</xs:complexType>
