@@ -150,7 +150,7 @@ dict_empi_mapping = {
     "VIP_INDICATOR": "",
     "DEATH_INDICATOR": "",
     "DOD": "",
-    "HOSPITAL_CARD_NO": "",
+    "HOSPITAL_CARD_NO": "patient_id",
     "CATEGORY_CODE": ""
 }
 

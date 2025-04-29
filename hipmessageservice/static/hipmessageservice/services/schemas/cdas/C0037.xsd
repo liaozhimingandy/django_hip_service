@@ -7,7 +7,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -16,8 +16,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
-								<xs:attribute name="extension" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
+								<xs:attribute name="extension" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -26,7 +26,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -38,7 +38,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="root" type="xs:string"/>
+								<xs:attribute name="root" type="xs:string" use="required"/>
 								<xs:attribute name="extension" use="required">
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
@@ -62,8 +62,8 @@
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>
-								<xs:attribute name="codeSystem" type="xs:string"/>
-								<xs:attribute name="codeSystemName" type="xs:string"/>
+								<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -97,10 +97,10 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
-								<xs:attribute name="codeSystem" type="xs:string"/>
-								<xs:attribute name="codeSystemName" type="xs:string"/>
-								<xs:attribute name="displayName" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+								<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+								<xs:attribute name="displayName" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -109,7 +109,7 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="code" type="xs:string"/>
+								<xs:attribute name="code" type="xs:string" use="required"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -133,7 +133,14 @@
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
 														<xs:attribute name="root" type="xs:string" use="required"/>
-														<xs:attribute name="extension" type="xs:string" use="required"/>
+														<xs:attribute name="extension" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="1"/>
+																	<xs:maxLength value="36"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -180,7 +187,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="生理性别代码表(GB/T 2261.1)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -235,12 +248,12 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="classCode" type="xs:string"/>
+									<xs:attribute name="classCode" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="typeCode" type="xs:string"/>
-						<xs:attribute name="contextControlCode" type="xs:string"/>
+						<xs:attribute name="typeCode" type="xs:string" use="required"/>
+						<xs:attribute name="contextControlCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="author">
@@ -379,7 +392,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="authenticator" minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="authenticator" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation> 主(副主)任医师签名  主治医师签名  住院医师签名  责任护士签名  进修医师签名  实习医师签名  编码员签名 </xs:documentation>
 					</xs:annotation>

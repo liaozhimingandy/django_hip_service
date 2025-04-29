@@ -39,7 +39,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ["application_name", "application_category", "is_mock"]
+    list_display = ["application_name", "application_category", "is_mock", "is_deleted"]
     ordering = ["application_category", ]
     search_fields = ["application_name"]
     list_filter = ["application_category", "firm__firm_name", "is_customer", "is_deleted"]
@@ -49,7 +49,8 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(is_deleted=False)
+        # return qs.filter(is_deleted=False)
+        return qs.filter()
 
     def delete_queryset(self, request, queryset):
         for item in queryset:
@@ -99,19 +100,19 @@ class FirmAdmin(admin.ModelAdmin):
 
 @admin.register(CDA)
 class CDAAdmin(admin.ModelAdmin):
-    list_display = ["value", "comment"]
+    list_display = ["value", "comment", "is_deleted"]
     list_display_links = ["value"]
     search_fields = ["value", "comment"]
     list_per_page = 10
     ordering = ["value", ]
-    list_filter = ["firm"]
-    filter_horizontal = ["firm", ]
+    list_filter = ["firm", "is_deleted"]
+    filter_horizontal = ["firm",]
 
     inlines = [CDAStatusAdmin, ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(is_deleted=False)
+        return qs.filter()
 
     def delete_queryset(self, request, queryset):
         for item in queryset:

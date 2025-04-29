@@ -202,7 +202,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="生理性别代码表(GB/T 2261.1)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																	<xs:attribute name="displayName" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
@@ -253,7 +259,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="婚姻状况代码表(GB/T 2261.2)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -390,7 +402,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="民族类别代码表(GB/T 3304)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -1198,7 +1216,7 @@
 																	</xs:complexType>
 																</xs:element>
 																<xs:element name="text" type="xs:string"/>
-																<xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+																<xs:element name="entry" maxOccurs="unbounded">
 																	<xs:annotation>
 																		<xs:documentation>主诉条目现病史条目一般健康状况标志患者传染性标志婚育史条目过敏史条目手术史条目输血史条目个人史条目月经史条目家族史条目体格检查-体温（℃）体格检查-脉率（次/min）体格检查-呼吸频率（次/min）体格检查-血压（mmHg）体格检查-身高（cm）体格检查-体重（kg）体格检查-一般状况检查结果体格检查-皮肤和黏膜检查结果体格检查-全身浅表淋巴结检查结果体格检查-头部及其器官检查结果体格检查-颈部检查结果体格检查-胸部检查结果体格检查-腹部检查结果体格检查-肛门指诊检查结果体格检查-外生殖器检查结果体格检查-脊柱检查结果体格检查-四肢检查结果体格检查-神经系统检查结果专科情况辅助检查结果条目陈述内容可靠标志初步诊断-西医条目中医“四诊”观察结果初步诊断-中医条目修正诊断-西医条目修正诊断-中医条目确定诊断-西医条目确定诊断-中医条目补充诊断-西医条目治则治法条目</xs:documentation>
 																	</xs:annotation>

@@ -2170,10 +2170,7 @@ class CallPatient(models.Model):
                               help_text="部分厂商为patient_id+times组合成就诊流水号")
     dept_id = models.CharField(max_length=36, db_comment="就诊科室ID", verbose_name='就诊科室ID')
     dept_name = models.CharField(max_length=64, db_comment="就诊科室名称", verbose_name='就诊科室名称')
-    # 医生工号
     doc_id = models.CharField(max_length=36, verbose_name='医生工号', db_comment='医生工号')
-
-    # 医生姓名
     doc_name = models.CharField(max_length=64, verbose_name='医生姓名', db_comment='医生姓名')
     index = models.PositiveSmallIntegerField(db_comment='排队号', verbose_name='排队号')
     gmt_call = models.DateTimeField(db_comment='叫号时间', verbose_name='叫号时间')
@@ -2181,7 +2178,12 @@ class CallPatient(models.Model):
     gmt_visit = models.DateTimeField(db_comment='接诊时间', verbose_name='接诊时间')
     position = models.CharField(max_length=64, db_comment='位置', verbose_name='位置')
     from_ip = models.GenericIPAddressField(db_comment='呼叫电脑所在ip地址', verbose_name='呼叫电脑所在ip地址')
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
+                                verbose_name='医疗卫生机构代码')
+    message = models.CharField(max_length=128, db_comment='叫号内容', verbose_name='叫号内容')
+    from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
     gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+
 
     def __str__(self):
         return f'{self.dept_name}-{self.patient_id}-{self.index}'

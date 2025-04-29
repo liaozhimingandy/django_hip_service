@@ -170,7 +170,7 @@ STATIC_URL = os.getenv("APP_STATIC_URL", 'static/')
 # python manage.py collectstatic 收集文件到下面文件文件夹里
 # STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # 这个配置定义了静态文件应用在启用 FileSystemFinder 查找器时将穿越的额外位置, 不能包含 STATIC_ROOT路径
-# 静态文件夹对应的实际路径
+# 静态文件夹对应的实际路径; 在部署时改成/temp
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '/temp')
 ]

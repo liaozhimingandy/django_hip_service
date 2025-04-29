@@ -13,14 +13,44 @@ import threading
 import time
 import uuid
 
+import graphene
+import pandas as pd
 from django.contrib.staticfiles import finders
 from lxml import etree as et
-import graphene
 
-from evaluation.utils import CDATool, cda_map, query_to_dict, create_examples_zip, generate_cda
+from evaluation.utils import create_examples_zip, generate_cda
 
 # 定义XML命名空间
 namespace = {'xmlns': 'urn:hl7-org:v3'}
+
+# 服务文件映射关系
+list_file_path = {
+        "PatientInfoQuery": "EMR-PL-04-个人信息查询服务",
+        "OrganizationInfoQuery": "EMR-PL-07-医疗卫生机构（科室）信息查询服务",
+        "ProviderInfoQuery": "EMR-PL-10-医疗卫生人员信息查询服务",
+        "TerminologyQuery": "EMR-PL-13-术语查询服务",
+        "DocumentAccess": "EMR-PL-15-电子病历文档检索服务",
+        "DocumentRetrieve": "EMR-PL-16-电子病历文档调阅服务",
+        "EncounterCardInfoQuery": "EMR-PL-19-就诊卡信息查询服务",
+        "SourceAndScheduleInfoQuery": "EMR-PL-52-号源排班信息查询服务",
+        "OutPatientInfoQuery": "EMR-PL-22-门诊挂号信息查询服务",
+        "InPatientInfoQuery": "EMR-PL-25-住院就诊信息查询服务",
+        "TransferInfoQuery": "EMR-PL-28-住院转科信息查询服务",
+        "DischargeInfoQuery": "EMR-PL-31-出院登记信息查询服务",
+        "OrderInfoQuery": "EMR-PL-34-医嘱信息查询服务",
+        "ExamAppInfoQuery": "EMR-PL-37-检验申请信息查询服务",
+        "CheckAppInfoQuery": "EMR-PL-40-检查申请信息查询服务",
+        "PathologyAppInfoQuery": "EMR-PL-43-病理申请信息查询服务",
+        "BloodTransAppInfoQuery": "EMR-PL-46-输血申请信息查询服务",
+        "OperationAppInfoQuery": "EMR-PL-49-手术申请信息查询服务",
+        "OutPatientAppointStatusInfoQuery": "EMR-PL-55-门诊预约状态信息查询服务",
+        "CheckAppointStatusInfoQuery": "EMR-PL-58-检查预约状态信息查询服务",
+        "OrderFillerStatusInfoQuery": "EMR-PL-60-医嘱执行状态信息查询服务",
+        "CheckStatusInfoQuery": "EMR-PL-62-检查状态信息查询服务",
+        "ExamStatusInfoQuery": "EMR-PL-64-检验状态信息查询服务",
+        "OperationScheduleInfoQuery": "EMR-PL-79-手术排班信息查询服务",
+        "OperationStatusInfoQuery": "EMR-PL-81-手术状态信息查询服务"
+    }
 
 
 # 返回的内容
@@ -64,33 +94,6 @@ def update_demo_param(service, dir_name: str, args: list) -> None:
         返回None
 
     """
-    list_file_path = {
-        "PatientInfoQuery": "EMR-PL-04-个人信息查询服务",
-        "OrganizationInfoQuery": "EMR-PL-07-医疗卫生机构（科室）信息查询服务",
-        "ProviderInfoQuery": "EMR-PL-10-医疗卫生人员信息查询服务",
-        "TerminologyQuery": "EMR-PL-13-术语查询服务",
-        "DocumentAccess": "EMR-PL-15-电子病历文档检索服务",
-        "DocumentRetrieve": "EMR-PL-16-电子病历文档调阅服务",
-        "EncounterCardInfoQuery": "EMR-PL-19-就诊卡信息查询服务",
-        "SourceAndScheduleInfoQuery": "EMR-PL-52-号源排班信息查询服务",
-        "OutPatientInfoQuery": "EMR-PL-22-门诊挂号信息查询服务",
-        "InPatientInfoQuery": "EMR-PL-25-住院就诊信息查询服务",
-        "TransferInfoQuery": "EMR-PL-28-住院转科信息查询服务",
-        "DischargeInfoQuery": "EMR-PL-31-出院登记信息查询服务",
-        "OrderInfoQuery": "EMR-PL-34-医嘱信息查询服务",
-        "ExamAppInfoQuery": "EMR-PL-37-检验申请信息查询服务",
-        "CheckAppInfoQuery": "EMR-PL-40-检查申请信息查询服务",
-        "PathologyAppInfoQuery": "EMR-PL-43-病理申请信息查询服务",
-        "BloodTransAppInfoQuery": "EMR-PL-46-输血申请信息查询服务",
-        "OperationAppInfoQuery": "EMR-PL-49-手术申请信息查询服务",
-        "OutPatientAppointStatusInfoQuery": "EMR-PL-55-门诊预约状态信息查询服务",
-        "CheckAppointStatusInfoQuery": "EMR-PL-58-检查预约状态信息查询服务",
-        "OrderFillerStatusInfoQuery": "EMR-PL-60-医嘱执行状态信息查询服务",
-        "CheckStatusInfoQuery": "EMR-PL-62-检查状态信息查询服务",
-        "ExamStatusInfoQuery": "EMR-PL-64-检验状态信息查询服务",
-        "OperationScheduleInfoQuery": "EMR-PL-79-手术排班信息查询服务",
-        "OperationStatusInfoQuery": "EMR-PL-81-手术状态信息查询服务"
-    }
     assert len(args) > 0, "No arguments"
     id_msg = str(uuid.uuid4())
     gmt_created = time.strftime('%Y%m%d%H%M%S')
@@ -180,10 +183,23 @@ class Query(graphene.ObjectType):
         """
         # 临时文件路径
         dir_name = str(uuid.uuid4())
+        list_params = [('类别名称', '参数名称', '参数值')]
 
         # 处理数据（这里可以根据需要处理 input_data）
         for item in data['data']:
             update_demo_param(item.service_code, dir_name, item.params)
+            list_params.append((f'{list_file_path[item.service_code]}-T01', ','.join(el.comment for el in item.params),
+                                ','.join((el.value for el in item.params))))
+            list_params.append((f'{list_file_path[item.service_code]}-F01', ','.join(el.comment for el in item.params),
+                                os.getenv("DEFAULT_TEST_VALUE", '000000')))
+
+        # 生成一份csv文件交互服务测试参数文件
+        file_path = f"temp/services/{dir_name}/services_params.xlsx"
+
+        df = pd.DataFrame(list_params[1:], columns=list_params[0])
+
+        # 保存到 Excel
+        df.to_excel(file_path, sheet_name="services", index=False)
 
         # 启动后台线程,执行对文件打包
         task_thread = threading.Thread(target=create_examples_zip, args=(dir_name, True))

@@ -175,7 +175,7 @@ def generate_cda(dir_path: str, adm_no: str) -> None:
         if not os.path.exists(file_dir):
             os.makedirs(os.path.join(file_dir, row['patient_name']))
 
-        tmp_file_name = f'EMR-SD-{row["doc_type_code"][-2:]}-{cda_map.get(row["doc_type_code"], "未知")}-{row["patient_name"]}-T01-{str(row["no"]).rjust(3, "0")}.xml'
+        tmp_file_name = f'EMR-SD-{row["doc_type_code"][-2:]}-{cda_map.get(row["doc_type_code"], "未知")}-{row["patient_name"]}-T01-{row["no"]:0>3}.xml'
         with open(file=os.path.join(file_dir, row["patient_name"], tmp_file_name), encoding='utf-8', mode='w',
                   newline='') as f:
             f.writelines(row["content"])

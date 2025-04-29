@@ -1,12 +1,8 @@
 import uuid
 
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator
 
-
-class Demo(models.Model):
-    age = models.PositiveSmallIntegerField(blank=True, null=True, db_comment='年龄',
-                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
 
 class SexCodeChoices(models.IntegerChoices):
     """
@@ -24,12 +20,14 @@ class BaseModel(models.Model):
     """
 
     id = models.AutoField("表主键", primary_key=True, db_comment='表主键')
-    gmt_created = models.DateTimeField("记录时间", db_comment='记录创建日期时间', auto_now=True)
-    is_finished = models.BooleanField("完成标识", db_comment='文档完成标识,1:已完成生成,0未生成,默认为0', default=False)
-    gmt_finish = models.DateTimeField("文档生成日期时间", blank=True, null=True, db_comment='文档生成日期时间')
     doc_id = models.UUIDField("文档流水号", default=uuid.uuid4, db_comment='文档流水号', db_index=True, unique=True)
+    gmt_doc = models.CharField("文档机器生成时间", max_length=14, db_comment='文档机器生成时间',
+                               validators=[MinLengthValidator(14)])
     adm_no = models.CharField("就诊流水号", max_length=36, db_comment='就诊流水号', db_index=True)
     data_src = models.CharField("数据来源", max_length=32, db_comment='数据来源,请参照主数据标准字典:医疗卫生机构')
+    gmt_created = models.DateTimeField("记录时间", db_comment='记录创建日期时间', auto_now=True)
+    is_finished = models.BooleanField("完成标识", db_comment='文档完成标识,1:已完成生成,0未生成,默认为0', default=False)
+    gmt_finish = models.DateTimeField("文档完成日期时间", blank=True, null=True, db_comment='文档完成日期时间')
 
     class Meta:
         abstract = True
@@ -45,6 +43,8 @@ class Position(models.Model):
     ward_no = models.CharField("病房号", max_length=36, db_comment="病房号", null=True, blank=True)
     bed_id = models.CharField("病床号Id", max_length=36, db_comment="病床号Id", null=True, blank=True)
     bed_no = models.CharField("病床号", max_length=36, db_comment="病床号", null=True, blank=True)
+    org_id = models.CharField('医疗机构组织机构标识', max_length=18, db_comment='医疗机构组织机构标识')
+    org_name = models.CharField('医疗机构组织机构名称', max_length=64, db_comment='医疗机构组织机构名称')
 
     class Meta:
         abstract = True
@@ -58,12 +58,12 @@ class C0001(models.Model):
                                  db_comment='居民健康卡号')
     addrcode = models.CharField(db_column='addrCode', max_length=100, blank=True, null=True,
                                 db_comment='地址类别代码')
-    state = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-省（自治区、直辖市）')
-    city = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-市（地区、州）')
-    county = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-县（区）')
-    township = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-乡（镇、街道办事处）')
+    state = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-省(自治区、直辖市)')
+    city = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-市(地区、州)')
+    county = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-县(区)')
+    township = models.CharField(max_length=100, blank=True, null=True, db_comment='地址-乡(镇、街道办事处)')
     streetname = models.CharField(db_column='streetName', max_length=100, blank=True, null=True,
-                                  db_comment='地址-村（街、路、弄等）')
+                                  db_comment='地址-村(街、路、弄等)')
     housenumber = models.CharField(db_column='houseNumber', max_length=100, blank=True, null=True,
                                    db_comment='地址-门牌号码')
     postalcode = models.CharField(db_column='postalCode', max_length=100, blank=True, null=True,
@@ -114,17 +114,17 @@ class C0001(models.Model):
                                                null=True,
                                                db_comment='联系人与患者的关系名称')
     associatedentitystate = models.CharField(db_column='associatedEntityState', max_length=100, blank=True, null=True,
-                                             db_comment='地址-省（自治区、直辖市）')
+                                             db_comment='地址-省(自治区、直辖市)')
     associatedentitycity = models.CharField(db_column='associatedEntityCity', max_length=100, blank=True, null=True,
-                                            db_comment='地址-市（地区、州）')
+                                            db_comment='地址-市(地区、州)')
     associatedentitycounty = models.CharField(db_column='associatedEntityCounty', max_length=100, blank=True, null=True,
-                                              db_comment='地址-县（区）')
+                                              db_comment='地址-县(区)')
     associatedentitytownship = models.CharField(db_column='associatedEntityTownship', max_length=100, blank=True,
                                                 null=True,
-                                                db_comment='地址-乡（镇、街道办事处）')
+                                                db_comment='地址-乡(镇、街道办事处)')
     associatedentitystreetname = models.CharField(db_column='associatedEntityStreetName', max_length=100, blank=True,
                                                   null=True,
-                                                  db_comment='地址-村（街、路、弄等）')
+                                                  db_comment='地址-村(街、路、弄等)')
     associatedentityhousenumber = models.CharField(db_column='associatedEntityHouseNumber', max_length=100, blank=True,
                                                    null=True, db_comment='地址-门牌号码')
     associatedentitypostalcode = models.CharField(db_column='associatedEntityPostalCode', max_length=100, blank=True,
@@ -142,7 +142,7 @@ class C0001(models.Model):
     rhname = models.CharField(db_column='RHName', max_length=100, blank=True, null=True,
                               db_comment='Rh血型名称')
     diseasehistory = models.TextField(db_column='diseaseHistory', blank=True, null=True,
-                                      db_comment='疾病史（含外伤）')
+                                      db_comment='疾病史(含外伤)')
     infectioushistory = models.TextField(db_column='infectiousHistory', blank=True, null=True,
                                          db_comment='传染病史')
     surgicalhistory = models.TextField(db_column='surgicalHistory', blank=True, null=True,
@@ -167,7 +167,7 @@ class C0001(models.Model):
                                  db_comment='患者类型代码')
     patienttypename = models.CharField(db_column='patientTypeName', max_length=100, blank=True, null=True,
                                        db_comment='患者类型名称')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     admissiondatetime = models.CharField(db_column='admissionDateTime', max_length=50, blank=True, null=True,
                                          db_comment='入院日期时间')
@@ -256,7 +256,7 @@ class C0001(models.Model):
 
 class C0002(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     applyid = models.CharField(db_column='applyId', max_length=20, blank=True, null=True,
                                db_comment='电子申请单编号')
     id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
@@ -266,8 +266,9 @@ class C0002(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     deptcode = models.CharField(db_column='deptCode', max_length=50, blank=True, null=True,
                                 db_comment='科室代码')
     deptname = models.CharField(db_column='deptName', max_length=50, blank=True, null=True,
@@ -378,7 +379,7 @@ class C0002(models.Model):
 
 class C0003(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     applyid = models.CharField(db_column='applyId', max_length=20, blank=True, null=True,
                                db_comment='电子申请单编号')
     telecom = models.CharField(max_length=20, blank=True, null=True, db_comment='患者电话号码')
@@ -388,8 +389,9 @@ class C0003(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     deptname = models.CharField(db_column='deptName', max_length=50, blank=True, null=True,
                                 db_comment='科室名称')
     authororgid = models.CharField(db_column='authorOrgId', max_length=20, blank=True, null=True,
@@ -516,7 +518,7 @@ class C0003(models.Model):
                                         db_comment='专业技术职务类别名称')
     enterobservationroomdatetime = models.CharField(db_column='enterObservationRoomDateTime', max_length=15, blank=True,
                                                     null=True,
-                                                    db_comment='收入观察室日期时间（抢救室时间）')
+                                                    db_comment='收入观察室日期时间(抢救室时间)')
     observationrecord = models.TextField(db_column='observationRecord', blank=True, null=True,
                                          db_comment='急诊留观病程记录')
     note = models.TextField(blank=True, null=True, db_comment='注意事项')
@@ -536,15 +538,16 @@ class C0003(models.Model):
 
 class C0004(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     orderid = models.CharField(db_column='orderId', max_length=30, blank=True, null=True,
                                db_comment='处方编号')
     id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     orderdeptname = models.CharField(db_column='orderDeptName', max_length=50, blank=True, null=True,
                                      db_comment='处方开立科室名称')
     authororgid = models.CharField(db_column='authorOrgId', max_length=20, blank=True, null=True,
@@ -640,14 +643,15 @@ class C0004(models.Model):
 
 class C0005(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=50, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=50, blank=True, null=True, db_comment='门(急)诊号')
     orderid = models.CharField(db_column='orderId', max_length=50, blank=True, null=True,
                                db_comment='处方编号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     orderdeptname = models.CharField(db_column='orderDeptName', max_length=50, blank=True, null=True,
@@ -746,7 +750,7 @@ class C0005(models.Model):
     tcmprescriptiondesc = models.TextField(db_column='TCMPrescriptionDesc', blank=True, null=True,
                                            db_comment='中药饮片处方')
     tcmnumber = models.IntegerField(db_column='TCMNumber', blank=True, null=True,
-                                    db_comment='中药饮片剂数（剂）')
+                                    db_comment='中药饮片剂数(剂)')
     tcmdecoctingmethod = models.CharField(db_column='TCMDecoctingMethod', max_length=100, blank=True, null=True,
                                           db_comment='中药饮片煎煮法')
     tcmmethods = models.CharField(db_column='TCMMethods', max_length=100, blank=True, null=True,
@@ -776,7 +780,7 @@ class C0005(models.Model):
 
 class C0006(models.Model):
     doc_id = models.CharField(max_length=100, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     examreportno = models.CharField(db_column='examReportNo', max_length=100, blank=True, null=True,
                                     db_comment='检查报告单编号')
@@ -955,7 +959,7 @@ class C0006(models.Model):
 
 class C0007(models.Model):
     doc_id = models.CharField(max_length=100, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     examreportno = models.CharField(db_column='examReportNo', max_length=100, blank=True, null=True,
                                     db_comment='检验报告单编号')
@@ -973,7 +977,8 @@ class C0007(models.Model):
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gendername = models.CharField(db_column='genderName', max_length=100, blank=True, null=True,
                                   db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=100, blank=True, null=True,
                                db_comment='年龄单位')
     labreportdate = models.CharField(db_column='labReportDate', max_length=8, blank=True, null=True,
@@ -1108,11 +1113,11 @@ class C0007Detail(models.Model):
 
 class C0008(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=50, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=50, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=50, blank=True, null=True,
                                db_comment='电子申请单编号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
@@ -1163,7 +1168,7 @@ class C0008(models.Model):
                                                    db_comment='过敏史标志')
     allergichistory = models.TextField(db_column='allergicHistory', blank=True, null=True,
                                        db_comment='过敏史')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
     diseasediagnosiscode = models.CharField(db_column='diseaseDiagnosisCode', max_length=50, blank=True, null=True,
                                             db_comment='疾病诊断编码')
     diseasediagnosisname = models.CharField(db_column='diseaseDiagnosisName', max_length=50, blank=True, null=True,
@@ -1244,15 +1249,16 @@ class C0008(models.Model):
 
 class C0009(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=50, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=50, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=50, blank=True, null=True,
                                db_comment='电子申请单编号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
@@ -1334,9 +1340,9 @@ class C0009(models.Model):
     surgicalgradename = models.CharField(db_column='surgicalGradeName', max_length=50, blank=True, null=True,
                                          db_comment='手术级别名称')
     bleedingvolume = models.IntegerField(db_column='bleedingVolume', blank=True, null=True,
-                                         db_comment='出血量（mL）')
+                                         db_comment='出血量(mL)')
     bloodtransfusionvolume = models.IntegerField(db_column='bloodTransfusionVolume', blank=True, null=True,
-                                                 db_comment='输血量（mL）')
+                                                 db_comment='输血量(mL)')
     transfusionreactionflag = models.SmallIntegerField(db_column='transfusionReactionFlag', blank=True, null=True,
                                                        db_comment='输血反应标志')
     anesthesiamethodcode = models.CharField(db_column='anesthesiaMethodCode', max_length=50, blank=True, null=True,
@@ -1353,7 +1359,7 @@ class C0009(models.Model):
                                                     blank=True, null=True,
                                                     db_comment='术中用药')
     infusionvolume = models.IntegerField(db_column='infusionVolume', blank=True, null=True,
-                                         db_comment='输液量（mL）')
+                                         db_comment='输液量(mL)')
     postoperativediagnosiscode = models.CharField(db_column='postoperativeDiagnosisCode', max_length=50, blank=True,
                                                   null=True, db_comment='术后诊断编码')
     operationprocessdesc = models.TextField(db_column='operationProcessDesc', blank=True, null=True,
@@ -1392,7 +1398,7 @@ class C0009(models.Model):
 
 class C0010(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=20, blank=True, null=True,
                                db_comment='电子申请单编号')
@@ -1400,8 +1406,9 @@ class C0010(models.Model):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     providerorgid = models.CharField(db_column='providerOrgId', max_length=10, blank=True, null=True,
                                      db_comment='医疗机构组织机构代码(提供患者服务机构)')
     providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
@@ -1454,7 +1461,7 @@ class C0010(models.Model):
                                            db_comment='简要病史')
     allergichistory = models.TextField(db_column='allergicHistory', blank=True, null=True,
                                        db_comment='过敏史')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
     generalexamresult = models.TextField(db_column='generalExamResult', blank=True, null=True,
                                          db_comment='一般状况检查结果')
     mentalnormalflag = models.SmallIntegerField(db_column='mentalNormalFlag', blank=True, null=True,
@@ -1534,7 +1541,7 @@ class C0010(models.Model):
 
 class C0011(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=20, blank=True, null=True,
                                db_comment='电子申请单编号')
@@ -1542,8 +1549,9 @@ class C0011(models.Model):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -1630,7 +1638,7 @@ class C0011(models.Model):
     bloodtransvarietiesname = models.CharField(db_column='bloodTransVarietiesName', max_length=50, blank=True,
                                                null=True, db_comment='输血品种名称')
     bloodtransvolume = models.IntegerField(db_column='bloodTransVolume', blank=True, null=True,
-                                           db_comment='输血量（mL）')
+                                           db_comment='输血量(mL)')
     bloodtransvolumeunit = models.CharField(db_column='bloodTransVolumeUnit', max_length=10, blank=True, null=True,
                                             db_comment='输血量计量单位')
     bloodtransreactionflag = models.SmallIntegerField(db_column='bloodTransReactionFlag', blank=True, null=True,
@@ -1680,18 +1688,18 @@ class C0011(models.Model):
     specialmonitoringitemresult = models.CharField(db_column='specialMonitoringItemResult', max_length=200, blank=True,
                                                    null=True,
                                                    db_comment='特殊监测项目结果')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
-    temperature = models.IntegerField(blank=True, null=True, db_comment='体温（℃）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
+    temperature = models.DecimalField('体温(℃)', max_digits=4, decimal_places=1, db_comment='体温(℃)')
     heartrate = models.IntegerField(db_column='heartRate', blank=True, null=True,
-                                    db_comment='心率（次/min）')
+                                    db_comment='心率(次/min)')
     pulserate = models.IntegerField(db_column='pulseRate', blank=True, null=True,
-                                    db_comment='脉率（次/min）')
+                                    db_comment='脉率(次/min)')
     respiratoryrate = models.IntegerField(db_column='respiratoryRate', blank=True, null=True,
-                                          db_comment='呼吸频率（次/min）')
+                                          db_comment='呼吸频率(次/min)')
     systolicpressure = models.IntegerField(db_column='systolicPressure', blank=True, null=True,
-                                           db_comment='收缩压（mmHg）')
+                                           db_comment='收缩压(mmHg)')
     diastolicpressure = models.IntegerField(db_column='diastolicPressure', blank=True, null=True,
-                                            db_comment='舒张压（mmHg）')
+                                            db_comment='舒张压(mmHg)')
     operationcode = models.CharField(db_column='operationCode', max_length=5, blank=True, null=True,
                                      db_comment='手术及操作编码')
     operationstartdatetime = models.CharField(db_column='operationStartDateTime', max_length=15, blank=True, null=True,
@@ -1714,7 +1722,7 @@ class C0011(models.Model):
                                                      blank=True, null=True,
                                                      db_comment='出手术室日期时间')
     bleedingvolume = models.IntegerField(db_column='bleedingVolume', blank=True, null=True,
-                                         db_comment='出血量（mL）')
+                                         db_comment='出血量(mL)')
     destinationcode = models.CharField(db_column='destinationCode', max_length=1, blank=True, null=True,
                                        db_comment='患者去向代码')
     is_finished = models.SmallIntegerField(db_comment='文档完成标识,1:已完成生成,0未生成,默认为0')
@@ -1731,7 +1739,7 @@ class C0011(models.Model):
 
 class C0012(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=20, blank=True, null=True,
                                db_comment='电子申请单编号')
@@ -1739,8 +1747,9 @@ class C0012(models.Model):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -1780,7 +1789,7 @@ class C0012(models.Model):
                              db_comment='医疗机构组织机构代码')
     orgname = models.CharField(db_column='orgName', max_length=10, blank=True, null=True,
                                db_comment='医疗机构组织机构名称')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
     generalexamresult = models.TextField(db_column='generalExamResult', blank=True, null=True,
                                          db_comment='一般状况检查结果')
     abocode = models.CharField(db_column='ABOCode', max_length=1, blank=True, null=True,
@@ -1830,7 +1839,7 @@ class C0012(models.Model):
 
 class C0013(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=20, blank=True, null=True,
                                db_comment='电子申请单编号')
@@ -1838,8 +1847,9 @@ class C0013(models.Model):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -1919,7 +1929,7 @@ class C0013(models.Model):
     bloodbagcode = models.IntegerField(db_column='bloodBagCode', blank=True, null=True,
                                        db_comment='血袋编码')
     bloodtransfusionvolume = models.IntegerField(db_column='bloodTransfusionVolume', blank=True, null=True,
-                                                 db_comment='输血量（mL）')
+                                                 db_comment='输血量(mL)')
     bloodtransfusionvolumeunit = models.CharField(db_column='bloodTransfusionVolumeUnit', max_length=10, blank=True,
                                                   null=True, db_comment='输血量计量单位')
     bloodtransreactionflag = models.SmallIntegerField(db_column='bloodTransReactionFlag', blank=True, null=True,
@@ -1951,7 +1961,8 @@ class C0014(models.Model):
                                     db_comment='产妇身份证件号码')
     parturientname = models.CharField(db_column='parturientName', max_length=50, blank=True, null=True,
                                       db_comment='产妇姓名')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -2020,19 +2031,19 @@ class C0014(models.Model):
     thisspecialpregnancydesc = models.CharField(db_column='thisSpecialPregnancyDesc', max_length=200, blank=True,
                                                 null=True, db_comment='此次妊娠特殊情况')
     pregnancyweight = models.DecimalField(db_column='pregnancyWeight', max_digits=5, decimal_places=2, blank=True,
-                                          null=True, db_comment='孕前体重（kg）')
-    height = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True, db_comment='身高（cm）')
+                                          null=True, db_comment='孕前体重(kg)')
+    height = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True, db_comment='身高(cm)')
     pregnancyheight = models.DecimalField(db_column='pregnancyHeight', max_digits=5, decimal_places=2, blank=True,
-                                          null=True, db_comment='产前体重（kg）')
+                                          null=True, db_comment='产前体重(kg)')
     systolicpressure = models.IntegerField(db_column='systolicPressure', blank=True, null=True,
-                                           db_comment='收缩压（mmHg）')
+                                           db_comment='收缩压(mmHg)')
     diastolicpressure = models.IntegerField(db_column='diastolicPressure', blank=True, null=True,
-                                            db_comment='舒张压（mmHg）')
-    temperature = models.IntegerField(blank=True, null=True, db_comment='体温（℃）')
+                                            db_comment='舒张压(mmHg)')
+    temperature = models.DecimalField('体温(℃)', max_digits=4, decimal_places=1, db_comment='体温(℃)')
     pulserate = models.IntegerField(db_column='pulseRate', blank=True, null=True,
-                                    db_comment='脉率（次/min）')
+                                    db_comment='脉率(次/min)')
     respiratoryrate = models.IntegerField(db_column='respiratoryRate', blank=True, null=True,
-                                          db_comment='呼吸频率（次/min）')
+                                          db_comment='呼吸频率(次/min)')
     pasthistory = models.TextField(db_column='pastHistory', blank=True, null=True,
                                    db_comment='既往史')
     surgicalhistory = models.TextField(db_column='surgicalHistory', blank=True, null=True,
@@ -2040,25 +2051,25 @@ class C0014(models.Model):
     pregnancychildbirthhistory = models.TextField(db_column='pregnancyChildbirthHistory', blank=True, null=True,
                                                   db_comment='既往孕产史')
     fundusheight = models.DecimalField(db_column='fundusHeight', max_digits=4, decimal_places=1, blank=True, null=True,
-                                       db_comment='宫底高度（cm）')
+                                       db_comment='宫底高度(cm)')
     abdominalgirth = models.DecimalField(db_column='abdominalGirth', max_digits=5, decimal_places=1, blank=True,
-                                         null=True, db_comment='腹围（cm）')
+                                         null=True, db_comment='腹围(cm)')
     tireorientationcode = models.CharField(db_column='tireOrientationCode', max_length=2, blank=True, null=True,
                                            db_comment='胎方位代码')
     tireorientationname = models.CharField(db_column='tireOrientationName', max_length=20, blank=True, null=True,
                                            db_comment='胎方位名称')
     fetalheartrate = models.IntegerField(db_column='fetalHeartRate', blank=True, null=True,
-                                         db_comment='胎心率（次/min）')
+                                         db_comment='胎心率(次/min)')
     cephalicdystociadesc = models.CharField(db_column='cephalicDystociaDesc', max_length=200, blank=True, null=True,
                                             db_comment='头位难产情况的评估')
     outtransversediameter = models.DecimalField(db_column='outTransverseDiameter', max_digits=3, decimal_places=1,
                                                 blank=True, null=True,
-                                                db_comment='出口横径（cm）')
+                                                db_comment='出口横径(cm)')
     sacralexternaldiameter = models.IntegerField(db_column='sacralExternalDiameter', blank=True, null=True,
-                                                 db_comment='骶耻外径（cm）')
+                                                 db_comment='骶耻外径(cm)')
     diameterischialtubercle = models.DecimalField(db_column='diameterIschialTubercle', max_digits=4, decimal_places=1,
                                                   blank=True, null=True,
-                                                  db_comment='坐骨结节间径（cm）')
+                                                  db_comment='坐骨结节间径(cm)')
     uterinecontractiondesc = models.CharField(db_column='uterineContractionDesc', max_length=200, blank=True, null=True,
                                               db_comment='宫缩情况')
     cervicalthickness = models.CharField(db_column='cervicalThickness', max_length=30, blank=True, null=True,
@@ -2116,7 +2127,8 @@ class C0015(models.Model):
                                     db_comment='产妇身份证件号码')
     parturientname = models.CharField(db_column='parturientName', max_length=50, blank=True, null=True,
                                       db_comment='产妇姓名')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -2207,24 +2219,24 @@ class C0015(models.Model):
                                                        blank=True, null=True,
                                                        db_comment='前羊水性状')
     watervolumefrontsheep = models.IntegerField(db_column='waterVolumeFrontSheep', blank=True, null=True,
-                                                db_comment='前羊水量（mL）')
+                                                db_comment='前羊水量(mL)')
     uterinecontractionstartdatetime = models.CharField(db_column='uterineContractionStartDateTime', max_length=15,
                                                        blank=True, null=True,
                                                        db_comment='宫缩开始日期时间')
     firstdurationstagelabor = models.IntegerField(db_column='firstDurationStageLabor', blank=True, null=True,
-                                                  db_comment='第1产程时长（min）')
+                                                  db_comment='第1产程时长(min)')
     fullpalaceopeningdatetime = models.CharField(db_column='fullPalaceOpeningDateTime', max_length=15, blank=True,
                                                  null=True, db_comment='宫口开全日期时间')
     seconddurationstagelabor = models.IntegerField(db_column='secondDurationStageLabor', blank=True, null=True,
-                                                   db_comment='第2产程时长（min）')
+                                                   db_comment='第2产程时长(min)')
     fetaldeliverydatetime = models.CharField(db_column='fetalDeliveryDateTime', max_length=15, blank=True, null=True,
                                              db_comment='胎儿娩出日期时间')
     thirddurationstagelabor = models.IntegerField(db_column='thirdDurationStageLabor', blank=True, null=True,
-                                                  db_comment='第3产程时长（min）')
+                                                  db_comment='第3产程时长(min)')
     placentadeliverydatetime = models.CharField(db_column='placentaDeliveryDateTime', max_length=15, blank=True,
                                                 null=True, db_comment='胎盘娩出日期时间')
     totaldurationstagelabor = models.IntegerField(db_column='totalDurationStageLabor', blank=True, null=True,
-                                                  db_comment='总产程时长（min）')
+                                                  db_comment='总产程时长(min)')
     tireorientationcode = models.CharField(db_column='tireOrientationCode', max_length=2, blank=True, null=True,
                                            db_comment='胎方位代码')
     tireorientationname = models.CharField(db_column='tireOrientationName', max_length=20, blank=True, null=True,
@@ -2240,11 +2252,11 @@ class C0015(models.Model):
     amnioticfluidcharacterdesc = models.CharField(db_column='amnioticFluidCharacterDesc', max_length=100, blank=True,
                                                   null=True, db_comment='羊水性状')
     amnioticfluidvolume = models.IntegerField(db_column='amnioticFluidVolume', blank=True, null=True,
-                                              db_comment='羊水量（mL）')
+                                              db_comment='羊水量(mL)')
     umbilicalcordlength = models.IntegerField(db_column='umbilicalCordLength', blank=True, null=True,
-                                              db_comment='脐带长度（cm）')
+                                              db_comment='脐带长度(cm)')
     aroundneck = models.IntegerField(db_column='aroundNeck', blank=True, null=True,
-                                     db_comment='绕颈身（周）')
+                                     db_comment='绕颈身(周)')
     umbilicalcordabnormalityflag = models.SmallIntegerField(db_column='umbilicalCordAbnormalityFlag', blank=True,
                                                             null=True,
                                                             db_comment='脐带异常情况标志')
@@ -2304,25 +2316,25 @@ class C0015(models.Model):
                                                      blank=True, null=True,
                                                      db_comment='产后观察日期时间')
     postpartumexamtime = models.IntegerField(db_column='postpartumExamTime', blank=True, null=True,
-                                             db_comment='产后检查时间（min）')
+                                             db_comment='产后检查时间(min)')
     postpartumsystolicbloodpressure = models.IntegerField(db_column='postpartumSystolicBloodpressure', blank=True,
                                                           null=True,
-                                                          db_comment='产后收缩压（mmHg ）')
+                                                          db_comment='产后收缩压(mmHg )')
     postpartumdiastolicbloodpressure = models.IntegerField(db_column='postpartumDiastolicBloodPressure', blank=True,
                                                            null=True,
-                                                           db_comment='产后舒张压（mmHg ）')
+                                                           db_comment='产后舒张压(mmHg )')
     postpartumpulse = models.IntegerField(db_column='postpartumPulse', blank=True, null=True,
-                                          db_comment='产后脉搏（次/min ）')
+                                          db_comment='产后脉搏(次/min )')
     postpartumheartrate = models.IntegerField(db_column='postpartumHeartRate', blank=True, null=True,
-                                              db_comment='产后心率（次/min ）')
+                                              db_comment='产后心率(次/min )')
     postpartumhemorrhage = models.IntegerField(db_column='postpartumHemorrhage', blank=True, null=True,
-                                               db_comment='产后出血量（mL）')
+                                               db_comment='产后出血量(mL)')
     postpartumuterinecontraction = models.CharField(db_column='postpartumUterineContraction', max_length=200,
                                                     blank=True, null=True,
                                                     db_comment='产后宫缩')
     postpartumfundusheight = models.DecimalField(db_column='postpartumFundusHeight', max_digits=4, decimal_places=1,
                                                  blank=True, null=True,
-                                                 db_comment='产后宫底高度（cm）')
+                                                 db_comment='产后宫底高度(cm)')
     analeaminationdesc = models.CharField(db_column='analEaminationDesc', max_length=100, blank=True, null=True,
                                           db_comment='肛查')
     neonatalsexcode = models.CharField(db_column='neonatalSexCode', max_length=1, blank=True, null=True,
@@ -2330,9 +2342,9 @@ class C0015(models.Model):
     neonatalsexname = models.CharField(db_column='neonatalSexName', max_length=10, blank=True, null=True,
                                        db_comment='新生儿性别名称')
     neonatalbirthweight = models.IntegerField(db_column='neonatalBirthWeight', blank=True, null=True,
-                                              db_comment='新生儿出生体重（g）')
+                                              db_comment='新生儿出生体重(g)')
     birthlengthnewborn = models.DecimalField(db_column='birthLengthNewborn', max_digits=5, decimal_places=1, blank=True,
-                                             null=True, db_comment='新生儿出生身长（cm）')
+                                             null=True, db_comment='新生儿出生身长(cm)')
     tumorsize = models.CharField(db_column='tumorSize', max_length=100, blank=True, null=True,
                                  db_comment='产瘤大小')
     tumorproducingsite = models.CharField(db_column='tumorProducingSite', max_length=100, blank=True, null=True,
@@ -2457,9 +2469,9 @@ class C0016(models.Model):
                                                   null=True,
                                                   db_comment='胎膜完整情况标志')
     umbilicalcordlength = models.CharField(db_column='umbilicalCordLength', max_length=50, blank=True, null=True,
-                                           db_comment='脐带长度（cm）')
+                                           db_comment='脐带长度(cm)')
     aroundneck = models.CharField(db_column='aroundNeck', max_length=50, blank=True, null=True,
-                                  db_comment='绕颈身（周）')
+                                  db_comment='绕颈身(周)')
     prenataldiagnosis = models.TextField(db_column='prenatalDiagnosis', blank=True, null=True,
                                          db_comment='产前诊断')
     surgicalindication = models.TextField(db_column='surgicalIndication', blank=True, null=True,
@@ -2495,7 +2507,7 @@ class C0016(models.Model):
     umbilicalcordwinding = models.TextField(db_column='umbilicalCordWinding', blank=True, null=True,
                                             db_comment='脐带缠绕情况')
     umbilicalcordtrsion = models.CharField(db_column='umbilicalCordTrsion', max_length=50, blank=True, null=True,
-                                           db_comment='脐带扭转（周）')
+                                           db_comment='脐带扭转(周)')
     cordbloodstorageflag = models.CharField(db_column='cordBloodStorageFlag', max_length=50, blank=True, null=True,
                                             db_comment='存脐带血情况标志')
     sutureuterinewalldesc = models.TextField(db_column='sutureUterineWallDesc', blank=True, null=True,
@@ -2526,15 +2538,15 @@ class C0016(models.Model):
                                                         null=True,
                                                         db_comment='手术时产妇情况')
     bleedingvolume = models.CharField(db_column='bleedingVolume', max_length=50, blank=True, null=True,
-                                      db_comment='出血量（mL）')
+                                      db_comment='出血量(mL)')
     transfusioncomponents = models.CharField(db_column='transfusionComponents', max_length=100, blank=True, null=True,
                                              db_comment='输血成分')
     bloodtransvolume = models.CharField(db_column='bloodTransVolume', max_length=50, blank=True, null=True,
-                                        db_comment='输血量（mL）')
+                                        db_comment='输血量(mL)')
     infusionvolume = models.CharField(db_column='infusionVolume', max_length=50, blank=True, null=True,
-                                      db_comment='输液量（mL）')
+                                      db_comment='输液量(mL)')
     oxygensupplytime = models.CharField(db_column='oxygenSupplyTime', max_length=50, blank=True, null=True,
-                                        db_comment='供氧时间（min）')
+                                        db_comment='供氧时间(min)')
     otherdrugs = models.CharField(db_column='otherDrugs', max_length=100, blank=True, null=True,
                                   db_comment='其他用药')
     otherdesc = models.CharField(db_column='otherDesc', max_length=100, blank=True, null=True,
@@ -2542,38 +2554,38 @@ class C0016(models.Model):
     operationenddatetime = models.CharField(db_column='operationEndDateTime', max_length=100, blank=True, null=True,
                                             db_comment='手术结束日期时间')
     wholeoperationtime = models.CharField(db_column='wholeOperationTime', max_length=50, blank=True, null=True,
-                                          db_comment='手术全程时间（min）')
+                                          db_comment='手术全程时间(min)')
     postpartumdiagnosis = models.TextField(db_column='postpartumDiagnosis', blank=True, null=True,
                                            db_comment='产后诊断')
     postpartumobservationdatetime = models.CharField(db_column='postpartumObservationDateTime', max_length=100,
                                                      blank=True, null=True,
                                                      db_comment='产后观察日期时间')
     postpartumexamtime = models.CharField(db_column='postpartumExamTime', max_length=50, blank=True, null=True,
-                                          db_comment='产后检查时间（min）')
+                                          db_comment='产后检查时间(min)')
     postpartumsystolicbloodpressure = models.CharField(db_column='postpartumSystolicBloodpressure', max_length=50,
                                                        blank=True, null=True,
-                                                       db_comment='产后收缩压（mmHg ）')
+                                                       db_comment='产后收缩压(mmHg )')
     postpartumdiastolicbloodpressure = models.CharField(db_column='postpartumDiastolicBloodPressure', max_length=50,
                                                         blank=True, null=True,
-                                                        db_comment='产后舒张压（mmHg ）')
+                                                        db_comment='产后舒张压(mmHg )')
     postpartumpulse = models.CharField(db_column='postpartumPulse', max_length=50, blank=True, null=True,
-                                       db_comment='产后脉搏（次/min ）')
+                                       db_comment='产后脉搏(次/min )')
     postpartumheartrate = models.CharField(db_column='postpartumHeartRate', max_length=50, blank=True, null=True,
-                                           db_comment='产后心率（次/min ）')
+                                           db_comment='产后心率(次/min )')
     postpartumhemorrhage = models.CharField(db_column='postpartumHemorrhage', max_length=50, blank=True, null=True,
-                                            db_comment='产后出血量（mL）')
+                                            db_comment='产后出血量(mL)')
     postpartumuterinecontraction = models.CharField(db_column='postpartumUterineContraction', max_length=200,
                                                     blank=True, null=True,
                                                     db_comment='产后宫缩')
     postpartumfundusheight = models.DecimalField(db_column='postpartumFundusHeight', max_digits=4, decimal_places=1,
                                                  blank=True, null=True,
-                                                 db_comment='产后宫底高度（cm）')
+                                                 db_comment='产后宫底高度(cm)')
     neonatalsexcode = models.CharField(db_column='neonatalSexCode', max_length=100, blank=True, null=True,
                                        db_comment='新生儿性别代码')
     neonatalbirthweight = models.IntegerField(db_column='neonatalBirthWeight', blank=True, null=True,
-                                              db_comment='新生儿出生体重（g）')
+                                              db_comment='新生儿出生体重(g)')
     birthlengthnewborn = models.DecimalField(db_column='birthLengthNewborn', max_digits=5, decimal_places=1, blank=True,
-                                             null=True, db_comment='新生儿出生身长（cm）')
+                                             null=True, db_comment='新生儿出生身长(cm)')
     tumorsize = models.CharField(db_column='tumorSize', max_length=100, blank=True, null=True,
                                  db_comment='产瘤大小')
     tumorproducingsite = models.CharField(db_column='tumorProducingSite', max_length=100, blank=True, null=True,
@@ -2618,114 +2630,75 @@ class C0017(Position, BaseModel):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField(db_column='ageUnit', max_length=8, blank=True, null=True,
-                                db_comment='年龄单位')
-    provider_org_id = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4,  db_comment='年龄单位')
+    provider_org_id = models.CharField(max_length=20, blank=True, null=True,
                                        db_comment='医疗机构组织机构代码(提供患者服务机构)')
-    provider_org_name = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
+    provider_org_name = models.CharField(max_length=10, blank=True, null=True,
                                          db_comment='医疗机构组织机构名称(提供患者服务机构)')
-    create_date = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
-                                   db_comment='文档创作日期')
-    author_id = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
+    gmt_author = models.CharField('文档创作日期', max_length=14, validators=[MinLengthValidator(14)],
+                                  db_comment='文档创作日期')
+    author_id = models.CharField('护士工号(文档创作者)', max_length=50,
                                  db_comment='护士工号(文档创作者)')
-    author_name = models.CharField(db_column='authorName', max_length=50, blank=True, null=True,
-                                   db_comment='护士签名(文档创作者)')
-    gen_doc_org_id = models.CharField(db_column='genDocOrgId', max_length=20, blank=True, null=True,
+    author_name = models.CharField('护士签名(文档创作者)', max_length=50, db_comment='护士签名(文档创作者)')
+    gen_doc_org_id = models.CharField('医疗机构组织机构代码(文档生成机构)', max_length=18,
                                       db_comment='医疗机构组织机构代码(文档生成机构)')
-    gen_doc_org_name = models.CharField(db_column='genDocOrgName', max_length=10, blank=True, null=True,
+    gen_doc_org_name = models.CharField('医疗机构组织机构名称(文档生成机构)', max_length=64,
                                         db_comment='医疗机构组织机构名称(文档生成机构)')
-    signature_datetime = models.CharField(db_column='signatureDateTime', max_length=15, blank=True, null=True,
-                                          db_comment='签名日期时间')
-    nurse_id = models.CharField(db_column='nurseId', max_length=50, blank=True, null=True,
-                                db_comment='护士工号')
-    nurse_name = models.CharField(db_column='nurseName', max_length=50, blank=True, null=True,
-                                  db_comment='护士签名')
+    gmt_signature = models.CharField('签名日期时间', max_length=14, validators=[MinLengthValidator(14)],
+                                     db_comment='签名日期时间')
+    nurse_id = models.CharField('护士工号', max_length=36, db_comment='护士工号')
+    nurse_name = models.CharField('护士签名', max_length=64, db_comment='护士签名')
     disease_diagnosis_code = models.CharField("疾病诊断编码", max_length=32, db_comment='疾病诊断编码')
     disease_diagnosis_name = models.CharField("疾病诊断名称", max_length=64, db_comment='疾病诊断名称')
-    allergic_history = models.TextField(db_column='allergicHistory', blank=True, null=True,
-                                        db_comment='过敏史')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
-    temperature = models.IntegerField(blank=True, null=True, db_comment='体温(℃)')
-    respiratory_rate = models.IntegerField(db_column='respiratoryRate', blank=True, null=True,
-                                           db_comment='呼吸频率(次/min)')
-    pulse_rate = models.IntegerField(db_column='pulseRate', blank=True, null=True,
-                                     db_comment='脉率(次/min)')
-    systolic_pressure = models.IntegerField(db_column='systolicPressure', blank=True, null=True,
-                                            db_comment='收缩压(mmHg)')
-    diastolic_pressure = models.IntegerField(db_column='diastolicPressure', blank=True, null=True,
-                                             db_comment='舒张压(mmHg)')
-    blood_oxy_gen_saturation = models.DecimalField(db_column='bloodOxygenSaturation', max_digits=4, decimal_places=1,
-                                                   blank=True, null=True,
+    allergic_history = models.TextField('过敏史', db_comment='过敏史')
+    weight = models.DecimalField('体重(kg)', max_digits=5, decimal_places=2, db_comment='体重(kg)')
+    temperature = models.DecimalField('体温(℃)', max_digits=4, decimal_places=1, db_comment='体温(℃)')
+    respiratory_rate = models.PositiveSmallIntegerField('呼吸频率(次/min)', db_comment='呼吸频率(次/min)')
+    pulse_rate = models.PositiveSmallIntegerField('脉率(次/min)', db_comment='脉率(次/min)')
+    systolic_pressure = models.PositiveSmallIntegerField('收缩压(mmHg)', db_comment='收缩压(mmHg)')
+    diastolic_pressure = models.PositiveSmallIntegerField('舒张压(mmHg)', db_comment='舒张压(mmHg)')
+    blood_oxy_gen_saturation = models.DecimalField(db_column='血氧饱和度(%%)', max_digits=4, decimal_places=1,
                                                    db_comment='血氧饱和度(%%)')
-    dorsal_artery_foot_flag = models.SmallIntegerField(db_column='dorsalArteryFootFlag', blank=True, null=True,
-                                                       db_comment='足背动脉搏动标志')
-    diet_code = models.CharField(db_column='dietCode', max_length=1, blank=True, null=True,
-                                 db_comment='饮食情况代码')
-    diet_name = models.CharField(db_column='dietName', max_length=10, blank=True, null=True,
-                                 db_comment='饮食情况名称')
-    dietary_guidance_code = models.CharField(db_column='dietaryGuidanceCode', max_length=2, blank=True, null=True,
-                                             db_comment='饮食指导代码')
-    dietary_guidance_name = models.CharField(db_column='dietaryGuidanceName', max_length=10, blank=True, null=True,
-                                             db_comment='饮食指导名称')
-    nursing_grade_code = models.CharField(db_column='nursingGradeCode', max_length=1, blank=True, null=True,
-                                          db_comment='护理等级代码')
-    nursing_grade_name = models.CharField(db_column='nursingGradeName', max_length=10, blank=True, null=True,
-                                          db_comment='护理等级名称')
-    nursing_type_code = models.CharField(db_column='nursingTypeCode', max_length=1, blank=True, null=True,
-                                         db_comment='护理类型代码')
-    nursing_type_name = models.CharField(db_column='nursingTypeName', max_length=10, blank=True, null=True,
-                                         db_comment='护理类型名称')
-    catheter_care_desc = models.TextField(db_column='catheterCareDesc', blank=True, null=True,
-                                          db_comment='导管护理描述')
-    tracheal_care_code = models.CharField(db_column='trachealCareCode', max_length=1, blank=True, null=True,
-                                          db_comment='气管护理代码')
-    tracheal_care_name = models.CharField(db_column='trachealCareName', max_length=1, blank=True, null=True,
-                                          db_comment='气管护理名称')
-    postural_nursing = models.CharField(db_column='posturalNursing', max_length=30, blank=True, null=True,
-                                        db_comment='体位护理')
-    skincare_desc = models.CharField(db_column='skinCareDesc', max_length=50, blank=True, null=True,
-                                     db_comment='皮肤护理')
-    nutrition_nursing = models.CharField(db_column='nutritionNursing', max_length=100, blank=True, null=True,
-                                         db_comment='营养护理')
-    mental_nursing_code = models.CharField(db_column='mentalNursingCode', max_length=1, blank=True, null=True,
-                                           db_comment='心理护理代码')
-    mental_nursing_name = models.CharField(db_column='mentalNursingName', max_length=50, blank=True, null=True,
-                                           db_comment='心理护理名称')
-    safety_nursing_code = models.CharField(db_column='safetyNursingCode', max_length=1, blank=True, null=True,
-                                           db_comment='安全护理代码')
-    safety_nursing_name = models.CharField(db_column='safetyNursingName', max_length=30, blank=True, null=True,
-                                           db_comment='安全护理名称')
-    brief_condition = models.TextField(db_column='briefCondition', blank=True, null=True,
-                                       db_comment='简要病情')
-    nursing_observation_item_name = models.CharField(db_column='nursingObservationItemName', max_length=30, blank=True,
-                                                     null=True,
+    dorsal_artery_foot_flag = models.BooleanField('足背动脉搏动标志', default=False, db_comment='足背动脉搏动标志')
+    diet_code = models.CharField('饮食情况代码', max_length=1, db_comment='饮食情况代码')
+    diet_name = models.CharField('饮食情况名称', max_length=16, db_comment='饮食情况名称')
+    dietary_guidance_code = models.CharField('饮食指导代码', max_length=2, db_comment='饮食指导代码')
+    dietary_guidance_name = models.CharField('饮食指导名称', max_length=10, db_comment='饮食指导名称')
+    nursing_grade_code = models.CharField('护理等级代码', max_length=1, db_comment='护理等级代码')
+    nursing_grade_name = models.CharField('护理等级名称', max_length=16, db_comment='护理等级名称')
+    nursing_type_code = models.CharField('护理类型代码', max_length=1, db_comment='护理类型代码')
+    nursing_type_name = models.CharField('护理类型名称', max_length=10, db_comment='护理类型名称')
+    catheter_care_desc = models.TextField('导管护理描述', db_comment='导管护理描述')
+    tracheal_care_code = models.CharField('气管护理代码', max_length=1, db_comment='气管护理代码')
+    tracheal_care_name = models.CharField('气管护理名称', max_length=1, db_comment='气管护理名称')
+    postural_nursing = models.CharField('体位护理', max_length=64, db_comment='体位护理')
+    skincare_desc = models.CharField('皮肤护理', max_length=64, db_comment='皮肤护理')
+    nutrition_nursing = models.CharField('营养护理', max_length=128, db_comment='营养护理')
+    mental_nursing_code = models.CharField('心理护理代码', max_length=1, db_comment='心理护理代码')
+    mental_nursing_name = models.CharField('心理护理名称', max_length=64, db_comment='心理护理名称')
+    safety_nursing_code = models.CharField('安全护理代码', max_length=1, db_comment='安全护理代码')
+    safety_nursing_name = models.CharField('安全护理名称', max_length=16, db_comment='安全护理名称')
+    brief_condition = models.TextField('简要病情', db_comment='简要病情')
+    nursing_observation_item_name = models.CharField('护理观察项目名称', max_length=64,
                                                      db_comment='护理观察项目名称')
-    nursing_observation_result = models.TextField(db_column='nursingObservationResult', blank=True, null=True,
-                                                  db_comment='护理观察结果')
-    nursing_operation_name = models.CharField(db_column='nursingOperationName', max_length=100, blank=True, null=True,
-                                              db_comment='护理操作名称')
-    nursing_operation_item_cls_name = models.CharField(db_column='nursingOperationItemClsName', max_length=100,
-                                                       blank=True, null=True,
+    nursing_observation_result = models.TextField('护理观察结果', db_comment='护理观察结果')
+    nursing_operation_name = models.CharField('护理操作名称', max_length=128, db_comment='护理操作名称')
+    nursing_operation_item_cls_name = models.CharField('护理操作项目类目名称', max_length=128,
                                                        db_comment='护理操作项目类目名称')
-    nursing_operation_result = models.TextField(db_column='nursingOperationResult', blank=True, null=True,
-                                                db_comment='护理操作结果')
-    send_operation_safety_checklist_flag = models.SmallIntegerField(db_column='sendOperationSafetyChecklistFlag',
-                                                                    blank=True, null=True,
-                                                                    db_comment='发出手术安全核对表标志')
-    rcv_operation_safety_checklist_flag = models.SmallIntegerField(db_column='rcvOperationSafetyChecklistFlag',
-                                                                   blank=True, null=True,
-                                                                   db_comment='收回手术安全核对表标志')
-    send_risk_assessment_flag = models.SmallIntegerField(db_column='sendRiskAssessmentFlag', blank=True, null=True,
-                                                         db_comment='发出手术风险评估表标志')
-    rcv_risk_assessment_flag = models.SmallIntegerField(db_column='rcvRiskAssessmentFlag', blank=True, null=True,
-                                                        db_comment='收回手术风险评估表标志')
-    is_olation_flag = models.SmallIntegerField(db_column='isolationFlag', blank=True, null=True,
-                                               db_comment='隔离标志')
-    is_olation_cls_code = models.CharField(db_column='isolationClsCode', max_length=1, blank=True, null=True,
-                                           db_comment='隔离种类代码')
-    is_olation_cls_name = models.CharField(db_column='isolationClsName', max_length=100, blank=True, null=True,
-                                           db_comment='隔离种类名称')
+    nursing_operation_result = models.TextField('护理操作结果', db_comment='护理操作结果')
+    send_operation_safety_checklist_flag = models.BooleanField('发出手术安全核对表标志', default=False,
+                                                               db_comment='发出手术安全核对表标志')
+    rcv_operation_safety_checklist_flag = models.BooleanField('收回手术安全核对表标志', default=False,
+                                                              db_comment='收回手术安全核对表标志')
+    send_risk_assessment_flag = models.BooleanField('发出手术风险评估表标志', default=False,
+                                                    db_comment='发出手术风险评估表标志')
+    rcv_risk_assessment_flag = models.BooleanField('收回手术风险评估表标志', default=False,
+                                                   db_comment='收回手术风险评估表标志')
+    is_olation_flag = models.BooleanField('隔离标志', default=False, db_comment='隔离标志')
+    is_olation_cls_code = models.CharField(max_length=1, db_comment='隔离种类代码')
+    is_olation_cls_name = models.CharField(max_length=64, db_comment='隔离种类名称')
 
     class Meta:
         verbose_name = '一般护理记录'
@@ -2735,98 +2708,73 @@ class C0017(Position, BaseModel):
 
 class C0018(Position, BaseModel):
     """
-    病重（病危）护理记录
+    病重(病危)护理记录
     """
 
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     age = models.PositiveSmallIntegerField('年龄', db_comment='年龄')
-    age_unit = models.CharField(db_column='ageUnit', max_length=8, blank=True, null=True,
-                                db_comment='年龄单位')
-    provider_org_id = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
-                                       db_comment='医疗机构组织机构代码(提供患者服务机构)')
-    provider_org_name = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
-                                         db_comment='医疗机构组织机构名称(提供患者服务机构)')
-    create_date = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
-                                   db_comment='文档创作日期')
-    author_id = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
-                                 db_comment='护士工号(文档创作者)')
-    author_name = models.CharField(db_column='authorName', max_length=50, blank=True, null=True,
-                                   db_comment='护士签名(文档创作者)')
-    gen_doc_org_id = models.CharField(db_column='genDocOrgId', max_length=20, blank=True, null=True,
+    age_unit = models.CharField('年龄单位', max_length=8, db_comment='年龄单位')
+    gmt_author = models.CharField('文档创作日期', max_length=14, db_comment='文档创作日期',
+                                  validators=[MinLengthValidator(14)])
+    author_id = models.CharField('护士工号(文档创作者)', max_length=36, db_comment='护士工号(文档创作者)')
+    author_name = models.CharField('护士签名(文档创作者)', max_length=64, db_comment='护士签名(文档创作者)')
+    gen_doc_org_id = models.CharField('医疗机构组织机构代码(文档生成机构)', max_length=18,
                                       db_comment='医疗机构组织机构代码(文档生成机构)')
-    gen_doc_org_name = models.CharField(db_column='genDocOrgName', max_length=10, blank=True, null=True,
+    gen_doc_org_name = models.CharField('医疗机构组织机构名称(文档生成机构)', max_length=64,
                                         db_comment='医疗机构组织机构名称(文档生成机构)')
-    gmt_signature = models.CharField(db_column='signatureDateTime', max_length=15, blank=True, null=True,
+    gmt_signature = models.CharField('签名日期时间', max_length=14, validators=[MinLengthValidator(14)],
                                      db_comment='签名日期时间')
-    nurse_id = models.CharField(db_column='nurseId', max_length=50, blank=True, null=True,
-                                db_comment='护士工号')
-    nurse_name = models.CharField(db_column='nurseName', max_length=50, blank=True, null=True,
-                                  db_comment='护士签名')
-    allergic_flag = models.SmallIntegerField(db_column='allergicFlag', blank=True, null=True,
-                                             db_comment='过敏史标志')
-    allergic_history = models.TextField(db_column='allergicHistory', blank=True, null=True, db_comment='过敏史')
+    nurse_id = models.CharField('护士工号', max_length=36, db_comment='护士工号')
+    nurse_name = models.CharField('护士签名', max_length=64, db_comment='护士签名')
+    allergic_flag = models.BooleanField('过敏史标志', default=False, db_comment='过敏史标志')
+    allergic_history = models.TextField('过敏史', blank=True, null=True, db_comment='过敏史')
     disease_diagnosis_code = models.CharField("疾病诊断编码", max_length=32, db_comment='疾病诊断编码')
     disease_diagnosis_name = models.CharField("疾病诊断名称", max_length=64, db_comment='疾病诊断名称')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
-    temperature = models.IntegerField(blank=True, null=True, db_comment='体温（℃）')
-    heartrate = models.IntegerField(db_column='heartRate', blank=True, null=True,
-                                    db_comment='心率（次/min）')
-    respiratory_rate = models.IntegerField(db_column='respiratoryRate', blank=True, null=True,
-                                           db_comment='呼吸频率（次/min）')
-    systolic_pressure = models.IntegerField(db_column='systolicPressure', blank=True, null=True,
-                                            db_comment='收缩压（mmHg）')
-    diastolicp_ressure = models.IntegerField(db_column='diastolicPressure', blank=True, null=True,
-                                             db_comment='舒张压（mmHg）')
-    blood_sugar_value = models.DecimalField(db_column='bloodSugarValue', max_digits=4, decimal_places=1, blank=True,
-                                            null=True, db_comment='血糖检测值（mmol/L）')
-    diet_code = models.CharField(db_column='dietCode', max_length=1, blank=True, null=True,
-                                 db_comment='饮食情况代码')
-    diet_name = models.CharField(db_column='dietName', max_length=10, blank=True, null=True,
-                                 db_comment='饮食情况名称')
-    nursing_grade_code = models.CharField(db_column='nursingGradeCode', max_length=1, blank=True, null=True,
-                                          db_comment='护理等级代码')
-    nursing_grade_name = models.CharField(db_column='nursingGradeName', max_length=10, blank=True, null=True,
-                                          db_comment='护理等级名称')
-    nursing_type_code = models.CharField(db_column='nursingTypeCode', max_length=1, blank=True, null=True,
-                                         db_comment='护理类型代码')
-    nursing_type_name = models.CharField(db_column='nursingTypeName', max_length=10, blank=True, null=True,
-                                         db_comment='护理类型名称')
-    nursing_observation_item_name = models.CharField(db_column='nursingObservationItemName', max_length=30, blank=True,
-                                                     null=True,
-                                                     db_comment='护理观察项目名称')
-    nursing_observation_result = models.TextField(db_column='nursingObservationResult', blank=True, null=True,
-                                                  db_comment='护理观察结果')
-    nursing_operation_name = models.CharField(db_column='nursingOperationName', max_length=100, blank=True, null=True,
-                                              db_comment='护理操作名称')
-    nursing_operation_item_cls_name = models.CharField(db_column='nursingOperationItemClsName', max_length=100,
-                                                       blank=True,
-                                                       null=True,
+    weight = models.DecimalField('体重(kg)', max_digits=5, decimal_places=2, blank=True, null=True,
+                                 db_comment='体重(kg)')
+    temperature = models.DecimalField('体温(℃)', max_digits=4, decimal_places=1, db_comment='体温(℃)')
+    heartrate = models.PositiveSmallIntegerField('心率(次/min)', blank=True, null=True, db_comment='心率(次/min)')
+    respiratory_rate = models.PositiveSmallIntegerField(blank=True, null=True, db_comment='呼吸频率(次/min)')
+    systolic_pressure = models.PositiveSmallIntegerField(blank=True, null=True, db_comment='收缩压(mmHg)')
+    diastolicp_ressure = models.PositiveSmallIntegerField('舒张压(mmHg)', blank=True, null=True,
+                                                          db_comment='舒张压(mmHg)')
+    blood_sugar_value = models.DecimalField(max_digits=4, decimal_places=1, db_comment='血糖检测值(mmol/L)')
+    diet_code = models.CharField('饮食情况代码', max_length=1, db_comment='饮食情况代码')
+    diet_name = models.CharField('饮食情况名称', max_length=10, db_comment='饮食情况名称')
+    nursing_grade_code = models.CharField('护理等级代码', max_length=1, db_comment='护理等级代码')
+    nursing_grade_name = models.CharField('护理等级名称', max_length=10, db_comment='护理等级名称')
+    nursing_type_code = models.CharField('护理类型代码', max_length=1, db_comment='护理类型代码')
+    nursing_type_name = models.CharField('护理类型名称', max_length=10, db_comment='护理类型名称')
+    nursing_observation_item_name = models.CharField('护理观察项目名称', max_length=30, db_comment='护理观察项目名称')
+    nursing_observation_result = models.TextField('护理观察结果', blank=True, null=True, db_comment='护理观察结果')
+    nursing_operation_name = models.CharField('护理操作名称', max_length=100, db_comment='护理操作名称')
+    nursing_operation_item_cls_name = models.CharField('护理操作项目类目名称', max_length=100,
                                                        db_comment='护理操作项目类目名称')
-    nursing_operation_result = models.TextField(db_column='nursingOperationResult', blank=True, null=True,
-                                                db_comment='护理操作结果')
-    ventilator_monitoring_item = models.CharField(db_column='ventilatorMonitoringitem', max_length=20, blank=True,
-                                                  null=True, db_comment='呼吸机监护项目')
+    nursing_operation_result = models.TextField('护理操作结果', blank=True, null=True, db_comment='护理操作结果')
+    ventilator_monitoring_item = models.CharField('呼吸机监护项目', max_length=64, blank=True, null=True,
+                                                  db_comment='呼吸机监护项目')
 
     class Meta:
-        verbose_name = '病重（病危）护理记录'
+        verbose_name = '病重(病危)护理记录'
         verbose_name_plural = verbose_name
-        db_table_comment = '病重（病危）护理记录'
+        db_table_comment = '病重(病危)护理记录'
 
 
 class C0019(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     providerorgid = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
                                      db_comment='医疗机构组织机构代码(提供患者服务机构)')
     providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
@@ -2885,7 +2833,7 @@ class C0019(models.Model):
                              db_comment='病床号')
     prediagnosiscode = models.CharField(db_column='preDiagnosisCode', max_length=11, blank=True, null=True,
                                         db_comment='术前诊断编码')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
     abocode = models.CharField(db_column='ABOCode', max_length=1, blank=True, null=True,
                                db_comment='ABO血型代码')
     aboname = models.CharField(db_column='ABOName', max_length=10, blank=True, null=True,
@@ -3025,62 +2973,52 @@ class C0019(models.Model):
 
 
 class C0020(Position, BaseModel):
+    """
+    生命体征测量记录
+    """
+
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
-    providerorgid = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
-                                     db_comment='医疗机构组织机构代码(提供患者服务机构)')
-    providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
-                                       db_comment='医疗机构组织机构名称(提供患者服务机构)')
-    createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
-                                  db_comment='文档创作日期')
-    authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
-                                db_comment='护士工号(文档创作者)')
-    authorname = models.CharField(db_column='authorName', max_length=50, blank=True, null=True,
-                                  db_comment='护士签名(文档创作者)')
-    gendocorgid = models.CharField(db_column='genDocOrgId', max_length=20, blank=True, null=True,
-                                   db_comment='医疗机构组织机构代码(文档生成机构)')
-    gendocorgname = models.CharField(db_column='genDocOrgName', max_length=10, blank=True, null=True,
-                                     db_comment='医疗机构组织机构名称(文档生成机构)')
-    signaturedatetime = models.CharField(db_column='signatureDateTime', max_length=15, blank=True, null=True,
-                                         db_comment='签名日期时间')
-    nurseid = models.CharField(db_column='nurseId', max_length=50, blank=True, null=True,
-                               db_comment='护士工号')
-    nursename = models.CharField(db_column='nurseName', max_length=50, blank=True, null=True,
-                                 db_comment='护士签名')
-    daysafterdelivery = models.IntegerField(db_column='daysAfterDelivery', blank=True, null=True,
-                                            db_comment='手术或分娩后天数')
-    admissiondatetime = models.CharField(db_column='admissionDateTime', max_length=15, blank=True, null=True,
-                                         db_comment='入院日期时间')
-    offsetdays = models.IntegerField(db_column='offsetDays', blank=True, null=True,
-                                     db_comment='实际住院天数')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
+    provider_org_id = models.CharField('医疗机构组织机构代码(提供患者服务机构)', max_length=18,
+                                       db_comment='医疗机构组织机构代码(提供患者服务机构)')
+    provider_org_name = models.CharField('医疗机构组织机构名称(提供患者服务机构)', max_length=64,
+                                         db_comment='医疗机构组织机构名称(提供患者服务机构)')
+    gmt_author = models.CharField('文档创作日期', max_length=14, db_comment='文档创作日期',
+                                  validators=[MinLengthValidator(14)])
+    author_id = models.CharField('护士工号(文档创作者)', max_length=36,
+                                 db_comment='护士工号(文档创作者)')
+    author_name = models.CharField('护士签名(文档创作者)', max_length=50, db_comment='护士签名(文档创作者)')
+    gen_doc_org_id = models.CharField('医疗机构组织机构代码(文档生成机构)', max_length=18,
+                                      db_comment='医疗机构组织机构代码(文档生成机构)')
+    gen_doc_org_name = models.CharField('医疗机构组织机构名称(文档生成机构)', max_length=64,
+                                        db_comment='医疗机构组织机构名称(文档生成机构)')
+    gmt_signature = models.CharField('签名日期时间', max_length=14, db_comment='签名日期时间',
+                                     validators=[MinLengthValidator(14)])
+    nurse_id = models.CharField('护士工号', max_length=36, db_comment='护士工号')
+    nurse_name = models.CharField('护士签名', max_length=64, db_comment='护士签名')
+    days_after_delivery = models.PositiveSmallIntegerField('手术或分娩后天数', db_comment='手术或分娩后天数')
+    gmt_admission = models.CharField('入院日期时间', max_length=14, db_comment='入院日期时间',
+                                     validators=[MinLengthValidator(14)])
+    offset_days = models.PositiveSmallIntegerField(db_column='offsetDays', db_comment='实际住院天数')
     disease_diagnosis_code = models.CharField("疾病诊断编码", max_length=32, db_comment='疾病诊断编码')
     disease_diagnosis_name = models.CharField("疾病诊断名称", max_length=64, db_comment='疾病诊断名称')
-    respiratoryrate = models.IntegerField(db_column='respiratoryRate', blank=True, null=True,
-                                          db_comment='呼吸频率（次/min）')
-    ventilatoruseflag = models.SmallIntegerField(db_column='ventilatorUseFlag', blank=True, null=True,
-                                                 db_comment='使用呼吸机标志')
-    pulserate = models.IntegerField(db_column='pulseRate', blank=True, null=True,
-                                    db_comment='脉率（次/min）')
-    pacemakerheartrate = models.IntegerField(db_column='pacemakerHeartRate', blank=True, null=True,
-                                             db_comment='起搏器心率（次/min）')
-    temperature = models.IntegerField(blank=True, null=True, db_comment='体温（℃）')
-    systolicpressure = models.IntegerField(db_column='systolicPressure', blank=True, null=True,
-                                           db_comment='收缩压（mmHg）')
-    diastolicpressure = models.IntegerField(db_column='diastolicPressure', blank=True, null=True,
-                                            db_comment='舒张压（mmHg）')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
-    abdominalgirth = models.DecimalField(db_column='abdominalGirth', max_digits=5, decimal_places=1, blank=True,
-                                         null=True, db_comment='腹围（cm）')
-    nursingobservationitemname = models.CharField(db_column='nursingObservationItemName', max_length=30, blank=True,
-                                                  null=True,
-                                                  db_comment='护理观察项目名称')
-    nursingobservationresult = models.TextField(db_column='nursingObservationResult', blank=True, null=True,
-                                                db_comment='护理观察结果')
+    respiratory_rate = models.PositiveSmallIntegerField('呼吸频率(次/min)', db_comment='呼吸频率(次/min)')
+    is_use_ventilator = models.BooleanField('使用呼吸机标志', default=True, db_comment='使用呼吸机标志')
+    pulse_rate = models.PositiveSmallIntegerField('脉率(次/min)', db_comment='脉率(次/min)')
+    pacemaker_heart_rate = models.PositiveSmallIntegerField('起搏器心率(次/min)', db_comment='起搏器心率(次/min)')
+    temperature = models.DecimalField('体温(℃)', max_digits=4, decimal_places=1, db_comment='体温(℃)')
+    systolic_pressure = models.PositiveSmallIntegerField('收缩压(mmHg)', db_comment='收缩压(mmHg)')
+    diastolic_pressure = models.PositiveSmallIntegerField('舒张压(mmHg)', db_comment='舒张压(mmHg)')
+    weight = models.DecimalField('体重(kg)', max_digits=5, decimal_places=2, db_comment='体重(kg)')
+    abdominalgirth = models.DecimalField('腹围(cm)', max_digits=5, decimal_places=1, db_comment='腹围(cm)')
+    nursing_observationitem_name = models.CharField('护理观察项目名称', max_length=64, db_comment='护理观察项目名称')
+    nursing_observation_result = models.TextField('护理观察结果', db_comment='护理观察结果')
 
     class Meta:
         verbose_name = '生命体征测量记录'
@@ -3096,8 +3034,9 @@ class C0021(models.Model):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     providerorgid = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
                                      db_comment='医疗机构组织机构代码(提供患者服务机构)')
     providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
@@ -3136,7 +3075,7 @@ class C0021(models.Model):
                              db_comment='病床号')
     disease_diagnosis_code = models.CharField("疾病诊断编码", max_length=32, db_comment='疾病诊断编码')
     disease_diagnosis_name = models.CharField("疾病诊断名称", max_length=64, db_comment='疾病诊断名称')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
     nursinggradecode = models.CharField(db_column='nursingGradeCode', max_length=1, blank=True, null=True,
                                         db_comment='护理等级代码')
     nursinggradename = models.CharField(db_column='nursingGradeName', max_length=10, blank=True, null=True,
@@ -3205,8 +3144,9 @@ class C0022(models.Model):
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     providerorgid = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
                                      db_comment='医疗机构组织机构代码(提供患者服务机构)')
     providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
@@ -3279,166 +3219,105 @@ class C0023(Position, BaseModel):
     """
     入院评估
     """
+
     health_id = models.CharField("居民健康卡号", max_length=18, db_comment='居民健康卡号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
-    telecom = models.CharField(max_length=16, db_comment='患者电话号码')
-    employerorgtelecom = models.CharField(db_column='employerOrgTelecom', max_length=16,
-                                          db_comment='工作单位电话号码')
-    email = models.CharField(max_length=100, db_comment='患者电子邮件地址')
-    id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
-    name = models.CharField(max_length=30, blank=True, null=True, db_comment='患者姓名')
-    gendercode = models.CharField(db_column='genderCode', max_length=1,
-                                  db_comment='性别代码')
-    gendername = models.CharField(db_column='genderName', max_length=12,
-                                  db_comment='性别名称')
-    ethnicgroupcode = models.CharField(db_column='ethnicGroupCode', max_length=20, blank=True, null=True,
-                                       db_comment='民族代码')
-    ethnicgroupname = models.CharField(db_column='ethnicGroupName', max_length=20, blank=True, null=True,
-                                       db_comment='民族名称')
-    maritalstatuscode = models.CharField(db_column='maritalStatusCode', max_length=2, blank=True, null=True,
-                                         db_comment='婚姻状况代码')
-    maritalstatusname = models.CharField(db_column='maritalStatusName', max_length=20, blank=True, null=True,
-                                         db_comment='婚姻状况名称')
-    nationcode = models.CharField(db_column='nationCode', max_length=3, blank=True, null=True,
-                                  db_comment='国籍代码')
-    nationname = models.CharField(db_column='nationName', max_length=6,
-                                  db_comment='国籍名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    ageunit = models.CharField(db_column='ageUnit', max_length=2, db_comment='年龄单位')
-    educode = models.CharField(db_column='eduCode', max_length=2, blank=True, null=True,
-                               db_comment='学历代码')
-    eduname = models.CharField(db_column='eduName', max_length=16, db_comment='学历名称')
-    occupationcode = models.CharField(db_column='occupationCode', max_length=2,
-                                      db_comment='职业类别代码')
-    occupationname = models.CharField(db_column='occupationName', max_length=12,
-                                      db_comment='职业类别名称')
-    createdate = models.TextField(db_column='createDate', blank=True, null=True,
-                                  db_comment='文档创作日期')
-    authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
-                                db_comment='医生工号(文档创作者)')
-    authorname = models.CharField(db_column='authorName', max_length=16, blank=True, null=True,
-                                  db_comment='医生签名(文档创作者)')
-    representedorgid = models.CharField(db_column='representedOrgId', max_length=18,
-                                        db_comment='医疗机构组织机构代码(保管机构)')
-    representedorgname = models.CharField(db_column='representedOrgName', max_length=20,
-                                          db_comment='医疗机构组织机构名称(保管机构)')
-    signaturedatetime = models.TextField(db_column='signatureDateTime', blank=True, null=True,
-                                         db_comment='签名日期时间')
-    assignednurseid = models.CharField(db_column='assignedNurseId', max_length=8, blank=True, null=True,
-                                       db_comment='责任医生工号')
-    assignednursename = models.CharField(db_column='assignedNurseName', max_length=20, blank=True, null=True,
-                                         db_comment='责任护士签名')
-    rcvnurseid = models.CharField(db_column='rcvNurseId', max_length=8, blank=True, null=True,
-                                  db_comment='接诊护士工号')
-    rcvnursename = models.CharField(db_column='rcvNurseName', max_length=20, blank=True, null=True,
-                                    db_comment='接诊护士签名')
-    associatedentityname = models.CharField(db_column='associatedEntityName', max_length=20, blank=True, null=True,
-                                            db_comment='联系人姓名')
-    associatedentitytelecom = models.CharField(db_column='associatedEntityTelecom', max_length=16, blank=True,
-                                               null=True, db_comment='联系人电话号码')
-    providerorgid = models.CharField(db_column='providerOrgId', max_length=18,
+    telecom = models.CharField('患者电话号码', max_length=16, db_comment='患者电话号码')
+    employer_org_telecom = models.CharField('工作单位电话号码', max_length=16, db_comment='工作单位电话号码')
+    email = models.CharField('患者电子邮件地址', max_length=100, db_comment='患者电子邮件地址')
+    id_no = models.CharField('患者身份证件号码', max_length=18, db_comment='患者身份证件号码')
+    name = models.CharField('患者姓名', max_length=30, db_comment='患者姓名')
+    gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
+    gender_name = models.CharField("性别名称", max_length=10, db_comment='性别名称')
+    ethnic_group_code = models.CharField('民族代码', max_length=2, db_comment='民族代码')
+    ethnic_group_name = models.CharField('民族名称', max_length=20, db_comment='民族名称')
+    marital_status_code = models.CharField('婚姻状况代码', max_length=2, db_comment='婚姻状况代码')
+    marital_status_name = models.CharField('婚姻状况名称', max_length=20, db_comment='婚姻状况名称')
+    nation_code = models.CharField('国籍代码', max_length=3, db_comment='国籍代码')
+    nation_name = models.CharField('国籍名称', max_length=16, db_comment='国籍名称')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
+    edu_code = models.CharField('学历代码', max_length=2, db_comment='学历代码')
+    edu_name = models.CharField('学历名称', max_length=16, db_comment='学历名称')
+    occupation_code = models.CharField('职业类别代码', max_length=2, db_comment='职业类别代码')
+    occupation_name = models.CharField('职业类别名称', max_length=16, db_comment='职业类别名称')
+    gmt_author = models.CharField('文档创作日期时间', max_length=14, db_comment='文档创作日期时间',
+                                  validators=[MinLengthValidator(14)])
+    author_id = models.CharField('医生工号(文档创作者)', max_length=36, db_comment='医生工号(文档创作者)')
+    author_name = models.CharField('医生签名(文档创作者)', max_length=64, db_comment='医生签名(文档创作者)')
+    represented_org_id = models.CharField('医疗机构组织机构代码(保管机构)', max_length=18, db_comment='医疗机构组织机构代码(保管机构)')
+    represented_org_name = models.CharField('医疗机构组织机构名称(保管机构)', max_length=64, db_comment='医疗机构组织机构名称(保管机构)')
+    gmt_signature = models.TextField('签名日期时间', max_length=14, db_comment='签名日期时间',
+                                     validators=[MinLengthValidator(14)])
+    assigned_nurse_id = models.CharField('责任医生工号', max_length=36, db_comment='责任医生工号')
+    assigned_nurse_name = models.CharField('责任护士签名', max_length=64, db_comment='责任护士签名')
+    rcv_nurse_id = models.CharField('接诊护士工号', max_length=36, db_comment='接诊护士工号')
+    rcv_nurse_name = models.CharField('接诊护士签名', max_length=64, db_comment='接诊护士签名')
+    associat_edentity_name = models.CharField('联系人姓名', max_length=64, db_comment='联系人姓名')
+    associated_entity_telecom = models.CharField('联系人电话号码', max_length=16, db_comment='联系人电话号码')
+    providerorgid = models.CharField('医疗机构组织机构代码(提供患者服务机构)', max_length=18,
                                      db_comment='医疗机构组织机构代码(提供患者服务机构)')
-    providerorgname = models.CharField(db_column='providerOrgName', max_length=20,
+    provider_org_name = models.CharField('医疗机构组织机构名称(提供患者服务机构)', max_length=64,
                                        db_comment='医疗机构组织机构名称(提供患者服务机构)')
-    admissionreasons = models.TextField(db_column='admissionReasons',
-                                        db_comment='入院原因')
-    admissionroutecode = models.CharField(db_column='admissionRouteCode', max_length=50, blank=True, null=True,
-                                          db_comment='入院途径代码')
-    admissionroutename = models.CharField(db_column='admissionRouteName', max_length=50, blank=True, null=True,
-                                          db_comment='入院途径名称')
-    wardmodedesc = models.CharField(db_column='wardModeDesc', max_length=6,
-                                    db_comment='入病房方式')
-    mainsymptomsdesc = models.TextField(db_column='mainSymptomsDesc',
-                                        db_comment='主要症状')
-    weight = models.DecimalField(max_digits=10, decimal_places=2, db_comment='体重（kg）')
-    temperature = models.DecimalField(max_digits=10, decimal_places=1, db_comment='体温（℃）')
-    pulserate = models.DecimalField(db_column='pulseRate', max_digits=10, decimal_places=0,
-                                    db_comment='呼吸频率（次/min）')
-    respiratoryrate = models.DecimalField(db_column='respiratoryRate', max_digits=10, decimal_places=0,
-                                          db_comment='脉率（次/min）')
-    systolicpressure = models.TextField(db_column='systolicPressure',
-                                        db_comment='收缩压（mmHg）')
-    diastolicpressure = models.TextField(db_column='diastolicPressure',
-                                         db_comment='舒张压（mmHg）')
-    diseasehistory = models.TextField(db_column='diseaseHistory',
-                                      db_comment='疾病史（含外伤）')
-    infectioushistory = models.CharField(db_column='infectiousHistory', max_length=4,
-                                         db_comment='传染病史')
-    vaccinationhistory = models.CharField(db_column='vaccinationHistory', max_length=2,
-                                          db_comment='预防接种史')
-    surgicalhistory = models.CharField(db_column='surgicalHistory', max_length=4,
-                                       db_comment='手术史')
-    bloodtransfusionhistory = models.CharField(db_column='bloodTransfusionHistory', max_length=4,
-                                               db_comment='输血史')
-    generalhealthflag = models.CharField(db_column='generalHealthFlag', max_length=4,
-                                         db_comment='一般健康状况标志')
-    patientinfectiouflag = models.CharField(db_column='patientInfectiouFlag', max_length=5,
-                                            db_comment='患者传染性标志')
-    allergichistory = models.TextField(db_column='allergicHistory', db_comment='过敏史')
-    familyhistory = models.CharField(db_column='familyHistory', max_length=4,
-                                     db_comment='家族史')
-    apgarscore = models.IntegerField(db_column='apgarScore', db_comment='Apgar评分值')
-    devdegreecode = models.CharField(db_column='devDegreeCode', max_length=1,
-                                     db_comment='发育程度代码')
-    devdegreename = models.CharField(db_column='devDegreeName', max_length=6,
-                                     db_comment='发育程度名称')
-    normalmentalflag = models.CharField(db_column='normalMentalFlag', max_length=4,
-                                        db_comment='精神状态正常标志')
-    sleepdesc = models.TextField(db_column='sleepDesc', blank=True, null=True,
-                                 db_comment='睡眠状况')
-    exceptionalcase = models.CharField(db_column='exceptionalCase', max_length=2,
-                                       db_comment='特殊情况')
-    mentalitystatuscode = models.CharField(db_column='mentalityStatusCode', max_length=1,
-                                           db_comment='心理状态代码')
-    mentalitystatusname = models.CharField(db_column='mentalityStatusName', max_length=4,
-                                           db_comment='心理状态名称')
-    nutritionalstatuscode = models.CharField(db_column='nutritionalStatusCode', max_length=1,
-                                             db_comment='营养状态代码')
-    nutritionalstatusname = models.CharField(db_column='nutritionalStatusName', max_length=4,
-                                             db_comment='营养状态名称')
-    selfcareabilitycode = models.CharField(db_column='selfCareAbilityCode', max_length=1,
-                                           db_comment='自理能力代码')
-    selfcareabilityname = models.CharField(db_column='selfCareAbilityName', max_length=8,
-                                           db_comment='自理能力名称')
-    smokingsignflag = models.CharField(db_column='smokingSignFlag', max_length=5,
-                                       db_comment='吸烟标志')
-    smokingstatuscode = models.CharField(db_column='smokingStatusCode', max_length=1,
-                                         db_comment='吸烟状况代码')
-    smokingstatusname = models.CharField(db_column='smokingStatusName', max_length=8,
-                                         db_comment='吸烟状况名称')
-    dailysmoking = models.TextField(db_column='dailySmoking', db_comment='日吸烟量（支）')
-    daysstopsmoking = models.CharField(db_column='daysStopSmoking', max_length=4,
-                                       db_comment='停止吸烟天数')
-    drinkingsignflag = models.CharField(db_column='drinkingSignFlag', max_length=5,
-                                        db_comment='饮酒标志')
-    drinkfrequencycode = models.CharField(db_column='drinkFrequencyCode', max_length=1,
-                                          db_comment='饮酒频率代码')
-    drinkfrequencyname = models.CharField(db_column='drinkFrequencyName', max_length=4,
-                                          db_comment='饮酒频率名称')
-    dailyalcoholconsumption = models.DecimalField(db_column='dailyAlcoholConsumption', max_digits=10, decimal_places=0,
-                                                  db_comment='日饮酒量（mL）')
-    dietcode = models.CharField(db_column='dietCode', max_length=1,
-                                db_comment='饮食情况代码')
-    dietname = models.CharField(db_column='dietName', max_length=4,
-                                db_comment='饮食情况名称')
-    admissiondiagnosticcode = models.CharField(db_column='admissionDiagnosticCode', max_length=50, blank=True,
-                                               null=True, db_comment='入院诊断编码')
-    admissiondiagnosticname = models.CharField(db_column='admissionDiagnosticName', max_length=100, blank=True,
-                                               null=True, db_comment='入院诊断名称')
-    nursingobservationitemname = models.CharField(db_column='nursingObservationItemName', max_length=2,
-                                                  db_comment='护理观察项目名称')
-    nursingobservationresult = models.CharField(db_column='nursingObservationResult', max_length=2,
-                                                db_comment='护理观察结果')
-    notifyphysicianflag = models.CharField(db_column='notifyPhysicianFlag', max_length=4,
-                                           db_comment='通知医师标志')
-    notifyphysiciandatetime = models.TextField(db_column='notifyPhysicianDateTime', blank=True, null=True,
-                                               db_comment='通知医师日期时间')
-    assessmentdatetime = models.TextField(db_column='assessmentDateTime', blank=True, null=True,
-                                          db_comment='评估日期时间')
-    rcvnursedatetime = models.CharField(db_column='rcvNurseDateTime', max_length=14, blank=True, null=True,
-                                        db_comment='接诊护士签名时间')
-    admissiondatetime = models.CharField(db_column='admissionDateTime', max_length=14, blank=True, null=True,
-                                         db_comment='入院时间')
+    admission_reasons = models.TextField('入院原因', db_comment='入院原因')
+    admission_route_code = models.CharField('入院途径代码', max_length=8, db_comment='入院途径代码')
+    admission_route_name = models.CharField('入院途径名称', max_length=64, db_comment='入院途径名称')
+    ward_mode_desc = models.CharField('入病房方式', max_length=6, db_comment='入病房方式')
+    main_symptoms_desc = models.TextField('主要症状', db_comment='主要症状')
+    weight = models.DecimalField(max_digits=10, decimal_places=2, db_comment='体重(kg)')
+    temperature = models.DecimalField(max_digits=10, decimal_places=1, db_comment='体温(℃)')
+    respiratory_rate = models.PositiveSmallIntegerField('呼吸频率(次/min)', db_comment='呼吸频率(次/min)')
+    pulse_rate = models.PositiveSmallIntegerField('脉率(次/min)', db_comment='脉率(次/min)')
+    systolic_pressure = models.PositiveSmallIntegerField('收缩压(mmHg)', db_comment='收缩压(mmHg)')
+    diastolic_pressure = models.PositiveSmallIntegerField('舒张压(mmHg)', db_comment='舒张压(mmHg)')
+    disease_history = models.TextField('疾病史(含外伤)', db_comment='疾病史(含外伤)')
+    infectious_history = models.CharField('传染病史', max_length=128, db_comment='传染病史')
+    vaccination_history = models.CharField('预防接种史', max_length=64, db_comment='预防接种史')
+    surgical_history = models.CharField('手术史', max_length=128, db_comment='手术史')
+    blood_transfusion_history = models.CharField('输血史', max_length=128, db_comment='输血史')
+    is_general_health = models.BooleanField('一般健康状况标志', default=False, db_comment='一般健康状况标志')
+    is_patient_infectiou = models.BooleanField('患者传染性标志', default=False, db_comment='患者传染性标志')
+    allergic_history = models.TextField(db_column='过敏史', db_comment='过敏史')
+    family_history = models.CharField('家族史', max_length=128, db_comment='家族史')
+    apgar_score = models.PositiveSmallIntegerField('Apgar评分值', db_comment='Apgar评分值')
+    dev_degree_code = models.CharField('发育程度代码', max_length=2, db_comment='发育程度代码')
+    devdegree_name = models.CharField('发育程度名称', max_length=8, db_comment='发育程度名称')
+    is_normalmental = models.BooleanField('精神状态正常标志', default=False, db_comment='精神状态正常标志')
+    sleep_desc = models.TextField('睡眠状况', db_comment='睡眠状况')
+    exceptional_case = models.CharField('特殊情况', max_length=128, db_comment='特殊情况')
+    mentality_status_code = models.CharField('心理状态代码', max_length=2, db_comment='心理状态代码')
+    mentality_status_name = models.CharField('心理状态名称', max_length=8, db_comment='心理状态名称')
+    nutritional_statu_scode = models.CharField('营养状态代码', max_length=2, db_comment='营养状态代码')
+    nutritional_status_name = models.CharField('营养状态名称', max_length=8, db_comment='营养状态名称')
+    self_care_ability_code = models.CharField('自理能力代码', max_length=2, db_comment='自理能力代码')
+    self_care_ability_name = models.CharField('自理能力名称', max_length=8, db_comment='自理能力名称')
+    is_smoking = models.BooleanField('吸烟标志', default=False, db_comment='吸烟标志')
+    smoking_status_code = models.CharField('吸烟状况代码', max_length=2, db_comment='吸烟状况代码')
+    smoking_status_name = models.CharField('吸烟状况名称', max_length=8, db_comment='吸烟状况名称')
+    daily_smoking = models.PositiveSmallIntegerField('日吸烟量(支)', db_comment='日吸烟量(支)')
+    days_stop_smoking = models.PositiveSmallIntegerField('停止吸烟天数', db_comment='停止吸烟天数')
+    is_drinking = models.BooleanField('饮酒标志', default=False, db_comment='饮酒标志')
+    drink_frequency_code = models.CharField('饮酒频率代码', max_length=2, db_comment='饮酒频率代码')
+    drink_frequency_name = models.CharField('饮酒频率名称', max_length=8, db_comment='饮酒频率名称')
+    daily_alcohol_consumption = models.DecimalField('日饮酒量(mL', max_digits=10, decimal_places=0,
+                                                  db_comment='日饮酒量(mL)')
+    diet_code = models.CharField('饮食情况代码', max_length=1, db_comment='饮食情况代码')
+    diet_name = models.CharField('饮食情况名称', max_length=16, db_comment='饮食情况名称')
+    admission_diagnostic_code = models.CharField('入院诊断编码', max_length=32, db_comment='入院诊断编码')
+    admission_diagnostic_name = models.CharField('入院诊断名称', max_length=64, db_comment='入院诊断名称')
+    nursing_observation_item_name = models.CharField('护理观察项目名称', max_length=64,
+                                                     db_comment='护理观察项目名称')
+    nursing_observation_result = models.TextField('护理观察结果', db_comment='护理观察结果')
+    is_notify_physician = models.BooleanField('通知医师标志', default=False, db_comment='通知医师标志')
+    gmt_notify_physician = models.CharField('通知医师日期时间', max_length=14, db_comment='通知医师日期时间',
+                                            validators=[MinLengthValidator(14)])
+    gmt_assessment = models.CharField('评估日期时间',  max_length=14, db_comment='评估日期时间',
+                                      validators=[MinLengthValidator(14)])
+    gmt_rcv_nurse = models.CharField('接诊护士签名时间', max_length=14, db_comment='接诊护士签名时间',
+                                     validators=[MinLengthValidator(14)])
+    gmt_admission = models.CharField('入院时间', max_length=14, db_comment='入院时间',
+                                     validators=[MinLengthValidator(14)])
 
     class Meta:
         verbose_name = '入院评估'
@@ -3446,206 +3325,125 @@ class C0023(Position, BaseModel):
         db_table_comment = '入院评估'
 
 
-class C0024(models.Model):
-    tid = models.BigIntegerField(primary_key=True, db_comment='表主键')
-    doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
+class C0024(Position, BaseModel):
+    """
+    护理计划
+    """
+
+    health_id = models.CharField("居民健康卡号", max_length=18, db_comment='居民健康卡号')
+    inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
+    id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
+    name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
+    gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
+    gender_name = models.CharField("性别名称", max_length=10, db_comment='性别名称')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
+    gmt_author = models.CharField('文档创作日期', max_length=14, db_comment='文档创作日期',
+                                  validators=[MinLengthValidator(14)])
+    author_id = models.CharField('医生工号(文档创作者)', max_length=36, db_comment='医生工号(文档创作者)')
+    author_name = models.CharField('医生签名(文档创作者)', max_length=50, db_comment='医生签名(文档创作者)')
+    represented_org_id = models.CharField('医疗机构组织机构代码(保管机构)', max_length=18,
+                                          db_comment='医疗机构组织机构代码(保管机构)')
+    represented_org_name = models.CharField('医疗机构组织机构名称(保管机构)', max_length=64,
+                                            db_comment='医疗机构组织机构名称(保管机构)')
+    gmt_signature = models.CharField('签名日期时间', max_length=14, db_comment='签名日期时间',
+                                     validators=[MinLengthValidator(14)])
+    assigned_nurse_id = models.CharField('护士工号', max_length=36, db_comment='护士工号')
+    assigned_nurse_name = models.CharField('护士签名', max_length=64, db_comment='护士签名')
+    disease_diagnosis_code = models.CharField('疾病诊断编码', max_length=16, db_comment='疾病诊断编码')
+    disease_diagnosis_name = models.CharField('疾病诊断名称', max_length=64, db_comment='疾病诊断名称')
+    nursing_grade_code = models.CharField('护理等级代码', max_length=1, db_comment='护理等级代码')
+    nursing_grade_name = models.CharField(max_length=16, db_comment='护理等级名称')
+    nursing_type_code = models.CharField('护理类型代码', max_length=1, db_comment='护理类型代码')
+    nursing_type_name = models.CharField('护理类型名称', max_length=50, db_comment='护理类型名称')
+    nursie_problems = models.TextField('护理问题', blank=True, null=True, db_comment='护理问题')
+    nursing_operation_itemcls_name = models.CharField('护理操作项目类目名称', max_length=100, blank=True, null=True,
+                                                      db_comment='护理操作项目类目名称')
+    nursing_operation_name = models.CharField('护理操作名称', max_length=100, db_comment='护理操作名称')
+    nursing_operation_result = models.TextField('护理操作结果', blank=True, null=True, db_comment='护理操作结果')
+    catheter_care_desc = models.TextField('导管护理描述', blank=True, null=True, db_comment='导管护理描述')
+    postural_nursing = models.CharField('体位护理', max_length=64, blank=True, null=True, db_comment='体位护理')
+    skin_care_desc = models.CharField('皮肤护理', max_length=64, blank=True, null=True, db_comment='皮肤护理')
+    tracheal_care_code = models.CharField('气管护理代码', max_length=1, db_comment='气管护理代码')
+    tracheal_care_name = models.CharField('气管护理名称', max_length=64, db_comment='气管护理名称')
+    safety_nursing_code = models.CharField('安全护理代码', max_length=1, db_comment='安全护理代码')
+    safety_nursing_name = models.CharField('安全护理名称', max_length=322, db_comment='安全护理名称')
+    dietary_guidance_code = models.CharField('饮食指导代码', max_length=2, db_comment='饮食指导代码')
+    dietary_guidance_name = models.CharField('饮食指导名称', max_length=10, db_comment='饮食指导名称')
+
+    class Meta:
+        verbose_name = '护理计划'
+        verbose_name_plural = verbose_name
+        db_table_comment = '护理计划'
+
+
+class C0025(Position, BaseModel):
+    """"
+    出院评估与指导
+    """
+
     health_id = models.CharField("居民健康卡号", max_length=18, db_comment='居民健康卡号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
-    deptid = models.CharField(db_column='deptId', max_length=50, blank=True, null=True,
-                              db_comment='科室代码')
-    deptname = models.CharField(db_column='deptName', max_length=50, blank=True, null=True,
-                                db_comment='科室名称')
-    wardcode = models.CharField(db_column='wardCode', max_length=50, blank=True, null=True,
-                                db_comment='病区代码')
-    wardname = models.CharField(db_column='wardName', max_length=50, blank=True, null=True,
-                                db_comment='病区名称')
-    wardid = models.CharField(db_column='wardId', max_length=10, blank=True, null=True,
-                              db_comment='病房号id')
-    wardno = models.CharField(db_column='wardNo', max_length=10, blank=True, null=True,
-                              db_comment='病房号')
-    bedid = models.CharField(db_column='bedId', max_length=10, blank=True, null=True,
-                             db_comment='病床号Id')
-    bedno = models.CharField(db_column='bedNo', max_length=10, blank=True, null=True,
-                             db_comment='病床号')
-    providerorgid = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
-                                     db_comment='医疗机构组织机构代码(提供患者服务机构)')
-    providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
-                                       db_comment='医疗机构组织机构名称(提供患者服务机构)')
-    createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
-                                  db_comment='文档创作日期')
-    authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
-                                db_comment='医生工号(文档创作者)')
-    authorname = models.CharField(db_column='authorName', max_length=50, blank=True, null=True,
-                                  db_comment='医生签名(文档创作者)')
-    representedorgid = models.CharField(db_column='representedOrgId', max_length=20, blank=True, null=True,
-                                        db_comment='医疗机构组织机构代码(保管机构)')
-    representedorgname = models.CharField(db_column='representedOrgName', max_length=10, blank=True, null=True,
-                                          db_comment='医疗机构组织机构名称(保管机构)')
-    signaturedatetime = models.CharField(db_column='signatureDateTime', max_length=15, blank=True, null=True,
-                                         db_comment='签名日期时间')
-    assignednurseid = models.CharField(db_column='assignedNurseId', max_length=50, blank=True, null=True,
-                                       db_comment='护士工号')
-    assignednursename = models.CharField(db_column='assignedNurseName', max_length=50, blank=True, null=True,
-                                         db_comment='护士签名')
-    diseasediagnosiscode = models.CharField(db_column='diseaseDiagnosisCode', max_length=10, blank=True, null=True,
-                                            db_comment='疾病诊断编码')
-    diseasediagnosisname = models.CharField(db_column='diseaseDiagnosisName', max_length=50, blank=True, null=True,
-                                            db_comment='疾病诊断名称')
-    nursinggradecode = models.CharField(db_column='nursingGradeCode', max_length=1, blank=True, null=True,
-                                        db_comment='护理等级代码')
-    nursinggradename = models.CharField(db_column='nursingGradeName', max_length=50, blank=True, null=True,
-                                        db_comment='护理等级名称')
-    nursingtypecode = models.CharField(db_column='nursingTypeCode', max_length=1, blank=True, null=True,
-                                       db_comment='护理类型代码')
-    nursingtypename = models.CharField(db_column='nursingTypeName', max_length=50, blank=True, null=True,
-                                       db_comment='护理类型名称')
-    nursieproblems = models.TextField(db_column='nursieProblems', blank=True, null=True,
-                                      db_comment='护理问题')
-    nursingoperationitemclsname = models.CharField(db_column='nursingOperationItemClsName', max_length=100, blank=True,
-                                                   null=True,
-                                                   db_comment='护理操作项目类目名称')
-    nursingoperationname = models.CharField(db_column='nursingOperationName', max_length=100, blank=True, null=True,
-                                            db_comment='护理操作名称')
-    nursingoperationresult = models.TextField(db_column='nursingOperationResult', blank=True, null=True,
-                                              db_comment='护理操作结果')
-    cathetercaredesc = models.TextField(db_column='catheterCareDesc', blank=True, null=True,
-                                        db_comment='导管护理描述')
-    posturalnursing = models.CharField(db_column='posturalNursing', max_length=30, blank=True, null=True,
-                                       db_comment='体位护理')
-    skincaredesc = models.CharField(db_column='skinCareDesc', max_length=50, blank=True, null=True,
-                                    db_comment='皮肤护理')
-    trachealcarecode = models.CharField(db_column='trachealCareCode', max_length=1, blank=True, null=True,
-                                        db_comment='气管护理代码')
-    trachealcarename = models.CharField(db_column='trachealCareName', max_length=50, blank=True, null=True,
-                                        db_comment='气管护理名称')
-    safetynursingcode = models.CharField(db_column='safetyNursingCode', max_length=1, blank=True, null=True,
-                                         db_comment='安全护理代码')
-    safetynursingname = models.CharField(db_column='safetyNursingName', max_length=30, blank=True, null=True,
-                                         db_comment='安全护理名称')
-    dietaryguidancecode = models.CharField(db_column='dietaryGuidanceCode', max_length=2, blank=True, null=True,
-                                           db_comment='饮食指导代码')
-    dietaryguidancename = models.CharField(db_column='dietaryGuidanceName', max_length=10, blank=True, null=True,
-                                           db_comment='饮食指导名称')
-    is_finished = models.SmallIntegerField(db_comment='文档完成标识,1:已完成生成,0未生成,默认为0')
-    create_datetime = models.DateTimeField(db_comment='记录创建日期时间')
-    finished_datetime = models.DateTimeField(blank=True, null=True, db_comment='文档生成日期时间')
-    adm_no = models.CharField(max_length=50, blank=True, null=True, db_comment='就诊流水号')
-    gmt_created = models.DateTimeField(db_comment='数据记录时间')
-    data_src = models.CharField(max_length=2, db_comment='数据来源,请参照主数据标准字典:医疗卫生机构')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
+    gmt_author = models.CharField('填表日期时间', max_length=14, validators=[MinLengthValidator(14)],
+                                  db_comment='填表日期时间')
+    author_id = models.CharField('医生工号(文档创作者)', max_length=36, db_comment='医生工号(文档创作者)')
+    author_name = models.CharField('authorName', max_length=64, db_comment='医生签名(文档创作者)')
+    represented_org_id = models.CharField('医疗机构组织机构代码', max_length=18,
+                                          db_comment='医疗机构组织机构代码(保管机构)')
+    represented_org_name = models.CharField('医疗机构组织机构名称(保管机构)', max_length=10,
+                                            db_comment='医疗机构组织机构名称(保管机构)')
+    gmt_signature = models.CharField('签名日期时间', max_length=14, db_comment='签名日期时间',
+                                     validators=[MinLengthValidator(14)])
+    rcv_nurse_id = models.CharField('接诊护士工号', max_length=50, db_comment='接诊护士工号')
+    rcv_nurse_name = models.CharField('接诊护士签名', max_length=50, db_comment='接诊护士签名')
+    discharge_diag_code = models.CharField('出院诊断编码', max_length=16, db_comment='出院诊断编码')
+    discharge_diag_name = models.CharField('出院诊断名称', max_length=32, db_comment='出院诊断名称')
+    gmt_discharge = models.CharField('出院日期时间', max_length=14, db_comment='出院日期时间',
+                                     validators=[MinLengthValidator(14)])
+    discharge_desc = models.TextField('出院情况', blank=True, null=True, db_comment='出院情况')
+    leaving_way_code = models.CharField('离院方式代码', max_length=1, db_comment='离院方式代码')
+    leaving_way_name = models.CharField('离院方式名称', max_length=16, db_comment='离院方式名称')
+    dietary_guidance_code = models.CharField('饮食指导代码', max_length=2, db_comment='饮食指导代码')
+    dietary_guidance_name = models.CharField('饮食指导名称', max_length=10, db_comment='饮食指导名称')
+    life_style_guidance = models.CharField('生活方式指导', max_length=64, db_comment='生活方式指导')
+    edu_contents = models.CharField('宣教内容', max_length=255, blank=True, null=True, db_comment='宣教内容')
+    followup_guidance = models.CharField('复诊指导', max_length=128, blank=True, null=True,
+                                         db_comment='复诊指导')
+    medication_guidance = models.CharField('用药指导', max_length=100, blank=True, null=True,
+                                           db_comment='用药指导')
+    self_careability_code = models.CharField('自理能力代码', max_length=1, db_comment='自理能力代码')
+    self_careability_name = models.CharField('自理能力名称', max_length=64, db_comment='自理能力名称')
+    diet_code = models.CharField('饮食情况代码', max_length=1, db_comment='饮食情况代码')
+    diet_name = models.CharField('饮食情况名称', max_length=16, db_comment='饮食情况名称')
 
     class Meta:
-        db_table_comment = ''
-
-
-class C0025(models.Model):
-    tid = models.BigIntegerField(primary_key=True, db_comment='表主键')
-    doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    health_id = models.CharField("居民健康卡号", max_length=18, db_comment='居民健康卡号')
-    inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
-    name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
-    gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
-    gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
-    deptid = models.CharField(db_column='deptId', max_length=50, blank=True, null=True,
-                              db_comment='科室代码')
-    deptname = models.CharField(db_column='deptName', max_length=50, blank=True, null=True,
-                                db_comment='科室名称')
-    wardcode = models.CharField(db_column='wardCode', max_length=50, blank=True, null=True,
-                                db_comment='病区代码')
-    wardname = models.CharField(db_column='wardName', max_length=50, blank=True, null=True,
-                                db_comment='病区名称')
-    wardid = models.CharField(db_column='wardId', max_length=10, blank=True, null=True,
-                              db_comment='病房号id')
-    wardno = models.CharField(db_column='wardNo', max_length=10, blank=True, null=True,
-                              db_comment='病房号')
-    bedid = models.CharField(db_column='bedId', max_length=10, blank=True, null=True,
-                             db_comment='病床号Id')
-    bedno = models.CharField(db_column='bedNo', max_length=10, blank=True, null=True,
-                             db_comment='病床号')
-    providerorgid = models.CharField(db_column='providerOrgId', max_length=20, blank=True, null=True,
-                                     db_comment='医疗机构组织机构代码(提供患者服务机构)')
-    providerorgname = models.CharField(db_column='providerOrgName', max_length=10, blank=True, null=True,
-                                       db_comment='医疗机构组织机构名称(提供患者服务机构)')
-    createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
-                                  db_comment='填表日期')
-    authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
-                                db_comment='医生工号(文档创作者)')
-    authorname = models.CharField(db_column='authorName', max_length=50, blank=True, null=True,
-                                  db_comment='医生签名(文档创作者)')
-    representedorgid = models.CharField(db_column='representedOrgId', max_length=20, blank=True, null=True,
-                                        db_comment='医疗机构组织机构代码(保管机构)')
-    representedorgname = models.CharField(db_column='representedOrgName', max_length=10, blank=True, null=True,
-                                          db_comment='医疗机构组织机构名称(保管机构)')
-    signaturedatetime = models.CharField(db_column='signatureDateTime', max_length=15, blank=True, null=True,
-                                         db_comment='签名日期时间')
-    rcvnursename = models.CharField(db_column='rcvNurseName', max_length=50, blank=True, null=True,
-                                    db_comment='接诊护士工号')
-    associatedentityname = models.CharField(db_column='associatedEntityName', max_length=50, blank=True, null=True,
-                                            db_comment='接诊护士签名')
-    dischargediagcode = models.CharField(db_column='dischargeDiagCode', max_length=11, blank=True, null=True,
-                                         db_comment='出院诊断编码')
-    dischargediagname = models.CharField(db_column='dischargeDiagName', max_length=11, blank=True, null=True,
-                                         db_comment='出院诊断名称')
-    dischargedatetime = models.CharField(db_column='dischargeDateTime', max_length=15, blank=True, null=True,
-                                         db_comment='出院日期时间')
-    dischargedesc = models.TextField(db_column='dischargeDesc', blank=True, null=True,
-                                     db_comment='出院情况')
-    leavingwaycode = models.CharField(db_column='leavingWayCode', max_length=1, blank=True, null=True,
-                                      db_comment='离院方式代码')
-    leavingwayname = models.CharField(db_column='leavingWayName', max_length=1, blank=True, null=True,
-                                      db_comment='离院方式名称')
-    dietaryguidancecode = models.CharField(db_column='dietaryGuidanceCode', max_length=2, blank=True, null=True,
-                                           db_comment='饮食指导代码')
-    dietaryguidancename = models.CharField(db_column='dietaryGuidanceName', max_length=10, blank=True, null=True,
-                                           db_comment='饮食指导名称')
-    lifestyleguidance = models.CharField(db_column='lifestyleGuidance', max_length=50, blank=True, null=True,
-                                         db_comment='生活方式指导')
-    educontents = models.CharField(db_column='eduContents', max_length=100, blank=True, null=True,
-                                   db_comment='宣教内容')
-    followupguidance = models.CharField(db_column='followUpGuidance', max_length=100, blank=True, null=True,
-                                        db_comment='复诊指导')
-    medicationguidance = models.CharField(db_column='medicationGuidance', max_length=100, blank=True, null=True,
-                                          db_comment='用药指导')
-    selfcareabilitycode = models.CharField(db_column='selfCareAbilityCode', max_length=1, blank=True, null=True,
-                                           db_comment='自理能力代码')
-    selfcareabilityname = models.CharField(db_column='selfCareAbilityName', max_length=10, blank=True, null=True,
-                                           db_comment='自理能力名称')
-    dietcode = models.CharField(db_column='dietCode', max_length=1, blank=True, null=True,
-                                db_comment='饮食情况代码')
-    dietname = models.CharField(db_column='dietName', max_length=10, blank=True, null=True,
-                                db_comment='饮食情况名称')
-    is_finished = models.SmallIntegerField(db_comment='文档完成标识,1:已完成生成,0未生成,默认为0')
-    create_datetime = models.DateTimeField(db_comment='记录创建日期时间')
-    finished_datetime = models.DateTimeField(blank=True, null=True, db_comment='文档生成日期时间')
-    adm_no = models.CharField(max_length=50, blank=True, null=True, db_comment='就诊流水号')
-    gmt_created = models.DateTimeField(db_comment='记录时间')
-    data_src = models.CharField(max_length=2, db_comment='数据来源,请参照主数据标准字典:医疗卫生机构')
-
-    class Meta:
-        db_table_comment = ''
+        verbose_name = '出院评估与指导'
+        verbose_name_plural = verbose_name
+        db_table_comment = '出院评估与指导'
 
 
 class C0026(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=50, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=50, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
     noinformedconsent = models.CharField(db_column='noInformedConsent', max_length=50, blank=True, null=True,
                                          db_comment='知情同意书编号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=50, blank=True, null=True,
@@ -3754,7 +3552,7 @@ class C0026(models.Model):
 
 class C0027(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     noinformedconsent = models.CharField(db_column='noInformedConsent', max_length=20, blank=True, null=True,
                                          db_comment='知情同意书编号')
@@ -3764,8 +3562,9 @@ class C0027(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -3863,7 +3662,7 @@ class C0027(models.Model):
 
 class C0028(models.Model):
     doc_id = models.CharField(max_length=100, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     noinformedconsent = models.CharField(db_column='noInformedConsent', max_length=100, blank=True, null=True,
                                          db_comment='知情同意书编号')
@@ -3875,7 +3674,8 @@ class C0028(models.Model):
                                   db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=100, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=100, blank=True, null=True,
                                db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
@@ -3970,7 +3770,7 @@ class C0028(models.Model):
 
 class C0029(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     noinformedconsent = models.CharField(db_column='noInformedConsent', max_length=20, blank=True, null=True,
                                          db_comment='知情同意书编号')
@@ -3980,8 +3780,9 @@ class C0029(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -4063,7 +3864,7 @@ class C0029(models.Model):
 
 class C0030(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     noinformedconsent = models.CharField(db_column='noInformedConsent', max_length=20, blank=True, null=True,
                                          db_comment='知情同意书编号')
@@ -4073,8 +3874,9 @@ class C0030(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
                                   db_comment='文档创作日期')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -4135,9 +3937,9 @@ class C0030(models.Model):
                                           db_comment='病情概括及主要抢救措施')
     criticalnotificationdatetime = models.CharField(db_column='criticalNotificationDateTime', max_length=15, blank=True,
                                                     null=True,
-                                                    db_comment='病危（重）通知日期时间')
+                                                    db_comment='病危(重)通知日期时间')
     criticalnotificationdesc = models.TextField(db_column='criticalNotificationDesc', blank=True, null=True,
-                                                db_comment='病危（重）通知内容')
+                                                db_comment='病危(重)通知内容')
     is_finished = models.SmallIntegerField(db_comment='文档完成标识,1:已完成生成,0未生成,默认为0')
     create_datetime = models.DateTimeField(blank=True, null=True, db_comment='记录创建日期时间')
     finished_datetime = models.DateTimeField(blank=True, null=True, db_comment='文档生成日期时间')
@@ -4152,7 +3954,7 @@ class C0030(models.Model):
 
 class C0031(models.Model):
     doc_id = models.CharField(max_length=100, blank=True, null=True, db_comment='文档流水号')
-    outpatient_id = models.CharField("门（急）诊号", max_length=18, blank=True, null=True, db_comment='门（急）诊号')
+    outpatient_id = models.CharField("门(急)诊号", max_length=18, blank=True, null=True, db_comment='门(急)诊号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
     noinformedconsent = models.CharField(db_column='noInformedConsent', max_length=100, blank=True, null=True,
                                          db_comment='知情同意书编号')
@@ -4164,7 +3966,8 @@ class C0031(models.Model):
                                   db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=100, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=100, blank=True, null=True,
                                db_comment='年龄单位')
     createdate = models.CharField(db_column='createDate', max_length=8, blank=True, null=True,
@@ -4251,15 +4054,15 @@ class C0032(models.Model):
     nomedicalrecord = models.CharField(db_column='NoMedicalRecord', max_length=100, blank=True, null=True,
                                        db_comment='病案号')
     statecurrent = models.CharField(db_column='stateCurrent', max_length=200, blank=True, null=True,
-                                    db_comment='现住址-省（自治区、直辖市）')
+                                    db_comment='现住址-省(自治区、直辖市)')
     citycurrent = models.CharField(db_column='cityCurrent', max_length=200, blank=True, null=True,
-                                   db_comment='现住址-市（地区、州）')
+                                   db_comment='现住址-市(地区、州)')
     countycurrent = models.CharField(db_column='countyCurrent', max_length=200, blank=True, null=True,
-                                     db_comment='现住址-县（区）')
+                                     db_comment='现住址-县(区)')
     townshipcurrent = models.CharField(db_column='townshipCurrent', max_length=200, blank=True, null=True,
-                                       db_comment='现住址-乡（镇、街道办事处）')
+                                       db_comment='现住址-乡(镇、街道办事处)')
     streetnamecurrent = models.CharField(db_column='streetNameCurrent', max_length=200, blank=True, null=True,
-                                         db_comment='现住址-村（街、路、弄等）')
+                                         db_comment='现住址-村(街、路、弄等)')
     housenumbercurrent = models.CharField(db_column='houseNumberCurrent', max_length=200, blank=True, null=True,
                                           db_comment='现住址-门牌号码')
     postalcodecurrent = models.CharField(db_column='postalCodeCurrent', max_length=100, blank=True, null=True,
@@ -4282,18 +4085,19 @@ class C0032(models.Model):
     ethnicgroupname = models.CharField(db_column='ethnicGroupName', max_length=100, blank=True, null=True,
                                        db_comment='民族名称')
     statebirth = models.CharField(db_column='stateBirth', max_length=200, blank=True, null=True,
-                                  db_comment='出生地-省（自治区、直辖市）')
+                                  db_comment='出生地-省(自治区、直辖市)')
     citybirth = models.CharField(db_column='cityBirth', max_length=200, blank=True, null=True,
-                                 db_comment='出生地-市（地区、州）')
+                                 db_comment='出生地-市(地区、州)')
     countybirth = models.CharField(db_column='countyBirth', max_length=200, blank=True, null=True,
-                                   db_comment='出生地-县（区）')
+                                   db_comment='出生地-县(区)')
     postalcodebirth = models.CharField(db_column='postalCodeBirth', max_length=100, blank=True, null=True,
                                        db_comment='出生地-邮政编码')
     nationcode = models.CharField(db_column='nationCode', max_length=100, blank=True, null=True,
                                   db_comment='国籍代码')
     nationname = models.CharField(db_column='nationName', max_length=100, blank=True, null=True,
                                   db_comment='国籍名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=100, blank=True, null=True,
                                db_comment='年龄单位')
     employerorgname = models.CharField(db_column='employerOrgName', max_length=200, blank=True, null=True,
@@ -4301,37 +4105,37 @@ class C0032(models.Model):
     employerorgtel = models.CharField(db_column='employerOrgTel', max_length=100, blank=True, null=True,
                                       db_comment='工作单位电话号码')
     stateemporg = models.CharField(db_column='stateEmpOrg', max_length=200, blank=True, null=True,
-                                   db_comment='工作单位地址-省（自治区、直辖市）')
+                                   db_comment='工作单位地址-省(自治区、直辖市)')
     cityemporg = models.CharField(db_column='cityEmpOrg', max_length=200, blank=True, null=True,
-                                  db_comment='工作单位地址-市（地区、州）')
+                                  db_comment='工作单位地址-市(地区、州)')
     countyemporg = models.CharField(db_column='countyEmpOrg', max_length=200, blank=True, null=True,
-                                    db_comment='工作单位地址-县（区）')
+                                    db_comment='工作单位地址-县(区)')
     townshipemporg = models.CharField(db_column='townshipEmpOrg', max_length=200, blank=True, null=True,
-                                      db_comment='工作单位地址-乡（镇、街道办事处）')
+                                      db_comment='工作单位地址-乡(镇、街道办事处)')
     streetnameemporg = models.CharField(db_column='streetNameEmpOrg', max_length=200, blank=True, null=True,
-                                        db_comment='工作单位地址-村（街、路、弄等）')
+                                        db_comment='工作单位地址-村(街、路、弄等)')
     housenumberemporg = models.CharField(db_column='houseNumberEmpOrg', max_length=200, blank=True, null=True,
                                          db_comment='工作单位地址-门牌号码')
     postalcodeemporg = models.CharField(db_column='postalCodeEmpOrg', max_length=100, blank=True, null=True,
                                         db_comment='工作单位地址-邮政编码')
     statereg = models.CharField(db_column='stateReg', max_length=200, blank=True, null=True,
-                                db_comment='户口地址-省（自治区、直辖市）')
+                                db_comment='户口地址-省(自治区、直辖市)')
     cityreg = models.CharField(db_column='cityReg', max_length=200, blank=True, null=True,
-                               db_comment='户口地址-市（地区、州）')
+                               db_comment='户口地址-市(地区、州)')
     countyreg = models.CharField(db_column='countyReg', max_length=200, blank=True, null=True,
-                                 db_comment='户口地址-县（区）')
+                                 db_comment='户口地址-县(区)')
     townshipreg = models.CharField(db_column='townshipReg', max_length=200, blank=True, null=True,
-                                   db_comment='户口地址-乡（镇、街道办事处）')
+                                   db_comment='户口地址-乡(镇、街道办事处)')
     streetnamereg = models.CharField(db_column='streetNameReg', max_length=200, blank=True, null=True,
-                                     db_comment='户口地址-村（街、路、弄等）')
+                                     db_comment='户口地址-村(街、路、弄等)')
     housenumberreg = models.CharField(db_column='houseNumberReg', max_length=200, blank=True, null=True,
                                       db_comment='户口地址-门牌号码')
     postalcodereg = models.CharField(db_column='postalCodeReg', max_length=100, blank=True, null=True,
                                      db_comment='户口地址-邮政编码')
     statenative = models.CharField(db_column='stateNative', max_length=200, blank=True, null=True,
-                                   db_comment='籍贯-省（自治区、直辖市）')
+                                   db_comment='籍贯-省(自治区、直辖市)')
     citynative = models.CharField(db_column='cityNative', max_length=200, blank=True, null=True,
-                                  db_comment='籍贯-市（地区、州）')
+                                  db_comment='籍贯-市(地区、州)')
     occupationcode = models.CharField(db_column='occupationCode', max_length=100, blank=True, null=True,
                                       db_comment='职业类别代码')
     occupationname = models.CharField(db_column='occupationName', max_length=100, blank=True, null=True,
@@ -4359,9 +4163,9 @@ class C0032(models.Model):
     deputydirectordatetime = models.CharField(db_column='deputyDirectorDateTime', max_length=20, blank=True, null=True,
                                               db_comment='签名日期时间')
     deputydirectorid = models.CharField(db_column='deputyDirectorId', max_length=200, blank=True, null=True,
-                                        db_comment='主任（副主任）医师签名')
+                                        db_comment='主任(副主任)医师签名')
     deputydirectorname = models.CharField(db_column='deputyDirectorName', max_length=200, blank=True, null=True,
-                                          db_comment='主任（副主任）医师签名')
+                                          db_comment='主任(副主任)医师签名')
     attendingdoctordatetime = models.CharField(db_column='attendingDoctorDateTime', max_length=20, blank=True,
                                                null=True, db_comment='签名日期时间')
     attendingdoctorid = models.CharField(db_column='attendingDoctorId', max_length=200, blank=True, null=True,
@@ -4405,17 +4209,17 @@ class C0032(models.Model):
                                                null=True,
                                                db_comment='联系人与患者的关系名称')
     associatedentitystate = models.CharField(db_column='associatedEntityState', max_length=200, blank=True, null=True,
-                                             db_comment='联系人地址-省（自治区、直辖市）')
+                                             db_comment='联系人地址-省(自治区、直辖市)')
     associatedentitycity = models.CharField(db_column='associatedEntityCity', max_length=200, blank=True, null=True,
-                                            db_comment='联系人地址-市（地区、州）')
+                                            db_comment='联系人地址-市(地区、州)')
     associatedentitycounty = models.CharField(db_column='associatedEntityCounty', max_length=200, blank=True, null=True,
-                                              db_comment='联系人地址-县（区）')
+                                              db_comment='联系人地址-县(区)')
     associatedentitytownship = models.CharField(db_column='associatedEntityTownship', max_length=200, blank=True,
                                                 null=True,
-                                                db_comment='联系人地址-乡（镇、街道办事处）')
+                                                db_comment='联系人地址-乡(镇、街道办事处)')
     associatedentitystreetname = models.CharField(db_column='associatedEntityStreetName', max_length=200, blank=True,
                                                   null=True,
-                                                  db_comment='联系人地址-村（街、路、弄等）')
+                                                  db_comment='联系人地址-村(街、路、弄等)')
     associatedentityhousenumber = models.CharField(db_column='associatedEntityHouseNumber', max_length=200, blank=True,
                                                    null=True,
                                                    db_comment='联系人地址-门牌号码')
@@ -4443,17 +4247,17 @@ class C0032(models.Model):
     admissionwardname = models.CharField(db_column='admissionWardName', max_length=100, blank=True, null=True,
                                          db_comment='入院病房')
     neonatalbirthweight = models.CharField(db_column='neonatalBirthWeight', max_length=100, blank=True, null=True,
-                                           db_comment='新生儿出生体重（g）')
+                                           db_comment='新生儿出生体重(g)')
     neonataladmissionweight = models.CharField(db_column='neonatalAdmissionWeight', max_length=100, blank=True,
-                                               null=True, db_comment='新生儿入院体重（g）')
+                                               null=True, db_comment='新生儿入院体重(g)')
     outpatientdiagnosis = models.CharField(db_column='outpatientDiagnosis', max_length=200, blank=True, null=True,
-                                           db_comment='门（急）诊诊断名称')
+                                           db_comment='门(急)诊诊断名称')
     outpatientdiagnosisdiseasecode = models.CharField(db_column='outpatientDiagnosisDiseaseCode', max_length=100,
                                                       blank=True, null=True,
-                                                      db_comment='门（急）诊诊断疾病编码')
+                                                      db_comment='门(急)诊诊断疾病编码')
     outpatientdiagnosisdiseasename = models.CharField(db_column='outpatientDiagnosisDiseaseName', max_length=100,
                                                       blank=True, null=True,
-                                                      db_comment='门（急）诊诊断疾病名称')
+                                                      db_comment='门(急)诊诊断疾病名称')
     nopathology = models.CharField(db_column='NoPathology', max_length=100, blank=True, null=True,
                                    db_comment='病理号')
     pathologicaldiagdesc = models.CharField(db_column='pathologicalDiagDesc', max_length=200, blank=True, null=True,
@@ -4709,18 +4513,18 @@ class C0033(models.Model):
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
     nomedicalrecord = models.CharField(db_column='NoMedicalRecord', max_length=50, blank=True, null=True,
                                        db_comment='病案号')
-    state = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-省（自治区、直辖市）')
-    city = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-市（地区、州）')
-    county = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-县（区）')
-    township = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-乡（镇、街道办事处）')
+    state = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-省(自治区、直辖市)')
+    city = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-市(地区、州)')
+    county = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-县(区)')
+    township = models.CharField(max_length=70, blank=True, null=True, db_comment='现住址-乡(镇、街道办事处)')
     streetname = models.CharField(db_column='streetName', max_length=70, blank=True, null=True,
-                                  db_comment='现住址-村（街、路、弄等）')
+                                  db_comment='现住址-村(街、路、弄等)')
     housenumber = models.CharField(db_column='houseNumber', max_length=70, blank=True, null=True,
                                    db_comment='现住址-门牌号码')
     postalcode = models.CharField(db_column='postalCode', max_length=50, blank=True, null=True,
                                   db_comment='现住址-邮政编码')
     telecom = models.CharField(max_length=50, blank=True, null=True, db_comment='患者电话号码')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
@@ -4735,18 +4539,19 @@ class C0033(models.Model):
     ethnicgroupname = models.CharField(db_column='ethnicGroupName', max_length=50, blank=True, null=True,
                                        db_comment='民族名称')
     statebirth = models.CharField(db_column='stateBirth', max_length=70, blank=True, null=True,
-                                  db_comment='出生地-省（自治区、直辖市）')
+                                  db_comment='出生地-省(自治区、直辖市)')
     citybirth = models.CharField(db_column='cityBirth', max_length=70, blank=True, null=True,
-                                 db_comment='出生地-市（地区、州）')
+                                 db_comment='出生地-市(地区、州)')
     countybirth = models.CharField(db_column='countyBirth', max_length=70, blank=True, null=True,
-                                   db_comment='出生地-县（区）')
+                                   db_comment='出生地-县(区)')
     postalcodebirth = models.CharField(db_column='postalCodeBirth', max_length=50, blank=True, null=True,
                                        db_comment='出生地-邮政编码')
     nationcode = models.CharField(db_column='nationCode', max_length=50, blank=True, null=True,
                                   db_comment='国籍代码')
     nationname = models.CharField(db_column='nationName', max_length=50, blank=True, null=True,
                                   db_comment='国籍名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     employerorgname = models.CharField(db_column='employerOrgName', max_length=70, blank=True, null=True,
@@ -4754,37 +4559,37 @@ class C0033(models.Model):
     employerorgtel = models.CharField(db_column='employerOrgTel', max_length=50, blank=True, null=True,
                                       db_comment='工作单位电话号码')
     stateemporg = models.CharField(db_column='stateEmpOrg', max_length=70, blank=True, null=True,
-                                   db_comment='工作单位地址-省（自治区、直辖市）')
+                                   db_comment='工作单位地址-省(自治区、直辖市)')
     cityemporg = models.CharField(db_column='cityEmpOrg', max_length=70, blank=True, null=True,
-                                  db_comment='工作单位地址-市（地区、州）')
+                                  db_comment='工作单位地址-市(地区、州)')
     countyemporg = models.CharField(db_column='countyEmpOrg', max_length=70, blank=True, null=True,
-                                    db_comment='工作单位地址-县（区）')
+                                    db_comment='工作单位地址-县(区)')
     townshipemporg = models.CharField(db_column='townshipEmpOrg', max_length=70, blank=True, null=True,
-                                      db_comment='工作单位地址-乡（镇、街道办事处）')
+                                      db_comment='工作单位地址-乡(镇、街道办事处)')
     streetnameemporg = models.CharField(db_column='streetNameEmpOrg', max_length=70, blank=True, null=True,
-                                        db_comment='工作单位地址-村（街、路、弄等）')
+                                        db_comment='工作单位地址-村(街、路、弄等)')
     housenumberemporg = models.CharField(db_column='houseNumberEmpOrg', max_length=70, blank=True, null=True,
                                          db_comment='工作单位地址-门牌号码')
     postalcodeemporg = models.CharField(db_column='postalCodeEmpOrg', max_length=50, blank=True, null=True,
                                         db_comment='工作单位地址-邮政编码')
     statereg = models.CharField(db_column='stateReg', max_length=70, blank=True, null=True,
-                                db_comment='户口地址-省（自治区、直辖市）')
+                                db_comment='户口地址-省(自治区、直辖市)')
     cityreg = models.CharField(db_column='cityReg', max_length=70, blank=True, null=True,
-                               db_comment='户口地址-市（地区、州）')
+                               db_comment='户口地址-市(地区、州)')
     countyreg = models.CharField(db_column='countyReg', max_length=70, blank=True, null=True,
-                                 db_comment='户口地址-县（区）')
+                                 db_comment='户口地址-县(区)')
     townshipreg = models.CharField(db_column='townshipReg', max_length=70, blank=True, null=True,
-                                   db_comment='户口地址-乡（镇、街道办事处）')
+                                   db_comment='户口地址-乡(镇、街道办事处)')
     streetnamereg = models.CharField(db_column='streetNameReg', max_length=70, blank=True, null=True,
-                                     db_comment='户口地址-村（街、路、弄等）')
+                                     db_comment='户口地址-村(街、路、弄等)')
     housenumberreg = models.CharField(db_column='houseNumberReg', max_length=70, blank=True, null=True,
                                       db_comment='户口地址-门牌号码')
     postalcodereg = models.CharField(db_column='postalCodeReg', max_length=50, blank=True, null=True,
                                      db_comment='户口地址-邮政编码')
     statenative = models.CharField(db_column='stateNative', max_length=70, blank=True, null=True,
-                                   db_comment='籍贯-省（自治区、直辖市）')
+                                   db_comment='籍贯-省(自治区、直辖市)')
     citynative = models.CharField(db_column='cityNative', max_length=70, blank=True, null=True,
-                                  db_comment='籍贯-市（地区、州）')
+                                  db_comment='籍贯-市(地区、州)')
     occupationcode = models.CharField(db_column='occupationCode', max_length=50, blank=True, null=True,
                                       db_comment='职业类别代码')
     occupationname = models.CharField(db_column='occupationName', max_length=50, blank=True, null=True,
@@ -4812,9 +4617,9 @@ class C0033(models.Model):
     deputydirectordatetime = models.CharField(db_column='deputyDirectorDateTime', max_length=15, blank=True, null=True,
                                               db_comment='签名日期时间')
     deputydirectorid = models.CharField(db_column='deputyDirectorId', max_length=50, blank=True, null=True,
-                                        db_comment='主任（副主任）医师签名')
+                                        db_comment='主任(副主任)医师签名')
     deputydirectorname = models.CharField(db_column='deputyDirectorName', max_length=50, blank=True, null=True,
-                                          db_comment='主任（副主任）医师签名')
+                                          db_comment='主任(副主任)医师签名')
     attendingdoctordatetime = models.CharField(db_column='attendingDoctorDateTime', max_length=15, blank=True,
                                                null=True, db_comment='签名日期时间')
     attendingdoctorid = models.CharField(db_column='attendingDoctorId', max_length=50, blank=True, null=True,
@@ -4858,17 +4663,17 @@ class C0033(models.Model):
                                                null=True,
                                                db_comment='联系人与患者的关系名称')
     associatedentitystate = models.CharField(db_column='associatedEntityState', max_length=70, blank=True, null=True,
-                                             db_comment='联系人地址-省（自治区、直辖市）')
+                                             db_comment='联系人地址-省(自治区、直辖市)')
     associatedentitycity = models.CharField(db_column='associatedEntityCity', max_length=70, blank=True, null=True,
-                                            db_comment='联系人地址-市（地区、州）')
+                                            db_comment='联系人地址-市(地区、州)')
     associatedentitycounty = models.CharField(db_column='associatedEntityCounty', max_length=70, blank=True, null=True,
-                                              db_comment='联系人地址-县（区）')
+                                              db_comment='联系人地址-县(区)')
     associatedentitytownship = models.CharField(db_column='associatedEntityTownship', max_length=70, blank=True,
                                                 null=True,
-                                                db_comment='联系人地址-乡（镇、街道办事处）')
+                                                db_comment='联系人地址-乡(镇、街道办事处)')
     associatedentitystreetname = models.CharField(db_column='associatedEntityStreetName', max_length=70, blank=True,
                                                   null=True,
-                                                  db_comment='联系人地址-村（街、路、弄等）')
+                                                  db_comment='联系人地址-村(街、路、弄等)')
     associatedentityhousenumber = models.CharField(db_column='associatedEntityHouseNumber', max_length=70, blank=True,
                                                    null=True,
                                                    db_comment='联系人地址-门牌号码')
@@ -4896,27 +4701,27 @@ class C0033(models.Model):
     admissionwardname = models.CharField(db_column='admissionWardName', max_length=50, blank=True, null=True,
                                          db_comment='入院病房')
     neonatalbirthweight = models.CharField(db_column='neonatalBirthWeight', max_length=50, blank=True, null=True,
-                                           db_comment='新生儿出生体重（g）')
+                                           db_comment='新生儿出生体重(g)')
     neonataladmissionweight = models.CharField(db_column='neonatalAdmissionWeight', max_length=50, blank=True,
-                                               null=True, db_comment='新生儿入院体重（g）')
+                                               null=True, db_comment='新生儿入院体重(g)')
     tcmdiagnosis = models.CharField(db_column='TCMDiagnosis', max_length=50, blank=True, null=True,
-                                    db_comment='门（急）诊诊断（中医诊断）病名名称')
+                                    db_comment='门(急)诊诊断(中医诊断)病名名称')
     tcmdiagdiseasecode = models.CharField(db_column='TCMDiagDiseaseCode', max_length=50, blank=True, null=True,
-                                          db_comment='门（急）诊诊断（中医诊断）病名编码')
+                                          db_comment='门(急)诊诊断(中医诊断)病名编码')
     tcmdiagdiseasename = models.CharField(db_column='TCMDiagDiseaseName', max_length=50, blank=True, null=True,
-                                          db_comment='门（急）诊诊断（中医诊断）病名名称')
+                                          db_comment='门(急)诊诊断(中医诊断)病名名称')
     tcmsyndrome = models.CharField(db_column='TCMsyndrome', max_length=50, blank=True, null=True,
-                                   db_comment='门（急）诊诊断（中医证候）名称')
+                                   db_comment='门(急)诊诊断(中医证候)名称')
     tcmsyndromecode = models.CharField(db_column='TCMsyndromeCode', max_length=50, blank=True, null=True,
-                                       db_comment='门（急）诊诊断（中医证候）证候编码')
+                                       db_comment='门(急)诊诊断(中医证候)证候编码')
     tcmsyndromename = models.CharField(db_column='TCMsyndromeName', max_length=50, blank=True, null=True,
-                                       db_comment='门（急）诊诊断（中医证候）证候名称')
+                                       db_comment='门(急)诊诊断(中医证候)证候名称')
     wmd = models.CharField(db_column='WMD', max_length=50, blank=True, null=True,
-                           db_comment='门（急）诊诊断（西医诊断）名称')
+                           db_comment='门(急)诊诊断(西医诊断)名称')
     wmddiseasecode = models.CharField(db_column='WMDDiseaseCode', max_length=50, blank=True, null=True,
-                                      db_comment='门（急）诊诊断（西医诊断）疾病编码')
+                                      db_comment='门(急)诊诊断(西医诊断)疾病编码')
     wmddiseasename = models.CharField(db_column='WMDDiseaseName', max_length=50, blank=True, null=True,
-                                      db_comment='门（急）诊诊断（西医诊断）疾病名称')
+                                      db_comment='门(急)诊诊断(西医诊断)疾病名称')
     nopathology = models.CharField(db_column='NoPathology', max_length=50, blank=True, null=True,
                                    db_comment='病理号')
     pathologicaldiagdesc = models.CharField(db_column='pathologicalDiagDesc', max_length=50, blank=True, null=True,
@@ -5247,12 +5052,12 @@ class C0033(models.Model):
 class C0034(models.Model):
     doc_id = models.CharField(max_length=100, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
-    state = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-省（自治区、直辖市）')
-    city = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-市（地区、州）')
-    county = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-县（区）')
-    township = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-乡（镇、街道办事处）')
+    state = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-省(自治区、直辖市)')
+    city = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-市(地区、州)')
+    county = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-县(区)')
+    township = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-乡(镇、街道办事处)')
     streetname = models.CharField(db_column='streetName', max_length=70, blank=True, null=True,
-                                  db_comment='地址-村（街、路、弄等）')
+                                  db_comment='地址-村(街、路、弄等)')
     housenumber = models.CharField(db_column='houseNumber', max_length=70, blank=True, null=True,
                                    db_comment='地址-门牌号码')
     id = models.CharField(max_length=100, blank=True, null=True, db_comment='患者身份证件号码')
@@ -5353,7 +5158,7 @@ class C0034(models.Model):
     generalhealthflag = models.SmallIntegerField(db_column='generalHealthFlag', blank=True, null=True,
                                                  db_comment='一般健康状况标志')
     diseasehistory = models.TextField(db_column='diseaseHistory', blank=True, null=True,
-                                      db_comment='疾病史（含外伤）')
+                                      db_comment='疾病史(含外伤)')
     patientinfectiouflag = models.SmallIntegerField(db_column='patientInfectiouFlag', blank=True, null=True,
                                                     db_comment='患者传染性标志')
     infectioushistory = models.TextField(db_column='infectiousHistory', blank=True, null=True,
@@ -5375,19 +5180,19 @@ class C0034(models.Model):
     familyhistory = models.TextField(db_column='familyHistory', blank=True, null=True,
                                      db_comment='家族史')
     temperature = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True,
-                                      db_comment='体格检查--体温（℃）')
+                                      db_comment='体格检查--体温(℃)')
     pulserate = models.CharField(db_column='pulseRate', max_length=100, blank=True, null=True,
-                                 db_comment='体格检查--脉率（次/min）')
+                                 db_comment='体格检查--脉率(次/min)')
     respiratoryrate = models.CharField(db_column='respiratoryRate', max_length=100, blank=True, null=True,
-                                       db_comment='体格检查--呼吸频率（次/min）')
+                                       db_comment='体格检查--呼吸频率(次/min)')
     systolicpressure = models.CharField(db_column='systolicPressure', max_length=100, blank=True, null=True,
-                                        db_comment='体格检查--收缩压（mmHg）')
+                                        db_comment='体格检查--收缩压(mmHg)')
     diastolicpressure = models.CharField(db_column='diastolicPressure', max_length=100, blank=True, null=True,
-                                         db_comment='体格检查--舒张压（mmHg）')
+                                         db_comment='体格检查--舒张压(mmHg)')
     height = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True,
-                                 db_comment='体格检查--身高（cm）')
+                                 db_comment='体格检查--身高(cm)')
     weight = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,
-                                 db_comment='体格检查--体重（kg）')
+                                 db_comment='体格检查--体重(kg)')
     generalexamresult = models.TextField(db_column='generalExamResult', blank=True, null=True,
                                          db_comment='体格检查--一般状况检查结果')
     skinmucousmembraneexamresults = models.TextField(db_column='skinMucousMembraneExamResults', blank=True, null=True,
@@ -5513,12 +5318,12 @@ class C0034(models.Model):
 class C0035(models.Model):
     doc_id = models.CharField(max_length=32, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField("住院号", max_length=10, blank=True, null=True, db_comment='住院号')
-    state = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-省（自治区、直辖市）')
-    city = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-市（地区、州）')
-    county = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-县（区）')
-    township = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-乡（镇、街道办事处）')
+    state = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-省(自治区、直辖市)')
+    city = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-市(地区、州)')
+    county = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-县(区)')
+    township = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-乡(镇、街道办事处)')
     streetname = models.CharField(db_column='streetName', max_length=70, blank=True, null=True,
-                                  db_comment='地址-村（街、路、弄等）')
+                                  db_comment='地址-村(街、路、弄等)')
     housenumber = models.CharField(db_column='houseNumber', max_length=70, blank=True, null=True,
                                    db_comment='地址-门牌号码')
     id_no = models.CharField('患者身份证件号码', max_length=32, db_comment='患者身份证件号码')
@@ -5533,8 +5338,9 @@ class C0035(models.Model):
                                        db_comment='民族代码')
     ethnicgroupname = models.CharField(db_column='ethnicGroupName', max_length=18, blank=True, null=True,
                                        db_comment='民族名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     occupationcode = models.CharField(db_column='occupationCode', max_length=20, blank=True, null=True,
                                       db_comment='职业类别代码')
     occupationname = models.CharField(db_column='occupationName', max_length=100, blank=True, null=True,
@@ -5659,15 +5465,15 @@ class C0035(models.Model):
 class C0036(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    state = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-省（自治区、直辖市）')
-    city = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-市（地区、州）')
-    county = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-县（区）')
-    township = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-乡（镇、街道办事处）')
+    state = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-省(自治区、直辖市)')
+    city = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-市(地区、州)')
+    county = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-县(区)')
+    township = models.CharField(max_length=70, blank=True, null=True, db_comment='地址-乡(镇、街道办事处)')
     streetname = models.CharField(db_column='streetName', max_length=70, blank=True, null=True,
-                                  db_comment='地址-村（街、路、弄等）')
+                                  db_comment='地址-村(街、路、弄等)')
     housenumber = models.CharField(db_column='houseNumber', max_length=70, blank=True, null=True,
                                    db_comment='地址-门牌号码')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
@@ -5679,7 +5485,8 @@ class C0036(models.Model):
                                        db_comment='民族代码')
     ethnicgroupname = models.CharField(db_column='ethnicGroupName', max_length=50, blank=True, null=True,
                                        db_comment='民族名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     occupationcode = models.CharField(db_column='occupationCode', max_length=50, blank=True, null=True,
@@ -5795,13 +5602,14 @@ class C0036(models.Model):
 class C0037(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=50, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=50, blank=True, null=True,
@@ -5905,8 +5713,9 @@ class C0038(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
                                       db_comment='文档创作日期时间')
     authorid = models.CharField(db_column='authorId', max_length=50, blank=True, null=True,
@@ -5976,13 +5785,14 @@ class C0038(models.Model):
 class C0039(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
@@ -6071,8 +5881,9 @@ class C0040(models.Model):
     gender_name = models.CharField("性别名称", max_length=20, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
-    age_unit = models.CharField('年龄单位', max_length=10, db_comment='年龄单位')
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age_unit = models.CharField('年龄单位', max_length=4, db_comment='年龄单位')
     discussiondatetime = models.CharField(db_column='discussionDateTime', max_length=15, blank=True, null=True,
                                           db_comment='讨论日期时间')
     discussionplace = models.CharField(db_column='discussionPlace', max_length=50, blank=True, null=True,
@@ -6157,13 +5968,14 @@ class C0040(models.Model):
 class C0041(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
@@ -6275,11 +6087,12 @@ class C0041(models.Model):
 class C0042(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
@@ -6408,13 +6221,14 @@ class C0042(models.Model):
 class C0043(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
@@ -6526,13 +6340,14 @@ class C0043(models.Model):
 class C0044(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
     birthtime = models.CharField(db_column='birthTime', max_length=8, blank=True, null=True,
                                  db_comment='出生日期')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
@@ -6634,7 +6449,7 @@ class C0045(models.Model):
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
     applyid = models.CharField(db_column='applyId', max_length=50, blank=True, null=True,
                                db_comment='电子申请单编号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
@@ -6763,7 +6578,8 @@ class C0046(models.Model):
                                   db_comment='性别代码')
     gendername = models.CharField(db_column='genderName', max_length=100, blank=True, null=True,
                                   db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=100, blank=True, null=True,
                                db_comment='年龄单位')
     summarydatetime = models.CharField(db_column='summaryDateTime', max_length=15, blank=True, null=True,
@@ -6871,11 +6687,12 @@ class C0046(models.Model):
 class C0047(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     discussiondatetime = models.CharField(db_column='discussionDateTime', max_length=15, blank=True, null=True,
@@ -7001,11 +6818,12 @@ class C0047(models.Model):
 class C0048(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=50, blank=True, null=True,
@@ -7085,11 +6903,12 @@ class C0048(models.Model):
 class C0049(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=50, blank=True, null=True,
@@ -7200,11 +7019,12 @@ class C0049(models.Model):
 class C0050(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     createdatetime = models.CharField(db_column='createDateTime', max_length=15, blank=True, null=True,
@@ -7292,11 +7112,12 @@ class C0050(models.Model):
 class C0051(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
-    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄', validators=[MinValueValidator(1), MaxValueValidator(150)])
+    age = models.PositiveSmallIntegerField('年龄', db_comment='年龄',
+                                           validators=[MinValueValidator(1), MaxValueValidator(150)])
     ageunit = models.CharField(db_column='ageUnit', max_length=50, blank=True, null=True,
                                db_comment='年龄单位')
     discussiondatetime = models.CharField(db_column='discussionDateTime', max_length=15, blank=True, null=True,
@@ -7397,7 +7218,7 @@ class C0052(models.Model):
     doc_id = models.CharField(max_length=50, blank=True, null=True, db_comment='文档流水号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
     telecom = models.CharField(max_length=50, blank=True, null=True, db_comment='患者电话号码')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
@@ -7434,7 +7255,7 @@ class C0052(models.Model):
                              db_comment='病床号Id')
     bedno = models.CharField(db_column='bedNo', max_length=50, blank=True, null=True,
                              db_comment='病床号')
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重（kg）')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_comment='体重(kg)')
     ordercategorycode = models.CharField(db_column='orderCategoryCode', max_length=50, blank=True, null=True,
                                          db_comment='医嘱类别代码')
     ordercategoryname = models.CharField(db_column='orderCategoryName', max_length=50, blank=True, null=True,
@@ -7515,18 +7336,18 @@ class C0053(models.Model):
     healthid = models.CharField(db_column='healthId', max_length=50, blank=True, null=True,
                                 db_comment='居民健康卡号')
     inpatient_id = models.CharField('住院号', max_length=18, blank=True, null=True, db_comment='住院号')
-    state = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-省（自治区、直辖市）')
-    city = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-市（地区、州）')
-    county = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-县（区）')
-    township = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-乡（镇、街道办事处）')
+    state = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-省(自治区、直辖市)')
+    city = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-市(地区、州)')
+    county = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-县(区)')
+    township = models.CharField(max_length=200, blank=True, null=True, db_comment='地址-乡(镇、街道办事处)')
     streetname = models.CharField(db_column='streetName', max_length=70, blank=True, null=True,
-                                  db_comment='地址-村（街、路、弄等）')
+                                  db_comment='地址-村(街、路、弄等)')
     housenumber = models.CharField(db_column='houseNumber', max_length=70, blank=True, null=True,
                                    db_comment='地址-门牌号码')
     postalcode = models.CharField(db_column='postalCode', max_length=50, blank=True, null=True,
                                   db_comment='邮政编码')
     telecom = models.CharField(max_length=50, blank=True, null=True, db_comment='患者电话号码')
-    id_no = models.CharField("患者身份证件号码", max_length=18,  db_comment='患者身份证件号码')
+    id_no = models.CharField("患者身份证件号码", max_length=18, db_comment='患者身份证件号码')
     name = models.CharField('患者姓名', max_length=64, db_comment='患者姓名')
     gender_code = models.PositiveSmallIntegerField("性别代码", choices=SexCodeChoices, db_comment='性别代码')
     gender_name = models.CharField('性别名称', max_length=10, db_comment='性别名称')
@@ -7685,7 +7506,6 @@ class C0053(models.Model):
     adm_no = models.CharField(max_length=50, blank=True, null=True)
     updatetime = models.DateTimeField(blank=True, null=True)
     fzyid = models.CharField(db_column='FZYID', max_length=50, blank=True, null=True)
-    data_src = models.CharField(max_length=2, db_comment='数据来源,请参照主数据标准字典:医疗卫生机构')
 
     class Meta:
         db_table_comment = ''
