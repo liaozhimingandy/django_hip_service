@@ -33,7 +33,7 @@ from ninja.responses import codes_2xx, codes_4xx
 from requests.exceptions import ConnectTimeout
 
 from cdr.models import ExamReport, ExamResultMain, ExamResultDetail, ExamResultDetailAST, CheckReport, Visit, Diagnosis, \
-    PathologyReport, CriticalValue, CallPatient
+    PathologyReport, CriticalValue, CallPatient, PatientInfoCollector
 from hipmessageservice.utils.encrypt import EncryptUtils
 
 
@@ -246,7 +246,7 @@ class ContentTypeEnum(str, Enum):
     VisitInfoUpdate = "VisitInfoUpdate"
     getExamReportPrintInfos = "getExamReportPrintInfos"
     callPatient = 'CallPatient'
-
+    PatientInfoCollector = "PatientInfoCollector"
 
 # 消息统一格式
 class SendMsgSchema(Schema):
@@ -764,6 +764,26 @@ def verification(data: dict) -> tuple:
 
             return True, 'ok'
 
+        # 患者信息采集
+        case 'PatientInfoCollector':
+            data = data[content_type]
+            # 获取需要保存的数据模型字段列表
+            fields = set([field.name for field in PatientInfoCollector._meta.local_fields]) - {'id', 'gmt_created', 'gmt_updated'}
+            filtered_data = {key: value for key, value in data.items() if key in fields}
+
+            info = PatientInfoCollector(**copy.deepcopy(filtered_data))
+            # 校验
+            try:
+                info.full_clean(exclude=('id_no', 'debit_card_no'))
+                # 保存到数据库
+                if settings.IS_SAVE_TO_DB:
+                    PatientInfoCollector.objects.update_or_create(id_no=info.id_no, debit_card_no=info.debit_card_no,
+                                                         defaults=filtered_data)
+
+            except ValidationError as e:
+                return False, [str(item) for item in e]
+
+            return True, 'ok'
 
         case _:
             return True, "本消息暂未纳入校验范围!"

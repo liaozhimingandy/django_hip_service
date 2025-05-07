@@ -2198,3 +2198,41 @@ class CallPatient(models.Model):
             models.Index(fields=('patient',)),
             models.Index(fields=('adm_no', 'gmt_call')),
         ]
+
+
+class PatientInfoCollector(models.Model):
+    """
+    病人信息采集器
+    """
+
+    id_no = models.CharField(max_length=36, verbose_name='身份证号', db_comment='身份证号')
+    name = models.CharField(max_length=64, verbose_name='姓名', db_comment='姓名')
+    mobile_phone = models.CharField(max_length=20, verbose_name='手机号', db_comment='手机号')
+    contact_code = models.CharField(max_length=20, verbose_name='联系人关系', db_comment='联系人关系')
+    debit_card_name = models.CharField(max_length=64, verbose_name='借记卡姓名', db_comment='借记卡姓名')
+    debit_card_no = models.CharField(max_length=36, verbose_name='借记卡卡号', db_comment='借记卡卡号')
+    bank_name = models.CharField(max_length=64, verbose_name='银行名称', db_comment='银行名称')
+    from_src = models.CharField(max_length=36, db_comment='来源系统', verbose_name='来源系统')
+    org_code = models.CharField(max_length=18, choices=FromOrgCodeChoices, db_comment="医疗卫生机构代码",
+                                verbose_name='医疗卫生机构代码')
+    gmt_created = models.DateTimeField(auto_now_add=True, db_comment='系统记录时间', verbose_name='系统记录时间')
+    gmt_updated = models.DateTimeField(auto_now=True, db_comment='系统更新时间', verbose_name='系统更新时间')
+
+    def __str__(self):
+        return f'{self.name}-{self.mobile_phone}'
+
+    class Meta:
+        verbose_name = '病人信息采集器'
+        verbose_name_plural = '病人信息采集器'
+        db_table_comment = '病人信息采集器'
+
+        indexes = [
+            models.Index(fields=('id_no',)),
+            models.Index(fields=('mobile_phone',)),
+            models.Index(fields=('id_no', 'debit_card_no')),
+        ]
+
+        # 唯一约束
+        constraints = [
+            models.UniqueConstraint(fields=('id_no', 'debit_card_no',), name='unique_id_no_debit_card_no'),
+        ]
