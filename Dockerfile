@@ -24,6 +24,7 @@ COPY pyproject.toml .
 
 # 安装 pdm 及项目依赖
 RUN pip install --no-cache-dir uv -i ${PIPURL} --default-timeout=1000 \
+    && uv lock \
     && uv sync --verbose --frozen --no-cache
 
 # 阶段 2: 运行时镜像
