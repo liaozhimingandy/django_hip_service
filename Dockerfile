@@ -24,9 +24,7 @@ COPY pyproject.toml .
 
 # 安装 pdm 及项目依赖
 RUN pip install --no-cache-dir uv -i ${PIPURL} --default-timeout=1000 \
-    && uv export -o requirements.txt \
-    && pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
-    && rm -f requirements.txt
+    && uv pip install -r pyproject.toml
 
 # 阶段 2: 运行时镜像
 FROM python:${TAG}
