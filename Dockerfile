@@ -11,20 +11,20 @@ ENV LC_ALL C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
 
 # pip镜像源
-#ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
-ENV PIPURL "https://pypi.org/simple/"
+ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+#ENV PIPURL "https://pypi.org/simple/"
 
 # 安装依赖
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential \
-    && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    libpq-dev gcc unixodbc unixodbc-dev freetds-dev build-essential \
+#    && rm -rf /var/lib/apt/lists/*
 
 # 复制 pdm.lock 文件
 COPY pyproject.toml .
 
 # 安装 pdm 及项目依赖
 RUN pip install --no-cache-dir uv -i ${PIPURL} --default-timeout=1000 \
-    && uv export -o requirements.txt \
+    && uv export --no-hashes --format requirements-txt > requirements.txt \
     && pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
     && rm -f requirements.txt
 
