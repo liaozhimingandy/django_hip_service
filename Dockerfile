@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制 pdm.lock 文件
-COPY pyproject.toml .
+COPY . .
 
 # 安装 pdm 及项目依赖
 RUN pip install --no-cache-dir uv -i ${PIPURL} --default-timeout=1000 \
