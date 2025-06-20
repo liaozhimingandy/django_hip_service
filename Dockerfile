@@ -57,6 +57,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # 复制 builder 阶段的虚拟环境（可选）或 site-packages
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # 创建工作目录并复制代码
 WORKDIR /app
