@@ -1112,6 +1112,14 @@
 																										</xs:attribute>
 																										<xs:attribute name="codeSystem" type="xs:string" use="required"/>
 																										<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																										<xs:attribute name="displayName" use="required">
+																											<xs:simpleType>
+																												<xs:restriction base="xs:string">
+																													<xs:minLength value="1"/>
+																													<xs:maxLength value="64"/>
+																												</xs:restriction>
+																											</xs:simpleType>
+																										</xs:attribute>
 																									</xs:extension>
 																								</xs:simpleContent>
 																							</xs:complexType>

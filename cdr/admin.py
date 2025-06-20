@@ -14,6 +14,10 @@ from cdr.models import CheckReport, BloodTrans, Patient, Check, CheckAppointStat
 class ReadOnlyAdmin(admin.ModelAdmin):
     list_per_page = 10
 
+    # 禁用删除权限
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     def get_readonly_fields(self, request, obj=None):
         # 获取所有字段的名称并设置为只读
         readonly_fields = [field.name for field in self.model._meta.fields]
@@ -151,7 +155,7 @@ class ExamAppInfoAdmin(ReadOnlyAdmin):
 
 @admin.register(ExamStatus)
 class ExamStatusInfo(ReadOnlyAdmin):
-    list_display = ('apply_no', 'adm_no', 'patient_id_new', "patient_name", 'status_code')
+    list_display = ('apply_no', 'adm_no', 'apply_desc', 'patient_id_new', "patient_name", 'status_code')
     raw_id_fields = ('patient',)
     list_display_links = ('apply_no',)
     search_fields = ('apply_no', 'adm_no', 'patient__patient_id')
@@ -247,7 +251,8 @@ class DischargeInfoAdmin(ReadOnlyAdmin):
 
 @admin.register(Operation)
 class OperationInfoAdmin(ReadOnlyAdmin):
-    list_display = ('apply_no', 'surgical_code', 'surgical_name', 'adm_no', 'patient_id_new', "patient_name")
+    list_display = ('apply_no', 'surgical_code', 'surgical_name', 'adm_no', 'patient_id_new', "patient_name",
+                    'gmt_apply')
     list_display_links = ('apply_no',)
     raw_id_fields = ('patient',)
     search_fields = ('adm_no', 'patient__patient_id', 'surgical_name')
@@ -414,7 +419,7 @@ class PathologyAppInfoAdmin(ReadOnlyAdmin):
 @admin.register(Provider)
 class ProviderInfoAdmin(ReadOnlyAdmin):
     """卫生人员机构"""
-    list_display = ('emp_id', 'emp_name', 'sex_code', 'telecom')
+    list_display = ('emp_id', 'emp_name', 'id_no', 'sex_code', 'telecom')
     list_display_links = ('emp_id',)
 
     search_fields = ('emp_id', 'emp_name')
@@ -497,7 +502,8 @@ class VisitAdmin(ReadOnlyAdmin):
 @admin.register(CriticalValue)
 class CriticalValueAdmin(ReadOnlyAdmin):
     """危急值信息"""
-    list_display = ('critical_id', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name', 'value')
+    list_display = ('critical_id', 'adm_no', 'patient_id_new', "patient_name", 'item_code', 'item_name',
+                    'value', 'gmt_report')
     list_display_links = ('critical_id',)
     raw_id_fields = ('patient',)
     search_fields = ('adm_no', 'patient__patient_id')
@@ -530,7 +536,8 @@ class PathologyReportAdmin(ReadOnlyAdmin):
 
 @admin.register(CallPatient)
 class CallPatientAdmin(ReadOnlyAdmin):
-    list_display = ('patient_id_new', "patient_name", 'adm_no', 'gmt_call', 'index', 'doc_id', 'doc_name', 'dept_id', 'dept_name')
+    list_display = ('patient_id_new', "patient_name", 'adm_no', 'gmt_call', 'index', 'doc_id', 'doc_name',
+                    'dept_id', 'dept_name')
     raw_id_fields = ('patient',)
     search_fields = ('adm_no', 'patient__patient_id')
     list_display_links = ('adm_no',)
@@ -546,6 +553,6 @@ class CallPatientAdmin(ReadOnlyAdmin):
 
 @admin.register(PatientInfoCollector)
 class PatientInfoCollectorAdmin(ReadOnlyAdmin):
-    list_display = ('id_no', "name", 'mobile_phone', 'debit_card_name', 'debit_card_no', 'bank_name', 'gmt_created')
-    search_fields = ('id_no', 'mobile_phone')
+    list_display = ('id_no', "name", 'mobile_phone', "contact_code", 'debit_card_name', 'debit_card_no', 'bank_name', 'gmt_created')
+    search_fields = ('id_no', 'mobile_phone', 'name')
     list_display_links = ('id_no',)

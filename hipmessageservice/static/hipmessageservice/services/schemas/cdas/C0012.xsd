@@ -871,6 +871,7 @@
 					<xs:simpleType>
 						<xs:restriction base="xs:float">
 							<xs:pattern value="(0|[1-9]\d{0,3})\.\d{2}"/>
+							<xs:pattern value="\d{0,4}"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>

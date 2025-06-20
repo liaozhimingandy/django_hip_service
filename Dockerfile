@@ -23,11 +23,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml .
 
 # 安装 pdm 及项目依赖
-RUN pip install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
-    && pdm lock \
-    && pdm export -o requirements.txt --without-hashes \
+RUN pip install --no-cache-dir uv -i ${PIPURL} --default-timeout=1000 \
+    && uv export -o requirements.txt \
     && pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
-    && rm -f requirements.txt pdm.lock
+    && rm -f requirements.txt
 
 # 阶段 2: 运行时镜像
 FROM python:${TAG}

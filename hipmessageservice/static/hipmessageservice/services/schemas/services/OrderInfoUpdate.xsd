@@ -1563,6 +1563,11 @@
 						<xs:attribute name="moodCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="extra" minOccurs="0">
+					<xs:complexType>
+						<xs:attribute name="value" use="required"/>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="ITSVersion" type="xs:string" use="required"/>
 		</xs:complexType>

@@ -1406,7 +1406,7 @@ class Organization(models.Model):
     pre_dept_id = models.CharField(max_length=36, blank=True, null=True, db_comment='上级医疗卫生机构（科室）号标识',
                                    verbose_name="上级医疗卫生机构（科室）号标识")
     pre_dept_name = models.CharField(max_length=64, blank=True, null=True, db_comment='上级医疗卫生机构（科室）号名称',
-                                     verbose_name="级医疗卫生机构（科室）号名称")
+                                     verbose_name="上级医疗卫生机构（科室）号名称")
     author_id = models.CharField(max_length=36, db_comment='申请者医务人员ID', verbose_name="申请者医务人员ID")
     author = models.CharField(max_length=36, db_comment='申请者医务人员姓名', verbose_name="申请者医务人员姓名")
     author_dept_id = models.CharField(max_length=36, db_comment='申请者医务人员科室号标识',
@@ -1624,7 +1624,7 @@ class Provider(models.Model):
     author_dept_contact = models.CharField(max_length=64, blank=True, null=True, db_comment='申请者科室联系人名称',
                                            verbose_name='申请者科室联系人名称')
     from_src = models.CharField(max_length=36, db_comment="来源系统", verbose_name='来源系统')
-    # extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息', null=True, blank=True)
+    extra = models.JSONField(db_comment="补充信息", verbose_name='补充信息', null=True, blank=True)
     gmt_created = models.DateTimeField(db_comment='申请时间', verbose_name='申请时间')
 
     def __str__(self):
@@ -2207,8 +2207,8 @@ class PatientInfoCollector(models.Model):
 
     id_no = models.CharField(max_length=36, verbose_name='身份证号', db_comment='身份证号')
     name = models.CharField(max_length=64, verbose_name='姓名', db_comment='姓名')
-    mobile_phone = models.CharField(max_length=20, verbose_name='手机号', db_comment='手机号')
-    contact_code = models.CharField(max_length=20, verbose_name='联系人关系', db_comment='联系人关系')
+    mobile_phone = models.CharField(max_length=64, verbose_name='手机号', db_comment='手机号') # 存银行名称
+    contact_code = models.CharField(max_length=2, verbose_name='联系人关系', db_comment='联系人关系')
     debit_card_name = models.CharField(max_length=64, verbose_name='借记卡姓名', db_comment='借记卡姓名')
     debit_card_no = models.CharField(max_length=36, verbose_name='借记卡卡号', db_comment='借记卡卡号')
     bank_name = models.CharField(max_length=64, verbose_name='银行名称', db_comment='银行名称')
@@ -2222,13 +2222,14 @@ class PatientInfoCollector(models.Model):
         return f'{self.name}-{self.mobile_phone}'
 
     class Meta:
-        verbose_name = '病人信息采集器'
-        verbose_name_plural = '病人信息采集器'
+        verbose_name = '病人信息采集'
+        verbose_name_plural = '病人信息采集'
         db_table_comment = '病人信息采集器'
 
         indexes = [
             models.Index(fields=('id_no',)),
             models.Index(fields=('mobile_phone',)),
+            models.Index(fields=('name',)),
             models.Index(fields=('id_no', 'debit_card_no')),
         ]
 

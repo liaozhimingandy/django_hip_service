@@ -884,7 +884,13 @@ Header
 																							<xs:complexType>
 																								<xs:simpleContent>
 																									<xs:extension base="xs:string">
-																										<xs:attribute name="value" type="xs:short" use="required"/>
+																										<xs:attribute name="value" use="required">
+																											<xs:simpleType>
+																												<xs:restriction base="xs:float">
+																													<xs:pattern value="\d+\.\d{2}"/>
+																												</xs:restriction>
+																											</xs:simpleType>
+																										</xs:attribute>
 																										<xs:attribute name="unit" type="xs:string" use="required"/>
 																									</xs:extension>
 																								</xs:simpleContent>
@@ -904,7 +910,13 @@ Header
 																																	<xs:documentation>药品代码及名称(通用名) </xs:documentation>
 																																</xs:annotation>
 																															</xs:element>
-																															<xs:element name="name" type="xs:string"/>
+																															<xs:element name="name">
+																																<xs:simpleType>
+																																	<xs:restriction base="xs:string">
+																																		<xs:maxLength value="50"/>
+																																	</xs:restriction>
+																																</xs:simpleType>
+																															</xs:element>
 																														</xs:sequence>
 																													</xs:complexType>
 																												</xs:element>

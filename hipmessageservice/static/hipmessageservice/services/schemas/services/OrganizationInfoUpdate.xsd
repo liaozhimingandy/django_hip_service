@@ -772,9 +772,7 @@
 																																			<xs:attribute name="root" type="xs:string" use="required"/>
 																																			<xs:attribute name="extension" use="required">
 																																				<xs:simpleType>
-																																					<xs:restriction base="xs:string">
-																																						<xs:minLength value="1"/>
-																																					</xs:restriction>
+																																					<xs:restriction base="xs:string"/>
 																																				</xs:simpleType>
 																																			</xs:attribute>
 																																		</xs:extension>

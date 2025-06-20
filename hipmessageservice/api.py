@@ -144,7 +144,7 @@ dict_empi_mapping = {
     "CREATE_BY": "author",
     "CREATE_TIME": "gmt_reg",
     "MEDICAL_RECORD_NO": "",
-    "OP_MEDICAL_RECORD_NO": "",
+    "OP_MEDICAL_RECORD_NO": "patient_id",
     "Passport_GA": "",
     "BEIJING_MEDICAL_CARD_NO": "",
     "VIP_INDICATOR": "",

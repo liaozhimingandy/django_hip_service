@@ -71,7 +71,7 @@
 				<xs:element name="title">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:enumeration value="病危（重）同意书"/>
+							<xs:enumeration value="病危重通知书"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>

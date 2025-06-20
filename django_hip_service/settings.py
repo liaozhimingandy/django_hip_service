@@ -30,6 +30,9 @@ def get_version_from_pyproject():
 
 __version__, APP_NAME = get_version_from_pyproject()
 
+with open(os.path.join(BASE_DIR, "VERSION"), "r", encoding="utf-8") as f:
+    __version__ = f.readline().strip()
+
 # id前缀
 PREFIX_ID = "esbid_"
 

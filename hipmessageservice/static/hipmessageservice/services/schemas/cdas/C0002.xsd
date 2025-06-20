@@ -920,9 +920,9 @@
 	<xs:complexType name="CD">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="code" type="xs:byte" use="optional"/>
-				<xs:attribute name="codeSystem" type="xs:string" use="optional"/>
-				<xs:attribute name="codeSystemName" type="xs:string" use="optional"/>
+				<xs:attribute name="code" type="xs:string" use="required"/>
+				<xs:attribute name="codeSystem" type="xs:string" use="required"/>
+				<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
 				<xs:attribute name="displayName" type="xs:string" use="optional"/>
 				<xs:attribute name="value" type="xs:long" use="optional"/>
 				<xs:attribute name="currency" type="xs:string" use="optional"/>
