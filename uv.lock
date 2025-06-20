@@ -130,7 +130,7 @@ wheels = [
 [[package]]
 name = "django-hip-service"
 version = "5.0.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "django" },
     { name = "django-cors-headers" },

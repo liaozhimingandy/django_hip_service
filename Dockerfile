@@ -66,8 +66,5 @@ COPY . /app
 RUN chmod +x /app/config/entrypoint.sh
 EXPOSE 8000
 
-ENV VIRTUAL_ENV=/app/.venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
 # 设置入口点
 ENTRYPOINT ["/app/config/entrypoint.sh"]
