@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # pip镜像源
 # ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
-#ENV PIPURL "https://pypi.org/simple/"
+ENV PIPURL "https://pypi.org/simple/"
 
 # 安装依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
