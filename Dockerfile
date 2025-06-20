@@ -11,7 +11,7 @@ ENV LC_ALL C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
 
 # pip镜像源
-ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+# ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 #ENV PIPURL "https://pypi.org/simple/"
 
 # 安装依赖
@@ -24,8 +24,10 @@ COPY . .
 
 # 安装 pdm 及项目依赖
 RUN pip install --no-cache-dir uv -i ${PIPURL} --default-timeout=1000 \
-    && uv lock \
-    && uv sync --verbose --frozen --no-cache
+    && uv export --frozen --no-hashes --format requirements-txt > requirements.txt \
+    && pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
+    && rm -rf requirements.txt
+
 
 # 阶段 2: 运行时镜像
 FROM python:${TAG}
