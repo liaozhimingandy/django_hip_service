@@ -35,7 +35,10 @@ RUN pip config set global.index-url ${PIPURL}
 
 # 导出 requirements.txt，然后通过 pip 安装，或直接 uv sync 安装
 # 方式 A：uv 同步安装
-RUN uv sync --frozen --no-cache
+RUN uv export --no-hashes --format requirements-txt > requirements.txt
+
+RUN pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
+     && rm requirements.txt
 
 
 # 阶段 2: 运行时镜像
@@ -53,7 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制 builder 阶段的虚拟环境（可选）或 site-packages
-COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 
 # 创建工作目录并复制代码
 WORKDIR /app
