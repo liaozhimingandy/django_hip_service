@@ -32,23 +32,9 @@ dependencies = [
     "pymssql>=2.3.2",
 ]
 requires-python = ">=3.13"
-readme = "README.md"
 license = {text = "APACHE-2.0"}
-
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-
-[tool.pdm]
-distribution = true
 
 test = [
     "pytest>=8.1.1",
 ]
-
 doc = ["mkdocs"]
-[tool.pdm.dev-dependencies]
-dev = [
-    "django-debug-toolbar>=4.4.6",
-]
