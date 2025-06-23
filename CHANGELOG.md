@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.1.1] - 2025-06-23
+
+### Version Upgrade: `26.1.0` → `26.1.1`
+
+### Bug Fixes
+- **core:** 修复dockerfile文件 (8d78130)
+
 ## [26.1.0] - 2025-06-23
 
 ### Version Upgrade: `26.0.0` → `26.1.0`
