@@ -1,5 +1,30 @@
 # Changelog
 
+## [26.1.0] - 2025-06-23
+
+### Version Upgrade: `26.0.0` → `26.1.0`
+
+### Features
+- **core:** 使用uv管理环境 (f0851de)
+
+### Bug Fixes
+- **core:** 修复dockerfile文件 (ac5be08)
+- **core:** 修复dockerfile文件 (a846342)
+- **core:** 修复dockerfile文件 (c305bdc)
+- **core:** 修复dockerfile文件 (dc9a7e4)
+- **core:** 修复dockerfile文件 (2a9cdaf)
+- **core:** 修复dockerfile文件 (23f153c)
+- **core:** 修复dockerfile文件 (89b00ef)
+- **core:** 修复dockerfile文件 (c375a0b)
+- **core:** 修复dockerfile文件 (6539df5)
+- **core:** 修复dockerfile文件 (eaffdab)
+- **core:** 修复dockerfile文件 (ca19346)
+- **core:** 修复dockerfile文件 (2b9934a)
+- **core:** 修复dockerfile文件 (80713b3)
+- **core:** 修复dockerfile文件 (e6efa91)
+- **core:** 修复dockerfile文件 (875dfc0)
+- **core:** 修复dockerfile文件 (a5fe535)
+
 ## [5.0.0](https://github.com/liaozhimingandy/django_hip_service/compare/v4.1.0...v5.0.0) (2025-04-10)
 
 
