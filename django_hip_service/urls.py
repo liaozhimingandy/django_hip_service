@@ -39,8 +39,8 @@ urlpatterns = [
 
 # 开发调试时使用
 if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+    # import debug_toolbar
+    # urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
     urlpatterns += staticfiles_urlpatterns()
 
 
