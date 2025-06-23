@@ -1,9 +1,9 @@
 services:
   app:
-    image: django_hip_service:4.1.5
+    image: django_hip_service:26.1.0
     restart: unless-stopped
 #    for beta
-    command: python manage.py runserver 0.0.0.0:8000
+#    command: python manage.py runserver 0.0.0.0:8000
 #    for producation
 #    command: gunicorn django_hip_service.wsgi:application -b 0.0.0.0:8000 --preload
     ports:
