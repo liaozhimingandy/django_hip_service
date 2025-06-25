@@ -12,7 +12,7 @@ ENV LANG C.UTF-8 \
 
 # 创建工作目录并复制代码
 WORKDIR /app
-COPY . /app
+COPY ../../. /app
 
 # 配置权限并暴露端口
 RUN chmod +x /app/config/entrypoint.sh
