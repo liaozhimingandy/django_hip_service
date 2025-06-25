@@ -51,11 +51,10 @@ ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,opena
                                                       "openapi-test.esb.alsoapp.com").split(",")
 
 CSRF_TRUSTED_ORIGINS = [f'http://{item}' for item in ALLOWED_HOSTS]
+
 # 允许来自指定来源的跨域请求
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # 允许 Vue 开发服务器的地址
-    "https://www.alsoapp.com", # 生产环境
-]
+CORS_ALLOWED_ORIGINS = [item for item in os.getenv("CORS_ALLOWED_ORIGINS").split(',')]
+
 # 允许特定 HTTP 方法和请求头
 CORS_ALLOW_METHODS = ["GET", "POST"]
 # Application definition

@@ -1,6 +1,6 @@
 services:
   app:
-    image: django_hip_service:26.1.1
+    image: django_hip_service:26.1.2
     restart: unless-stopped
 #    for beta
 #    command: python manage.py runserver 0.0.0.0:8000
@@ -8,6 +8,11 @@ services:
 #    command: gunicorn django_hip_service.wsgi:application -b 0.0.0.0:8000 --preload
     ports:
       - "8000:8000"
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
     env_file:
       - .env
     environment:

@@ -26,6 +26,7 @@ SERVICE_FIELDS_ORDER = [
     'labels',
     'image',
     'build',
+    "logging",
     'command',
     'container_name',
     'restart',
@@ -129,6 +130,15 @@ class AppAdmin(admin.ModelAdmin):
                         volume_name = extract_volume_name(volume)  # 提取卷名
                         if volume_name:  # 如果提取到卷名，则将卷添加到 volumes 部分
                             compose_data['volumes'][volume_name] = {}
+
+                # 添加容器日志
+                service_config['logging'] = {
+                    'driver': 'json-file',
+                    'options': {
+                        'max-size': '10m',
+                        'max-file': '5'
+                    }
+                }
 
             # 手动调整字典结构，确保 version 字段始终在最前面
             sorted_compose_data = OrderedDict({
