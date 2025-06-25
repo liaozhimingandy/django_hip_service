@@ -25,7 +25,7 @@ for app_ver in $RELEASE_DIR/*; do
         echo $app_ver
         echo "VERSION_PYTHON_TAG: $VERSION_PYTHON_TAG"
 
-         # Dockerfile 路径
+        # Dockerfile 路径
         DOCKERFILE_PATH="$app_ver/Dockerfile.base"
         # 上下文设为项目根
         CONTEXT_DIR="$PROJECT_ROOT"
