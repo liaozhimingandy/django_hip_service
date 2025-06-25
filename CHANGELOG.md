@@ -1,5 +1,16 @@
 # Changelog
 
+## [26.2.0] - 2025-06-25
+
+### Version Upgrade: `26.1.2` → `26.2.0`
+
+### Features
+- **core:** 重构docker镜像构建过程 (6c47259)
+
+### Bug Fixes
+- **core:** 修复已知bug (d612401)
+- **core:** 修复已知bug (dc04756)
+
 ## [26.1.2] - 2025-06-23
 
 ### Version Upgrade: `26.1.1` → `26.1.2`
