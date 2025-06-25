@@ -37,7 +37,7 @@ for app_ver in $RELEASE_DIR/*; do
         echo "Building with Dockerfile: $DOCKERFILE_PATH"
         echo "Build context: $CONTEXT_DIR"
 
-        docker build --build-arg VERSION_PYTHON_TAG=$VERSION_PYTHON_TAG -f "$app_ver/Dockerfile" -t "$REPO_NAME:$latest_tag_without_v" "$app_ver"
+        docker build --build-arg VERSION_PYTHON_TAG=$VERSION_PYTHON_TAG -f "$app_ver/Dockerfile" -t "$REPO_NAME:$latest_tag_without_v" "$CONTEXT_DIR"
     fi
 
 done
