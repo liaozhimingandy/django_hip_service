@@ -6,8 +6,8 @@ FROM "liaozhiming/django_hip_service:$VERSION_PYTHON_TAG-base"
 LABEL MAINTAINER="andy<contact@liaozhimingandy>"
 
 # 避免交互，设置环境变量
-ENV LANG C.UTF-8 \
-    LC_ALL C.UTF-8 \
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
 
 # 创建工作目录并复制代码

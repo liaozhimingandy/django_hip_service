@@ -28,6 +28,7 @@ for app_ver in $RELEASE_DIR/*; do
 
     # 去掉 v 前缀
     latest_tag="${latest_tag#v}"
+    
     log "最新标签：$latest_tag"
 
     popd > /dev/null

@@ -6,8 +6,8 @@ ARG VERSION_PYTHON_TAG=3.13-slim
 FROM python:${VERSION_PYTHON_TAG} AS builder
 
 # 避免交互，设置环境变量
-ENV LANG C.UTF-8 \
-    LC_ALL C.UTF-8 \
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
 
 # pip镜像源
@@ -48,8 +48,8 @@ RUN pip install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeou
 FROM python:${VERSION_PYTHON_TAG}
 
 # 避免交互，设置环境变量
-ENV LANG C.UTF-8 \
-    LC_ALL C.UTF-8 \
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
 
 # 安装运行时依赖
