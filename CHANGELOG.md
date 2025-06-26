@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.2.6] - 2025-06-26
+
+### Version Upgrade: `26.2.5` → `26.2.6`
+
+### Bug Fixes
+- **core:** 修复已知bug (e0dcc3c)
+
 ## [26.2.5] - 2025-06-26
 
 ### Version Upgrade: `26.2.4` → `26.2.5`
