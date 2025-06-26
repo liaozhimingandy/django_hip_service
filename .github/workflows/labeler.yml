@@ -44,9 +44,8 @@ jobs:
           # 设置使用令牌认证的远程URL
           remote_url="https://${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           
-          # 推送更改和标签
-          git push origin HEAD:main -v
-          git push origin --tags -v
+          # 推送当前分支及其新标签
+          git push -u origin HEAD --follow-tags -v
 
       - name: Deploy to production
         run: |
