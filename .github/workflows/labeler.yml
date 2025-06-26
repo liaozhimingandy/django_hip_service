@@ -2,7 +2,7 @@ name: labeler.yml
 on:
   push:
     branches:
-      - release/*
+      - main
 
 jobs:
   build:
