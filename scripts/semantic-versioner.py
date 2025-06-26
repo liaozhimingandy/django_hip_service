@@ -66,6 +66,11 @@ DEFAULT_CONFIG = {
             "pre_release": None,
             "build_metadata": None,
             "auto_increment": False
+        },
+        "release": {
+            "pre_release": None,
+            "build_metadata": None,
+            "auto_increment": False
         }
     }
 }
@@ -75,7 +80,13 @@ def get_current_branch():
     """获取当前分支名称"""
     result = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
                             capture_output=True, text=True, encoding='utf-8')
-    return result.stdout.strip()
+    branch_name = result.stdout.strip()
+
+    # 使用正则表达式提取前缀部分
+    match = re.match(r'([^/]+)', branch_name)
+    if match:
+        return match.group(1)
+    return branch_name  # 如果没有匹配到，返回原始分支名
 
 
 def get_current_version():
@@ -413,5 +424,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # python .\scripts\semantic-versioner.py --release
+    # python .\scripts\semantic-versioner.py --dry-run
     main()
