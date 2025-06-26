@@ -1,0 +1,45 @@
+# ── 版本控制 ───────────────────────────────
+.git
+.gitignore
+
+# ── Python 环境 & 构建产物 ───────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+pyproject.toml
+uv.lock
+
+# ── 应用静态资源 ────────────────────────────
+static/
+staticfiles/
+assets/
+
+# ── 配置 & 环境文件 ─────────────────────────
+.env
+.env/
+config/.env
+config/default.conf.template
+.idea/
+.github/
+.pylama.ini
+.pytest_cache
+ .pdm-python
+
+# ── 数据库迁移 & 样例 ────────────────────────
+*/migrations/
+*/sample.json
+*.db
+
+# ── 日志 & 临时文件 ─────────────────────────
+logs/
+temp/
+
+# ── Docker & CI/CD 自动化 ────────────────────
+docker-compose.yml
+scripts
+docker
+.dockerignore
+
+# ── 其它文档 ────────────────────────────────
+readme.md

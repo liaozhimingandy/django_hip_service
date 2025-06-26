@@ -21,14 +21,7 @@ from loguru import logger
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 从pyproject.toml加载应用版本号等信息
-def get_version_from_pyproject():
-    with open(os.path.join(BASE_DIR, "pyproject.toml"), "rb") as f:
-        data = tomllib.load(f)
-    # 假设版本号位于 [tool.poetry] 或 [project] 中
-    return data.get("project", {}).get("version"), data.get("project", {}).get("description")
-
-__version__, APP_NAME = get_version_from_pyproject()
+APP_NAME = '医院信息平台后台管理系统'
 
 with open(os.path.join(BASE_DIR, "VERSION"), "r", encoding="utf-8") as f:
     __version__ = f.readline().strip()

@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai      # 全局时区
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -1,6 +1,6 @@
 services:
   app:
-    image: django_hip_service:26.1.2
+    image: liaozhiming/django_hip_service:26.2.4
     restart: unless-stopped
 #    for beta
 #    command: python manage.py runserver 0.0.0.0:8000
