@@ -1186,6 +1186,6 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="currency" type="xs:string"/>
+		<xs:attribute name="currency" type="xs:string" use="required"/>
 	</xs:complexType>
 </xs:schema>

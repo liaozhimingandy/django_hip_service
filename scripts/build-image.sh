@@ -15,7 +15,7 @@ log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
 
 for app_ver in $RELEASE_DIR/*; do
 
-    if [ -f "$app_ver/Dockerfile.base" ]; then
+    if [ -f "$app_ver/Dockerfile" ]; then
 
         tag=$(echo $app_ver | cut -b 10-);
         log "Build: $tag";

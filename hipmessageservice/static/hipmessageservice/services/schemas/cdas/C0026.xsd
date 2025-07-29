@@ -74,7 +74,7 @@
 				<xs:element name="title">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:enumeration value="手术知情告知书"/>
+							<xs:enumeration value="手术知情同意书"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>

@@ -10,6 +10,7 @@
 ================================================="""
 import base64
 import copy
+import itertools
 import json
 import re
 import uuid
@@ -404,12 +405,14 @@ def verification_hip(data: dict) -> tuple:
     """互联互通服务校验"""
     content_type = data["content_type"]
     content = base64.b64decode(data[content_type]).decode('utf-8')
+
     # 服务schema校验
     ok, message = verification_hip_detail(schema_name=content_type, content=content, is_service=True)
 
     if not ok:
         return ok, message
 
+    # 二次校验
     match content_type:
         # 个人新增注册和更新
         case 'PatientInfoRegister' | 'PatientInfoUpdate':
@@ -430,7 +433,7 @@ def verification_hip(data: dict) -> tuple:
             ok, message = verification_hip_detail(schema_name=cda_code, content=cda_data, is_service=False)
 
             if not ok:
-                return ok, message
+                return ok, itertools.chain(message, [f"CDA: {cda_code}校验失败!"])
 
             # cda服务三重校验
             cda_name = xml_root.xpath("//xmlns:clinicalDocument/xmlns:code/xmlns:displayName/@value",
@@ -641,6 +644,10 @@ def verification(data: dict) -> tuple:
         case 'DiagIssuedAdd' | 'DiagIssuedUpdate':
             """ 诊断信息新增或更新逻辑 """
             diagnosiss = data[content_type]
+
+            # 诊断新增更新合并为更新接口,无删除接口,根据就诊流水号删除所有诊断信息
+            Diagnosis.objects.filter(adm_no=diagnosiss[0].get('adm_no', None), from_src=diagnosiss[0].get('from_src', None)).delete()
+
             # 获取需要保存的数据模型字段列表
             fields = set([field.name for field in Diagnosis._meta.local_fields]) - {'id', 'gmt_created', 'patient'}
             for diagnosis in diagnosiss:
@@ -652,7 +659,8 @@ def verification(data: dict) -> tuple:
                     diagnosis_info.full_clean(exclude=('diagnosis_id', 'patient'))
                     # 保存到数据库
                     if settings.IS_SAVE_TO_DB:
-                        Diagnosis.objects.update_or_create(diagnosis_id=diagnosis_info.diagnosis_id, defaults=filtered_data)
+                        Diagnosis.objects.update_or_create(diagnosis_id=diagnosis_info.diagnosis_id,
+                                                           from_src=diagnosis_info.from_src, defaults=filtered_data)
                 except ValidationError as e:
                     return False, [str(item) for item in e]
             return True, 'ok'

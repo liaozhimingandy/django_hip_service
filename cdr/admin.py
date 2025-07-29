@@ -463,8 +463,8 @@ class TransferInfoAdmin(ReadOnlyAdmin):
 @admin.register(Diagnosis)
 class DiagnosisAdmin(ReadOnlyAdmin):
     """诊断信息"""
-    list_display = ('adm_no', 'patient_id_new', "patient_name", 'diag_code', 'diag_name', 'adm_cls_code')
-    list_display_links = ('adm_no',)
+    list_display = ('diagnosis_id', 'adm_no', 'patient_id_new', "patient_name", 'diag_code', 'diag_name', 'adm_cls_code', 'from_src')
+    list_display_links = ('diagnosis_id',)
     raw_id_fields = ('patient',)
     search_fields = ('adm_no', 'patient__patient_id')
 
