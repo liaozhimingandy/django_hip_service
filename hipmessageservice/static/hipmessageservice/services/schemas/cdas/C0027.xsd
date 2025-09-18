@@ -130,7 +130,7 @@
 									<xs:sequence>
 										<xs:element name="id" maxOccurs="unbounded">
 											<xs:annotation>
-												<xs:documentation>门（急）诊号标识 住院号标识检验报告单号标识电子申请单编号 检验标本编号标识 </xs:documentation>
+												<xs:documentation>门（急）诊号标识 住院号标识知情同意书编号 健康档案标识号</xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
 												<xs:simpleContent>
@@ -183,7 +183,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="生理性别代码表(GB/T 2261.1)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -195,7 +201,7 @@
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
-																	<xs:attribute name="value" type="xs:int"/>
+																	<xs:attribute name="value" type="xs:int" use="required"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -385,7 +391,7 @@
 						<xs:attribute name="typeCode" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="authenticator" minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="authenticator" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation> 患者签名 代理人签名</xs:documentation>
 					</xs:annotation>
@@ -884,7 +890,7 @@
 							<xs:element name="structuredBody">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="component" minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="component" maxOccurs="unbounded">
 											<xs:annotation>
 												<xs:documentation>术前诊断章节治疗计划章节意见章节风险章节</xs:documentation>
 											</xs:annotation>
@@ -906,7 +912,7 @@
 																	</xs:complexType>
 																</xs:element>
 																<xs:element name="text" type="xs:string"/>
-																<xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+																<xs:element name="entry" maxOccurs="unbounded">
 																	<xs:annotation>
 																		<xs:documentation>术前诊断编码医疗机构意见患者意见麻醉中可能出现的意外</xs:documentation>
 																	</xs:annotation>

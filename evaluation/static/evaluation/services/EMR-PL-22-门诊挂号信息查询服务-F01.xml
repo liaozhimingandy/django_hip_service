@@ -71,9 +71,9 @@
       <typeOfEncounter> 
           
         <value> 
-          <item code="1" codeSystem="2.16.156.10011.2.3.1.271" codeSystemName="患者类型代码表"> 
-            <displayName value="门急诊" /> 
-          </item> 
+          <item code="" codeSystem="2.16.156.10011.2.3.1.271" codeSystemName="患者类型代码表">
+            <displayName value="" />
+          </item>
         </value> 
       </typeOfEncounter> 
     </queryByParameter> 

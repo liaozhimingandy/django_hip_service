@@ -1088,7 +1088,7 @@
 	<xs:complexType name="PQ">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="value" type="xs:int" use="required"/>
+				<xs:attribute name="value" type="xs:float" use="required"/>
 				<xs:attribute name="unit" type="xs:string" use="required"/>
 			</xs:extension>
 		</xs:simpleContent>

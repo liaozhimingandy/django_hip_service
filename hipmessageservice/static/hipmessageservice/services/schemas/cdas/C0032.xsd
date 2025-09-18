@@ -213,7 +213,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="生理性别代码表(GB/T 2261.1)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -266,7 +272,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="婚姻状况代码表(GB/T 2261.2)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -400,7 +412,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="民族类别代码表(GB 3304)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -685,7 +703,13 @@
 																		</xs:simpleType>
 																	</xs:attribute>
 																	<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																	<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																	<xs:attribute name="codeSystemName" use="required">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="世界各国和地区名称代码(GB/T 2659)"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																	<xs:attribute name="displayName" use="required">
 																		<xs:simpleType>
 																			<xs:restriction base="xs:string">
@@ -1085,7 +1109,13 @@
 																					</xs:simpleType>
 																				</xs:attribute>
 																				<xs:attribute name="codeSystem" type="xs:string" use="required"/>
-																				<xs:attribute name="codeSystemName" type="xs:string" use="required"/>
+																				<xs:attribute name="codeSystemName" use="required">
+																					<xs:simpleType>
+																						<xs:restriction base="xs:string">
+																							<xs:enumeration value="从业状况(个人身体)代码表(GB/T 2261.4)"/>
+																						</xs:restriction>
+																					</xs:simpleType>
+																				</xs:attribute>
 																				<xs:attribute name="displayName" use="required">
 																					<xs:simpleType>
 																						<xs:restriction base="xs:string">
@@ -2018,7 +2048,7 @@
 																	</xs:complexType>
 																</xs:element>
 																<xs:element name="text" type="xs:string"/>
-																<xs:element name="entry" maxOccurs="unbounded">
+																<xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
 																	<xs:annotation>
 																		<xs:documentation>门（急）诊诊断病理诊断住院患者损伤和中毒外部原因颅脑损伤患者入院前昏迷时间颅脑损伤患者入院后昏迷时间转科条目出院诊断-主要诊断条目出院诊断-其他诊断条目离院方式住院次数  　实际住院天数　亡患者尸检标志病案质量 有否出院31天内再住院计划 医疗付费方式 住院总费用 综合医疗服务费 诊断类服务费 治疗类服务费 康复费类服务费 中医治疗费 西药费 中药费  血液和血液制品类服务费  耗材类费用 其他费 </xs:documentation>
 																	</xs:annotation>

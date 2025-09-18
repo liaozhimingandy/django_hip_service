@@ -35,8 +35,8 @@
 				<id root="2.16.156.10011.2.5.1.4" extension="0020109112"/>
 				<!-- 患者性别 -->
 				<livingSubjectAdministrativeGender>
-					<value code="1" codeSystem="2.16.156.10011.2.3.3.4">
-						<displayName value="男性"/>
+					<value code="" codeSystem="2.16.156.10011.2.3.3.4">
+						<displayName value=""/>
 					</value>
 					<semanticsText value="患者性别"/>
 				</livingSubjectAdministrativeGender>
@@ -51,7 +51,7 @@
 				<livingSubjectName>
 					<value>
 						<item>
-							<part value="李丽丽"/>
+							<part value=""/>
 						</item>
 					</value>
 					<semanticsText value="患者姓名"/>
